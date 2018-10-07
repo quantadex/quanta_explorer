@@ -37,30 +37,34 @@ const getStyleLoaders = (cssOptions, preProcessor) => {
 			loader: require.resolve('css-loader'),
 			options: cssOptions,
 		},
-		{
-			// Options for PostCSS as we reference these options twice
-			// Adds vendor prefixing based on your specified browser support in
-			// package.json
-			loader: require.resolve('postcss-loader'),
-			options: {
-				// Necessary for external CSS imports to work
-				// https://github.com/facebook/create-react-app/issues/2677
-				ident: 'postcss',
-				plugins: () => [
-					require('postcss-flexbugs-fixes'),
-					require('postcss-preset-env')({
-						autoprefixer: {
-							flexbox: 'no-2009',
-						},
-						stage: 3,
-					}),
-				],
-			},
-		},
 	];
 	if (preProcessor) {
-		loaders.push(require.resolve(preProcessor));
+		if (typeof preProcessor === 'object') {
+			loaders.push(preProcessor);
+		} else {
+			loaders.push(require.resolve(preProcessor));
+		}
 	}
+	loaders.push({
+		// Options for PostCSS as we reference these options twice
+		// Adds vendor prefixing based on your specified browser support in
+		// package.json
+		loader: require.resolve('postcss-loader'),
+		options: {
+			// Necessary for external CSS imports to work
+			// https://github.com/facebook/create-react-app/issues/2677
+			ident: 'postcss',
+			plugins: () => [
+				require('postcss-flexbugs-fixes'),
+				require('postcss-preset-env')({
+					autoprefixer: {
+						flexbox: 'no-2009',
+					},
+					stage: 3,
+				}),
+			],
+		},
+	});
 	return loaders;
 };
 
@@ -139,6 +143,7 @@ module.exports = {
 			// Support React Native Web
 			// https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
 			'react-native': 'react-native-web',
+			'@quanta': path.resolve(__dirname, '../src/'),
 		},
 		plugins: [
 			// Adds support for installing with Plug'n'Play, leading to faster installs and adding
@@ -264,8 +269,6 @@ module.exports = {
 						test: cssRegex,
 						use: getStyleLoaders({
 							importLoaders: 1,
-							modules: true,
-							getLocalIdent: getCSSModuleLocalIdent,
 						}),
 					},
 					// Opt-in support for SASS (using .scss or .sass extensions).
@@ -281,7 +284,12 @@ module.exports = {
 								modules: true,
 								getLocalIdent: getCSSModuleLocalIdent,
 							},
-							'sass-loader'
+							{
+								loader: 'sass-loader',
+								options: {
+									includePaths: ['src/styles', 'node_modules'],
+								},
+							}
 						),
 					},
 					// "file" loader makes sure those assets get served by WebpackDevServer.

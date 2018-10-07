@@ -6,3 +6,11 @@ body {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
+
+.quanta-select__control {
+	border: none;
+}
+
+.quanta-select__indicator-separator {
+	display: none;
+}

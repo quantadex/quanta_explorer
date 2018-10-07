@@ -60,36 +60,41 @@ const getStyleLoaders = (cssOptions, preProcessor) => {
 			loader: require.resolve('css-loader'),
 			options: cssOptions,
 		},
-		{
-			// Options for PostCSS as we reference these options twice
-			// Adds vendor prefixing based on your specified browser support in
-			// package.json
-			loader: require.resolve('postcss-loader'),
-			options: {
-				// Necessary for external CSS imports to work
-				// https://github.com/facebook/create-react-app/issues/2677
-				ident: 'postcss',
-				plugins: () => [
-					require('postcss-flexbugs-fixes'),
-					require('postcss-preset-env')({
-						autoprefixer: {
-							flexbox: 'no-2009',
-						},
-						stage: 3,
-					}),
-				],
-				sourceMap: shouldUseSourceMap,
-			},
-		},
 	];
 	if (preProcessor) {
-		loaders.push({
-			loader: require.resolve(preProcessor),
-			options: {
-				sourceMap: shouldUseSourceMap,
-			},
-		});
+		if (typeof preProcessor === 'object') {
+			loaders.push(preProcessor);
+		} else {
+			loaders.push({
+				loader: require.resolve(preProcessor),
+				options: {
+					sourceMap: shouldUseSourceMap,
+				},
+			});
+		}
 	}
+
+	loaders.push({
+		// Options for PostCSS as we reference these options twice
+		// Adds vendor prefixing based on your specified browser support in
+		// package.json
+		loader: require.resolve('postcss-loader'),
+		options: {
+			// Necessary for external CSS imports to work
+			// https://github.com/facebook/create-react-app/issues/2677
+			ident: 'postcss',
+			plugins: () => [
+				require('postcss-flexbugs-fixes'),
+				require('postcss-preset-env')({
+					autoprefixer: {
+						flexbox: 'no-2009',
+					},
+					stage: 3,
+				}),
+			],
+			sourceMap: shouldUseSourceMap,
+		},
+	});
 	return loaders;
 };
 
@@ -210,6 +215,7 @@ module.exports = {
 			// Support React Native Web
 			// https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
 			'react-native': 'react-native-web',
+			'@quanta': path.resolve(__dirname, '../src/'),
 		},
 		plugins: [
 			// Adds support for installing with Plug'n'Play, leading to faster installs and adding
@@ -333,8 +339,6 @@ module.exports = {
 						loader: getStyleLoaders({
 							importLoaders: 1,
 							sourceMap: shouldUseSourceMap,
-							modules: true,
-							getLocalIdent: getCSSModuleLocalIdent,
 						}),
 						// Don't consider CSS imports dead code even if the
 						// containing package claims to have no side effects.
@@ -356,7 +360,13 @@ module.exports = {
 								modules: true,
 								getLocalIdent: getCSSModuleLocalIdent,
 							},
-							'sass-loader'
+							{
+								loader: 'sass-loader',
+								options: {
+									sourceMap: shouldUseSourceMap,
+									includePaths: ['src/styles', 'node_modules'],
+								},
+							}
 						),
 						// Don't consider CSS imports dead code even if the
 						// containing package claims to have no side effects.

@@ -1,0 +1,41 @@
+@import 'styles';
+
+.footer {
+	height: 275px;
+	background: #dddddd;
+
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.socialLinks {
+	display: flex;
+	margin-bottom: 30px;
+
+	.item {
+		cursor: pointer;
+		margin: 0 10px;
+	}
+
+	.item:first-child {
+		margin-left: 0;
+	}
+
+	.item:last-child {
+		margin-right: 0;
+	}
+}
+
+.description {
+	font-size: 12px;
+	width: 200px;
+	text-align: center;
+}
+
+@media screen and (max-width: $breakpoint-sm) {
+	.footer {
+		height: 213px;
+	}
+}

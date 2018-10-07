@@ -46,6 +46,12 @@
             ".json": "always",
             ".scss": "always"
         },
+        "import/no-unresolved": [
+            "error",
+            {
+              "ignore": [ "@quanta/" ]
+            }
+        ],
         "import/no-extraneous-dependencies": 0,
         "react/no-typos": 0,
         "react/jsx-filename-extension": 0,
@@ -59,5 +65,12 @@
         "jsx-a11y/anchor-is-valid": 0,
         "jsx-a11y/no-noninteractive-element-interactions": 0,
         "jsx-a11y/no-static-element-interactions": 1
+    },
+    "settings": {
+        "import/resolver": {
+            "node": {
+                "paths": ["@quanta"]
+            }
+        }
     }
 }
