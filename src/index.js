@@ -3,11 +3,11 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 
-import App from './App';
-import configureStore from './redux/store';
-import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.css';
 import './index.css';
+import configureStore from './redux/store';
+import * as serviceWorker from './serviceWorker';
+import App from './App';
 
 const store = configureStore();
 

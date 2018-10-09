@@ -278,6 +278,7 @@ module.exports = {
 					// extensions .module.scss or .module.sass
 					{
 						test: sassRegex,
+						exclude: __dirname + 'src/styles/styles.scss',
 						use: getStyleLoaders(
 							{
 								importLoaders: 2,

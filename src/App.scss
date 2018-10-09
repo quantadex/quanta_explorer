@@ -1,4 +1,3 @@
-@import 'bootstrap/scss/bootstrap.scss';
 @import 'styles';
 
 .app {
@@ -7,6 +6,10 @@
 
 .content {
 	padding-top: $header-height;
+}
+
+.body {
+	padding: 0 $global-padding-right 0 $global-padding-left;
 }
 
 @media screen and (max-width: $breakpoint-sm) {

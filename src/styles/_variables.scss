@@ -1,4 +1,12 @@
 // Colors
+$quanta-color-purple1: #5045d2;
+
+$quanta-color-gray1: #f8f8fa;
+$quanta-color-gray2: #979797;
+
+$quanta-color-black1: #110e36;
+
+$quanta-color-border1: rgba(61, 61, 61, 0.36);
 
 $global-padding-left: 6%;
 $global-padding-right: 6%;
@@ -6,7 +14,17 @@ $global-padding-right: 6%;
 $header-height: 78px;
 $header-height-mobile: 138px;
 
-$font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-
 // Screen sizes
 $breakpoint-sm: 768px;
+
+// Font
+
+$font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+$font-size1: 14px;
+$font-size2: 15px;
+$font-size3: 20px;
+$font-size4: 12px;
+$font-size5: 16px;
+
+$font-weight-semibold: 500;

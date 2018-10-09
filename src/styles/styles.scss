@@ -1,1 +1,35 @@
 @import 'variables.scss';
+
+h2 {
+	font-size: 24px;
+	font-weight: 500;
+}
+
+table {
+	font-size: $font-size1;
+	color: $quanta-color-black1;
+}
+
+table th {
+	text-transform: uppercase;
+}
+
+table tr th:first-child,
+table tr td:first-child {
+	padding-left: 0;
+}
+
+table tr th:last-child,
+table tr td:last-child {
+	padding-right: 0;
+}
+
+@media screen and (max-width: $breakpoint-sm) {
+	table {
+		font-size: $font-size4;
+	}
+
+	table th {
+		text-transform: none;
+	}
+}

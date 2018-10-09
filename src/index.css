@@ -14,3 +14,7 @@ body {
 .quanta-select__indicator-separator {
 	display: none;
 }
+
+.table th {
+	border-top: none;
+}
