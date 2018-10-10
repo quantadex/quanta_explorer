@@ -7,8 +7,9 @@ import classes from './DExplorer.scss';
 
 class DExplorer extends Component {
 	componentDidMount() {
-		const { fetchOperations } = this.props;
+		const { fetchOperations, fetchLedgers } = this.props;
 		fetchOperations();
+		fetchLedgers();
 	}
 
 	renderOperationsRecord = () => {
@@ -107,6 +108,7 @@ class DExplorer extends Component {
 const { func, arrayOf, object } = PropTypes;
 DExplorer.propTypes = {
 	fetchOperations: func.isRequired,
+	fetchLedgers: func.isRequired,
 	operations: arrayOf(object).isRequired,
 };
 
