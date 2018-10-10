@@ -1,10 +1,35 @@
-import React from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { Button, Table } from 'reactstrap';
 
 import classes from './DExplorer.scss';
 
-class DExplorer extends React.PureComponent {
+class DExplorer extends Component {
+	componentDidMount() {
+		const { fetchOperations } = this.props;
+		fetchOperations();
+	}
+
+	renderOperationsRecord = () => {
+		const { operations } = this.props;
+		return (
+			<tbody>
+				{operations.map(operation => (
+					<tr>
+						<td>
+							<a href={`/operation/${operation.id}`}>{operation.id}</a>
+						</td>
+						<td>{`Payment from ${operation.from} to ${operation.to} amout ${
+							operation.amount
+						}`}</td>
+						<td />
+					</tr>
+				))}
+			</tbody>
+		);
+	};
+
 	renderOprationsHistory = () => {
 		return (
 			<div className={classNames(classes.history, classes.operationHistory)}>
@@ -22,6 +47,7 @@ class DExplorer extends React.PureComponent {
 							<th>Created</th>
 						</tr>
 					</thead>
+					{this.renderOperationsRecord()}
 				</Table>
 			</div>
 		);
@@ -77,5 +103,11 @@ class DExplorer extends React.PureComponent {
 		);
 	}
 }
+
+const { func, arrayOf, object } = PropTypes;
+DExplorer.propTypes = {
+	fetchOperations: func.isRequired,
+	operations: arrayOf(object).isRequired,
+};
 
 export default DExplorer;

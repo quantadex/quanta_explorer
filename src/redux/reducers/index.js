@@ -1,5 +1,9 @@
 import { combineReducers } from 'redux';
 
-const reducers = combineReducers({});
+import operationsReducer from './operations';
+
+const reducers = combineReducers({
+	operations: operationsReducer,
+});
 
 export default reducers;
