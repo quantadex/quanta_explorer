@@ -10,6 +10,7 @@ const ACTION_HANDLERS = {
 	[Actions.requestLedgers]: state => ({
 		...state,
 		isFetching: true,
+		ledgers: [],
 	}),
 	[Actions.failLedgers]: state => ({
 		...state,

@@ -63,6 +63,30 @@
 	margin-bottom: 70px;
 }
 
+.id {
+	width: 150px;
+}
+
+.description {
+	flex: 1;
+	padding-left: 5%;
+}
+
+.created {
+	width: 100px;
+	text-align: right;
+}
+
+.sequence {
+	flex: 1;
+}
+
+.transactions,
+.operations {
+	width: 150px;
+	text-align: center;
+}
+
 @media screen and (max-width: $breakpoint-sm) {
 	.content {
 		padding: 0;
@@ -86,5 +110,18 @@
 
 	.main {
 		padding: 40px $global-padding-left;
+	}
+
+	.history {
+		.operationHistory.header {
+			margin-bottom: 0;
+			padding-bottom: 18px;
+			border-bottom: solid 2px $quanta-color-border2;
+		}
+	}
+
+	.description {
+		padding-left: 0;
+		margin-top: 8px;
 	}
 }

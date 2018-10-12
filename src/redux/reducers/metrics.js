@@ -1,24 +1,24 @@
 import { handleActions } from 'redux-actions';
-import * as Actions from '@quanta/redux/actions/operations';
+import * as Actions from '@quanta/redux/actions/metrics';
 
 const initialState = {
-	operations: [],
+	metrics: {},
 	isFetching: false,
 };
 
 const ACTION_HANDLERS = {
-	[Actions.requestOperations]: state => ({
+	[Actions.requestMetrics]: state => ({
 		...state,
 		isFetching: true,
-		operations: [],
+		metrics: [],
 	}),
-	[Actions.failOperations]: state => ({
+	[Actions.failMetrics]: state => ({
 		...state,
 		isFetching: false,
 	}),
-	[Actions.receiveOperations]: (state, action) => ({
+	[Actions.receiveMetrics]: (state, action) => ({
 		...state,
-		operations: action.payload.operations,
+		metrics: action.payload.metrics,
 		isFetching: false,
 	}),
 };

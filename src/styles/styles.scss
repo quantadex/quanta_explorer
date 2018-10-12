@@ -24,6 +24,11 @@ table tr td:last-child {
 	padding-right: 0;
 }
 
+a {
+	color: $quanta-color-purple1;
+	font-weight: $font-weight-bold;
+}
+
 @media screen and (max-width: $breakpoint-sm) {
 	table {
 		font-size: $font-size4;

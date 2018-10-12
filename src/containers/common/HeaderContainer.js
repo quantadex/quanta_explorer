@@ -1,7 +1,17 @@
 import { connect } from 'react-redux';
+import { changeEnvironmentType } from '@quanta/redux/actions/header';
 
 import Header from '../../components/common/Header';
 
-const mapStateToProps = () => ({});
+const mapActionCreators = {
+	changeEnvironmentType,
+};
 
-export default connect(mapStateToProps)(Header);
+const mapStateToProps = state => ({
+	environmentType: state.header.environmentType,
+});
+
+export default connect(
+	mapStateToProps,
+	mapActionCreators
+)(Header);

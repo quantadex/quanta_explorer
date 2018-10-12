@@ -1,28 +1,26 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Button, Input } from 'reactstrap';
 import QuantaSelect from '@quanta/components/common/QuantaSelect';
+import CONFIG from '@quanta/config';
 
-import Logo from '@quanta/assets/images/logo.png';
-import Search from '@quanta/assets/images/search.png';
+import Logo from '@quanta/assets/images/logo.svg';
+import Search from '@quanta/assets/images/search.svg';
 import classes from './Header.scss';
 
-const Header = () => (
+const Header = ({ environmentType, changeEnvironmentType }) => (
 	<div className={classes.header}>
 		<div className={classes.details}>
 			<img src={Logo} alt="logo" />
 			<QuantaSelect
 				isSearchable={false}
-				options={[
-					{
-						value: 'Betanet',
-						label: 'Betanet',
-					},
-					{
-						value: 'Betanet1',
-						label: 'Betanet1',
-					},
-				]}
+				options={CONFIG.TYPE.map(environment => ({
+					value: environment,
+					label: environment,
+				}))}
+				value={environmentType}
 				className={classes.category}
+				onChange={changeEnvironmentType}
 			/>
 		</div>
 		<div className={classes.search}>
@@ -34,5 +32,12 @@ const Header = () => (
 		</div>
 	</div>
 );
+
+const { shape, func } = PropTypes;
+
+Header.propTypes = {
+	environmentType: shape({}).isRequired,
+	changeEnvironmentType: func.isRequired,
+};
 
 export default Header;

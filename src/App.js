@@ -3,6 +3,7 @@ import { Route, Switch } from 'react-router-dom';
 
 import AsyncComponent from '@quanta/components/common/AsyncComponent';
 
+import 'bootstrap/scss/bootstrap.scss';
 import classes from './App.scss';
 
 const AsyncDExplorer = AsyncComponent(() => import('@quanta/containers/pages/DExplorerContainer'));

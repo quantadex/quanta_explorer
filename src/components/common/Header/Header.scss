@@ -1,7 +1,7 @@
 @import 'variables.scss';
 
-$header-padding-top: 20px;
-$header-padding-bottom: 20px;
+$header-padding-top: 19px;
+$header-padding-bottom: 19px;
 
 .header {
 	display: flex;
@@ -13,6 +13,7 @@ $header-padding-bottom: 20px;
 	padding-top: $header-padding-top;
 	padding-bottom: $header-padding-bottom;
 	border-bottom: 1px solid #dddddd;
+	background: #fff;
 
 	position: fixed;
 	top: 0;

@@ -1,10 +1,11 @@
 import axios from 'axios';
 import qs from 'qs';
+import CONFIG from '@quanta/config';
 
 export default function request({
 	url,
 	method = 'get',
-	baseUrl = process.env.REACT_APP_HORIZON_API_URL,
+	baseUrl = CONFIG.HORIZON_SERVER,
 	params = {},
 	headers = {},
 	body = {},

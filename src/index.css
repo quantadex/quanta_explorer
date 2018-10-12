@@ -7,14 +7,18 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
-.quanta-select__control {
-	border: none;
-}
-
 .quanta-select__indicator-separator {
 	display: none;
 }
 
-.table th {
-	border-top: none;
+@media screen and (min-width: 769px) {
+	.show-sm {
+		display: none !important;
+	}
+}
+
+@media screen and (max-width: 768px) {
+	.hidden-sm {
+		display: none !important;
+	}
 }
