@@ -12,10 +12,11 @@ import classes from './DExplorer.scss';
 
 class DExplorer extends Component {
 	componentDidMount() {
-		const { fetchOperations, fetchLedgers, fetchMetrics } = this.props;
+		const { fetchOperations, fetchLedgers, fetchMetrics, fetchNodeCount } = this.props;
 		fetchOperations();
 		fetchLedgers();
 		fetchMetrics();
+		fetchNodeCount();
 
 		this.operations = [];
 		this.ledgers = [];
@@ -226,7 +227,7 @@ class DExplorer extends Component {
 	};
 
 	render() {
-		const { metrics, averageBlockLatency } = this.props;
+		const { metrics, averageBlockLatency, nodeCount } = this.props;
 		return (
 			<div>
 				<div className={classes.details}>
@@ -245,7 +246,7 @@ class DExplorer extends Component {
 						</div>
 						<div className={classes.item}>
 							Number of Nodes
-							<div className={classes.value}>21</div>
+							<div className={classes.value}>{nodeCount}</div>
 						</div>
 					</div>
 				</div>
@@ -264,9 +265,11 @@ DExplorer.propTypes = {
 	fetchLedgers: func.isRequired,
 	fetchMetrics: func.isRequired,
 	setAverageBlockLatency: func.isRequired,
+	fetchNodeCount: func.isRequired,
 	operations: arrayOf(object).isRequired,
 	ledgers: arrayOf(object).isRequired,
 	metrics: shape({}).isRequired,
 	averageBlockLatency: number.isRequired,
+	nodeCount: number.isRequired,
 };
 export default DExplorer;

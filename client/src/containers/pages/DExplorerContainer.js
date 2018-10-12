@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import { fetchOperations } from '@quanta/redux/actions/operations';
 import { fetchLedgers } from '@quanta/redux/actions/ledgers';
 import { fetchMetrics } from '@quanta/redux/actions/metrics';
-import { setAverageBlockLatency } from '@quanta/redux/actions/global';
+import { setAverageBlockLatency, fetchNodeCount } from '@quanta/redux/actions/global';
 import DExplorer from '../../components/pages/DExplorer';
 
 const mapStateToProps = state => ({
@@ -10,6 +10,7 @@ const mapStateToProps = state => ({
 	ledgers: state.ledgers.ledgers,
 	metrics: state.metrics.metrics,
 	averageBlockLatency: state.global.averageBlockLatency,
+	nodeCount: state.global.nodeCount,
 });
 
 const mapActionCreators = dispatch => ({
@@ -24,6 +25,9 @@ const mapActionCreators = dispatch => ({
 	},
 	setAverageBlockLatency: averageBlockLatency => {
 		dispatch(setAverageBlockLatency(averageBlockLatency));
+	},
+	fetchNodeCount: () => {
+		dispatch(fetchNodeCount());
 	},
 });
 
