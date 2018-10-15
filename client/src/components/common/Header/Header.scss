@@ -14,6 +14,7 @@ $header-padding-bottom: 19px;
 	padding-bottom: $header-padding-bottom;
 	border-bottom: 1px solid #dddddd;
 	background: #fff;
+	z-index: 1000;
 
 	position: fixed;
 	top: 0;

@@ -5,7 +5,7 @@ import CONFIG from '@quanta/config';
 export default function request({
 	url,
 	method = 'get',
-	baseUrl = CONFIG.HORIZON_SERVER,
+	baseUrl = CONFIG.ENVIRONMENT.HORIZON_SERVER,
 	params = {},
 	headers = {},
 	body = {},

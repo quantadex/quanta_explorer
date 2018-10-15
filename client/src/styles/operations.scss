@@ -1,0 +1,48 @@
+@import 'variables.scss';
+
+.history {
+	.header {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-end;
+
+		margin-bottom: 24px;
+		h2 {
+			margin-bottom: 0;
+		}
+
+		button {
+			font-size: $font-size1;
+			line-height: 16px;
+		}
+	}
+}
+
+.id {
+	width: 150px;
+}
+
+.description {
+	flex: 1;
+	padding-left: 5%;
+}
+
+.created {
+	width: 100px;
+	text-align: right;
+}
+
+@media screen and (max-width: $breakpoint-sm) {
+	.history {
+		.header {
+			margin-bottom: 0;
+			padding-bottom: 18px;
+			border-bottom: solid 2px $quanta-color-border2;
+		}
+	}
+
+	.description {
+		padding-left: 0;
+		margin-top: 8px;
+	}
+}

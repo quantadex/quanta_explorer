@@ -5,8 +5,8 @@ import CONFIG from '@quanta/config';
 const initialState = {
 	searchKey: '',
 	environmentType: {
-		value: CONFIG.TYPE[0],
-		label: CONFIG.TYPE[0],
+		value: CONFIG.ENVIRONMENT.TYPE[0],
+		label: CONFIG.ENVIRONMENT.TYPE[0] === 'testnet' ? 'Testnet' : 'Betanet',
 	},
 };
 

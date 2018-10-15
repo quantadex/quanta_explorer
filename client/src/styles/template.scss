@@ -1,0 +1,24 @@
+@import 'variables.scss';
+
+.details {
+	background-color: $quanta-color-gray1;
+	padding: 50px $global-padding-left 50px $global-padding-right;
+
+	h2 {
+		margin-bottom: 17px;
+	}
+}
+
+.section {
+	margin-bottom: 21px;
+}
+
+.main {
+	padding: 56px $global-padding-left;
+}
+
+@media screen and (max-width: $breakpoint-sm) {
+	.main {
+		padding: 40px $global-padding-left;
+	}
+}

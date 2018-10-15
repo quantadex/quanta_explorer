@@ -14,7 +14,7 @@ const Header = ({ environmentType, changeEnvironmentType }) => (
 			<img src={Logo} alt="logo" />
 			<QuantaSelect
 				isSearchable={false}
-				options={CONFIG.TYPE.map(environment => ({
+				options={CONFIG.ENVIRONMENT.TYPE.map(environment => ({
 					value: environment,
 					label: environment,
 				}))}

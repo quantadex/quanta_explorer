@@ -1,18 +1,19 @@
 const express = require('express');
 
 const app = express();
-const cors = require('cors');
+const path = require('path');
 const axios = require('axios');
 const CONFIG = require('./client/src/config');
 
-app.use(cors());
+app.use(express.static(path.join(__dirname, 'client/build')));
+
 const port = process.env.PORT || 5000;
 
 app.get('/nodeCount', (req, res) => {
 	const { network } = req.query;
 	switch (network) {
-		case 'Testnet':
-		case 'Betanet':
+		case 'testnet':
+		case 'betanet':
 			break;
 		default:
 			res.status(400).json({
@@ -23,7 +24,7 @@ app.get('/nodeCount', (req, res) => {
 	}
 
 	axios({
-		url: `${CONFIG.ENVRIONMENT[network].SERVER_URL}/peers`,
+		url: `${CONFIG.ENVIRONMENT.SERVERS[network].SERVER_URL}/peers`,
 		method: 'get',
 	})
 		.then(response => {
@@ -38,6 +39,10 @@ app.get('/nodeCount', (req, res) => {
 				message: 'Something went wrong!',
 			});
 		});
+});
+
+app.get('*', (req, res) => {
+	res.sendFile(path.join(__dirname, 'client/build/index.html'));
 });
 
 app.listen(port, () => console.log(`Listening on port ${port}`));

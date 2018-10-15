@@ -3,13 +3,18 @@
   "version": "1.0.0",
   "scripts": {
     "client": "cd client && yarn start",
+    "client_build": "cd client && yarn build",
     "server": "nodemon server.js",
-    "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\""
+    "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
+    "build": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client_build\"",
+    "eslint": "eslint ."
   },
   "dependencies": {
     "axios": "^0.18.0",
     "cors": "^2.8.4",
-    "express": "^4.16.2"
+    "eslint-config-react-app": "^3.0.4",
+    "express": "^4.16.2",
+    "url-parse": "^1.4.3"
   },
   "devDependencies": {
     "concurrently": "^3.5.0"

@@ -1,5 +1,7 @@
 import moment from 'moment';
 
+const DATE_FORMAT = 'DD MMM YYYY hh:mm:ss z';
+
 export const timeDiff = (fromString, unit = 'm', toString) => {
 	const duration = toString
 		? moment.duration(moment(toString).diff(moment(fromString)))
@@ -13,4 +15,10 @@ export const timeDiff = (fromString, unit = 'm', toString) => {
 	}
 };
 
-export const abc = () => {};
+export const dateToString = (dateString, isUTC = true) => {
+	if (isUTC) {
+		return moment.utc(dateString).format(DATE_FORMAT);
+	} else {
+		return moment(dateString).format(DATE_FORMAT);
+	}
+};

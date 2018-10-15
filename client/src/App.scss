@@ -6,10 +6,13 @@
 
 .content {
 	padding-top: $header-height;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
 }
 
 .body {
-	padding: 0 $global-padding-right 0 $global-padding-left;
+	flex: 1;
 }
 
 @media screen and (max-width: $breakpoint-sm) {

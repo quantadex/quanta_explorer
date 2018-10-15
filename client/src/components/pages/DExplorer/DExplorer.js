@@ -3,11 +3,13 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import ReactEventSource from 'react-eventsource';
 import { Button } from 'reactstrap';
+import urlParse from 'url-parse';
 
 import CONFIG from '@quanta/config';
-import { trimAccountId } from '@quanta/helpers/string';
+import OperationDescription from '@quanta/components/common/OperationDescription';
 import { timeDiff } from '@quanta/helpers/utils';
 import tableClasses from '@quanta/styles/tables.scss';
+import operationsClasses from '@quanta/styles/operations.scss';
 import classes from './DExplorer.scss';
 
 class DExplorer extends Component {
@@ -35,73 +37,39 @@ class DExplorer extends Component {
 		setAverageBlockLatency(Math.round(totalLatency / (ledgers.length - 1)));
 	};
 
-	getDescription = operation => {
-		switch (operation.type) {
-			case 'create_account':
-				return `${trimAccountId(operation.account)} account funded with ${
-					operation.starting_balance
-				} ${CONFIG.ASSET_TYPE_NATIVE}`;
-			case 'payment':
-				return `Payment from ${trimAccountId(operation.from)} to ${trimAccountId(
-					operation.to
-				)} for ${CONFIG.ASSET_TYPE_NATIVE} ${operation.amount}`;
-			case 'change_trust':
-				if (parseFloat(operation.limit) === 0) {
-					return 'Trustline deleted for asset ';
-				}
-				return `Trustline updated for asset LIMIT ${operation.limit}`;
-			case 'account_merge':
-				return `${trimAccountId(operation.account)} merged with ${trimAccountId(
-					operation.into
-				)}`;
-			case 'path_payment':
-				return 'Path Payment';
-			case 'manage_offer':
-				return 'Manage Offer';
-			case 'create_passive_offer':
-				return 'Create Passive Offer';
-			case 'set_options':
-				return 'Set Options';
-			case 'allow_trust':
-				return 'Allow Trust';
-			case 'inflation':
-				return 'Inflation';
-			case 'manage_data':
-				return 'Manage Data';
-			case 'bump_sequence':
-				return 'Bump Sequence';
-			default:
-				return operation.type;
-		}
-	};
-
 	renderOperationsRecord = operations => {
 		return (
 			<React.Fragment>
 				{operations.map(operation => (
 					<React.Fragment key={operation.id}>
 						<div className={classNames(tableClasses.body, 'hidden-sm')}>
-							<a href={`/operation/${operation.id}`} className={classes.id}>
+							<a
+								href={urlParse(operation._links.transaction.href).pathname}
+								className={operationsClasses.id}
+							>
 								{operation.id}
 							</a>
-							<div className={classes.description}>
-								{this.getDescription(operation)}
+							<div className={operationsClasses.description}>
+								<OperationDescription operation={operation} />
 							</div>
-							<div className={classes.created}>{`<  ${Math.ceil(
+							<div className={operationsClasses.created}>{`<  ${Math.ceil(
 								timeDiff(operation.created_at)
 							)} min ago`}</div>
 						</div>
 						<div className={classNames(tableClasses.body, 'show-sm', 'flex-column')}>
 							<div className="d-flex justify-content-between w-100">
-								<a href={`/operation/${operation.id}`} className={classes.id}>
+								<a
+									href={urlParse(operation._links.transaction.href).pathname}
+									className={operationsClasses.id}
+								>
 									{operation.id}
 								</a>
-								<div className={classes.created}>{`<  ${Math.ceil(
+								<div className={operationsClasses.created}>{`<  ${Math.ceil(
 									timeDiff(operation.created_at)
 								)} min ago`}</div>
 							</div>
-							<div className={classes.description}>
-								{this.getDescription(operation)}
+							<div className={operationsClasses.description}>
+								<OperationDescription operation={operation} />
 							</div>
 						</div>
 					</React.Fragment>
@@ -115,7 +83,7 @@ class DExplorer extends Component {
 			<React.Fragment>
 				{ledgers.map(ledger => (
 					<div key={ledger.id} className={tableClasses.body}>
-						<a href={`/ledger/${ledger.id}`} className={classes.sequence}>
+						<a href={`/ledgers/${ledger.sequence}`} className={classes.sequence}>
 							{ledger.sequence}
 						</a>
 						<div className={classes.transactions}>{ledger.transaction_count}</div>
@@ -132,8 +100,8 @@ class DExplorer extends Component {
 	renderOprationsHistory = () => {
 		const { operations } = this.props;
 		return (
-			<div className={classNames(classes.history, classes.operationHistory)}>
-				<div className={classes.header}>
+			<div className={classNames(operationsClasses.history, classes.operationHistory)}>
+				<div className={operationsClasses.header}>
 					<h2>Operations History</h2>
 					<Button outline color="primary">
 						View All
@@ -141,13 +109,15 @@ class DExplorer extends Component {
 				</div>
 				<div className={tableClasses.table}>
 					<div className={classNames(tableClasses.header, 'hidden-sm')}>
-						<div className={classes.id}>Id</div>
-						<div className={classes.description} />
-						<div className={classes.created}>Created</div>
+						<div className={operationsClasses.id}>Id</div>
+						<div className={operationsClasses.description} />
+						<div className={operationsClasses.created}>Created</div>
 					</div>
 					{operations.length > 0 && (
 						<ReactEventSource
-							url={`${CONFIG.HORIZON_SERVER}/operations?order=asc&cursor=now`}
+							url={`${
+								CONFIG.ENVIRONMENT.HORIZON_SERVER
+							}/operations?order=asc&cursor=now`}
 						>
 							{events => {
 								const streamOperations = events
@@ -167,7 +137,9 @@ class DExplorer extends Component {
 										operation => !streamOperationIds.includes(operation.id)
 									),
 								].sort((a, b) => timeDiff(a.created_at, 'ms', b.created_at));
-								return this.renderOperationsRecord(totalOperations.slice(0, 8));
+								return this.renderOperationsRecord(
+									totalOperations.slice(0, CONFIG.SETTINGS.RECENT_ITEM_LENGTH)
+								);
 							}}
 						</ReactEventSource>
 					)}
@@ -196,7 +168,9 @@ class DExplorer extends Component {
 					</div>
 					{ledgers.length > 0 && (
 						<ReactEventSource
-							url={`${CONFIG.HORIZON_SERVER}/ledgers?order=asc&cursor=now`}
+							url={`${
+								CONFIG.ENVIRONMENT.HORIZON_SERVER
+							}/ledgers?order=asc&cursor=now`}
 						>
 							{events => {
 								const streamLedgers = events
@@ -216,8 +190,12 @@ class DExplorer extends Component {
 										operation => !streamLedgerIds.includes(operation.id)
 									),
 								].sort((a, b) => timeDiff(a.closed_at, 'ms', b.closed_at));
-								this.getBlockAverageLatency(totalLedgers.slice(0, 8));
-								return this.renderLedgersRecord(totalLedgers.slice(0, 8));
+								this.getBlockAverageLatency(
+									totalLedgers.slice(0, CONFIG.SETTINGS.RECENT_ITEM_LENGTH)
+								);
+								return this.renderLedgersRecord(
+									totalLedgers.slice(0, CONFIG.SETTINGS.RECENT_ITEM_LENGTH)
+								);
 							}}
 						</ReactEventSource>
 					)}
@@ -229,7 +207,7 @@ class DExplorer extends Component {
 	render() {
 		const { metrics, averageBlockLatency, nodeCount } = this.props;
 		return (
-			<div>
+			<React.Fragment>
 				<div className={classes.details}>
 					<div className={classes.content}>
 						<div className={classes.item}>
@@ -254,7 +232,7 @@ class DExplorer extends Component {
 					{this.renderOprationsHistory()}
 					{this.renderLedgerHistory()}
 				</div>
-			</div>
+			</React.Fragment>
 		);
 	}
 }

@@ -1,16 +1,22 @@
-const CONFIG = {
-	TYPE: ['Testnet', 'Betanet'],
-	ENVRIONMENT: {
-		Testnet: {
+const ENVIRONMENT = {
+	TYPE: ['testnet', 'betanet'],
+	SERVERS: {
+		testnet: {
 			SERVER_URL: 'http://testnet-02.quantachain.io:7000',
 		},
-		Betanet: {},
+		betanet: {},
 	},
 	HORIZON_SERVER: 'https://horizon-testnet.stellar.org',
-	TRIM_LENGTH: 4,
-	ASSET_TYPE_NATIVE: 'QDEX',
-	QUANTA_ISSUER: 'QXBCCCXXX',
-	LOCAL_BACKEND: 'http://localhost:5000',
 };
 
-module.exports = CONFIG;
+const SETTINGS = {
+	ACCOUNT_TRIM_LENGTH: 4,
+	RECENT_ITEM_LENGTH: 8,
+	ASSET_TYPE_NATIVE: 'QDEX',
+	QUANTA_ISSUER: 'GD5WLLS33NCP7Q4DRTJLGS5NT6GVVJWHC22QGCIBB2W72LIAJYCPEG5A',
+};
+
+module.exports = {
+	SETTINGS,
+	ENVIRONMENT,
+};
