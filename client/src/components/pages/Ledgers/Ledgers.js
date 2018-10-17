@@ -3,24 +3,20 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import ReactEventSource from 'react-eventsource';
 import { Button } from 'reactstrap';
-import urlParse from 'url-parse';
 
 import CONFIG from '@quanta/config';
-import OperationDescription from '@quanta/components/common/OperationDescription';
 import { timeDiff } from '@quanta/helpers/utils';
 import tableClasses from '@quanta/styles/tables.scss';
-import operationsClasses from '@quanta/styles/operations.scss';
-import classes from './DExplorer.scss';
+import classes from './Ledgers.scss';
 
-class DExplorer extends Component {
+class Ledgers extends Component {
 	componentDidMount() {
-		const { fetchOperations, fetchLedgers, fetchMetrics, fetchNodeCount } = this.props;
-		fetchOperations();
+		const { fetchLedgers, fetchMetrics, fetchNodeCount, fetchAllLedgers } = this.props;
 		fetchLedgers();
+		fetchAllLedgers({ limit: 15, order: 'desc' });
 		fetchMetrics();
 		fetchNodeCount();
 
-		this.operations = [];
 		this.ledgers = [];
 	}
 
@@ -37,57 +33,14 @@ class DExplorer extends Component {
 		setAverageBlockLatency(Math.round(totalLatency / (ledgers.length - 1)));
 	};
 
-	goToOperations = () => {
-		const { history } = this.props;
-
-		history.push('/operations');
+	onNext = () => {
+		const { allLinks, fetchAllLedgers } = this.props;
+		fetchAllLedgers({ url: allLinks.next.href });
 	};
 
-	goToLedgers = () => {
-		const { history } = this.props;
-
-		history.push('/ledgers');
-	};
-
-	renderOperationsRecord = operations => {
-		return (
-			<React.Fragment>
-				{operations.map(operation => (
-					<React.Fragment key={operation.id}>
-						<div className={classNames(tableClasses.body, 'hidden-sm')}>
-							<a
-								href={urlParse(operation._links.transaction.href).pathname}
-								className={operationsClasses.id}
-							>
-								{operation.id}
-							</a>
-							<div className={operationsClasses.description}>
-								<OperationDescription operation={operation} />
-							</div>
-							<div className={operationsClasses.created}>{`<  ${Math.ceil(
-								timeDiff(operation.created_at)
-							)} min ago`}</div>
-						</div>
-						<div className={classNames(tableClasses.body, 'show-sm', 'flex-column')}>
-							<div className="d-flex justify-content-between w-100">
-								<a
-									href={urlParse(operation._links.transaction.href).pathname}
-									className={operationsClasses.id}
-								>
-									{operation.id}
-								</a>
-								<div className={operationsClasses.created}>{`<  ${Math.ceil(
-									timeDiff(operation.created_at)
-								)} min ago`}</div>
-							</div>
-							<div className={operationsClasses.description}>
-								<OperationDescription operation={operation} />
-							</div>
-						</div>
-					</React.Fragment>
-				))}
-			</React.Fragment>
-		);
+	onPrev = () => {
+		const { allLinks, fetchAllLedgers } = this.props;
+		fetchAllLedgers({ url: allLinks.prev.href });
 	};
 
 	renderLedgersRecord = ledgers => {
@@ -109,68 +62,13 @@ class DExplorer extends Component {
 		);
 	};
 
-	renderOprationsHistory = () => {
-		const { operations } = this.props;
-		return (
-			<div className={classNames(operationsClasses.history, classes.operationHistory)}>
-				<div className={operationsClasses.header}>
-					<h2>Operations History</h2>
-					<Button outline color="primary" onClick={this.goToOperations}>
-						View All
-					</Button>
-				</div>
-				<div className={tableClasses.table}>
-					<div className={classNames(tableClasses.header, 'hidden-sm')}>
-						<div className={operationsClasses.id}>Id</div>
-						<div className={operationsClasses.description} />
-						<div className={operationsClasses.created}>Created</div>
-					</div>
-					{operations.length > 0 &&
-						this.operations && (
-							<ReactEventSource
-								url={`${
-									CONFIG.ENVIRONMENT.HORIZON_SERVER
-								}/operations?order=asc&cursor=now`}
-							>
-								{events => {
-									const streamOperations = events
-										.map(event => JSON.parse(event))
-										.sort((a, b) => timeDiff(a.created_at, 'ms', b.created_at));
-									const streamOperationIds = streamOperations.map(
-										operation => operation.id
-									);
-
-									if (this.operations.length === 0) {
-										this.operations = operations;
-									}
-
-									const totalOperations = [
-										...streamOperations,
-										...this.operations.filter(
-											operation => !streamOperationIds.includes(operation.id)
-										),
-									].sort((a, b) => timeDiff(a.created_at, 'ms', b.created_at));
-									return this.renderOperationsRecord(
-										totalOperations.slice(0, CONFIG.SETTINGS.RECENT_ITEM_LENGTH)
-									);
-								}}
-							</ReactEventSource>
-						)}
-				</div>
-			</div>
-		);
-	};
-
 	renderLedgerHistory = () => {
 		const { ledgers } = this.props;
 
 		return (
-			<div className={classes.history}>
+			<div className="hidden">
 				<div className={classes.header}>
 					<h2>Ledger History</h2>
-					<Button outline color="primary" onClick={this.goToLedgers}>
-						View All
-					</Button>
 				</div>
 				<div className={tableClasses.table}>
 					<div className={tableClasses.header}>
@@ -218,6 +116,60 @@ class DExplorer extends Component {
 		);
 	};
 
+	renderAllLedgers = () => {
+		const { allLedgers, allLinks } = this.props;
+		return (
+			<div className={classes.history}>
+				<h2>Ledger History</h2>
+				<div className={tableClasses.table}>
+					<div className={tableClasses.header}>
+						<div className={classes.sequence}>Sequence</div>
+						<div className={classes.transactions}>Transactions</div>
+						<div className={classes.operations}>Operations</div>
+						<div className={classes.created}>Created</div>
+					</div>
+					{this.renderLedgersRecord(allLedgers)}
+				</div>
+				<div className={tableClasses.footer}>
+					<Button
+						color="primary"
+						className={classNames(tableClasses.prevButton, 'hidden-sm')}
+						onClick={this.onPrev}
+						disabled={!allLinks.prev}
+					>
+						Prev
+					</Button>
+					<Button
+						color="primary"
+						className={classNames(tableClasses.prevButton, 'show-sm')}
+						onClick={this.onPrev}
+						disabled={!allLinks.prev}
+						size="sm"
+					>
+						Prev
+					</Button>
+					<Button
+						color="primary"
+						className="hidden-sm"
+						onClick={this.onNext}
+						disabled={!allLinks.next}
+					>
+						Next
+					</Button>
+					<Button
+						color="primary"
+						className="show-sm"
+						onClick={this.onNext}
+						disabled={!allLinks.next}
+						size="sm"
+					>
+						Next
+					</Button>
+				</div>
+			</div>
+		);
+	};
+
 	render() {
 		const { metrics, averageBlockLatency, nodeCount } = this.props;
 		return (
@@ -243,7 +195,7 @@ class DExplorer extends Component {
 					</div>
 				</div>
 				<div className={classes.main}>
-					{this.renderOprationsHistory()}
+					{this.renderAllLedgers()}
 					{this.renderLedgerHistory()}
 				</div>
 			</React.Fragment>
@@ -252,16 +204,17 @@ class DExplorer extends Component {
 }
 
 const { func, arrayOf, object, shape, number } = PropTypes;
-DExplorer.propTypes = {
-	fetchOperations: func.isRequired,
+Ledgers.propTypes = {
 	fetchLedgers: func.isRequired,
+	fetchAllLedgers: func.isRequired,
 	fetchMetrics: func.isRequired,
 	setAverageBlockLatency: func.isRequired,
 	fetchNodeCount: func.isRequired,
-	operations: arrayOf(object).isRequired,
 	ledgers: arrayOf(object).isRequired,
+	allLedgers: arrayOf(object).isRequired,
+	allLinks: shape({}).isRequired,
 	metrics: shape({}).isRequired,
 	averageBlockLatency: number.isRequired,
 	nodeCount: number.isRequired,
 };
-export default DExplorer;
+export default Ledgers;

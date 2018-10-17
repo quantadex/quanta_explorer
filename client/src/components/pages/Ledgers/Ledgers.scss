@@ -1,0 +1,90 @@
+@import 'variables.scss';
+
+.details {
+	background-color: $quanta-color-gray1;
+	padding: 12px $global-padding-left 12px $global-padding-right;
+	height: 65px;
+
+	display: flex;
+	align-items: center;
+}
+
+.content {
+	width: 100%;
+	padding: 0 4%;
+	display: flex;
+
+	.item {
+		flex: 1 1 auto;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		border-left: solid 1px $quanta-color-border1;
+
+		font-size: $font-size1;
+		color: $quanta-color-black1;
+
+		.value {
+			margin-left: 15px;
+			font-size: $font-size3;
+			font-weight: $font-weight-semibold;
+		}
+	}
+
+	.item:first-child {
+		border-left: none;
+	}
+}
+
+.main {
+	padding: 56px $global-padding-left;
+}
+
+.history {
+	h2 {
+		margin-bottom: 0;
+		margin-bottom: 24px;
+	}
+}
+
+.sequence {
+	flex: 1;
+}
+
+.transactions,
+.operations {
+	width: 150px;
+	text-align: center;
+}
+
+@media screen and (max-width: $breakpoint-sm) {
+	.content {
+		padding: 0;
+		justify-content: space-between;
+
+		.item {
+			flex: unset;
+			display: block;
+			text-align: center;
+			border-left: none;
+
+			font-size: $font-size4;
+			line-height: 1.7;
+
+			.value {
+				margin-left: 0;
+				font-size: $font-size5;
+			}
+		}
+	}
+
+	.main {
+		padding: 40px $global-padding-left;
+	}
+
+	.description {
+		padding-left: 0;
+		margin-top: 8px;
+	}
+}

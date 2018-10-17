@@ -5,6 +5,10 @@ export const REQUEST_LEDGERS = 'REQUEST_GET_LEDGERS';
 export const RECEIVE_LEDGERS = 'RECEIVE_GET_LEDGERS';
 export const FAIL_LEDGERS = 'FAIL_GET_LEDGERS';
 
+export const REQUEST_ALL_LEDGERS = 'REQUEST_GET_ALL_LEDGERS';
+export const RECEIVE_ALL_LEDGERS = 'RECEIVE_GET_ALL_LEDGERS';
+export const FAIL_ALL_LEDGERS = 'FAIL_GET_ALL_LEDGERS';
+
 export const REQUEST_LEDGER = 'REQUEST_GET_LEDGER';
 export const RECEIVE_LEDGER = 'RECEIVE_GET_LEDGER';
 export const FAIL_LEDGER = 'FAIL_LEDGER';
@@ -18,6 +22,10 @@ export const FAIL_LEDGER_OPERATIONS = 'FAIL_GET_LEDGER_OPERATIONS';
 export const requestLedgers = createAction(REQUEST_LEDGERS);
 export const failLedgers = createAction(FAIL_LEDGERS);
 export const receiveLedgers = createAction(RECEIVE_LEDGERS);
+
+export const requestAllLedgers = createAction(REQUEST_ALL_LEDGERS);
+export const failAllLedgers = createAction(FAIL_ALL_LEDGERS);
+export const receiveAllLedgers = createAction(RECEIVE_ALL_LEDGERS);
 
 export const requestLedger = createAction(REQUEST_LEDGER);
 export const failLedger = createAction(FAIL_LEDGER);
@@ -64,4 +72,23 @@ export const fetchLedger = ({ id }) => dispatch => {
 			);
 		})
 		.catch(() => dispatch(failLedger()));
+};
+
+export const fetchAllLedgers = ({ url, ...params }) => dispatch => {
+	dispatch(requestAllLedgers());
+	const apiBody = { url: url ? url : 'ledgers', params };
+	if (url) {
+		apiBody.baseUrl = '';
+	}
+
+	api(apiBody)
+		.then(response =>
+			dispatch(
+				receiveAllLedgers({
+					ledgers: response.data._embedded.records,
+					links: response.data._links,
+				})
+			)
+		)
+		.catch(() => dispatch(failAllLedgers()));
 };

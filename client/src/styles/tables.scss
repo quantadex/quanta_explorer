@@ -20,6 +20,18 @@
 	}
 }
 
+.footer {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	margin-top: 38px;
+}
+
+.prevButton {
+	margin-right: 10px;
+}
+
 @media screen and (max-width: $breakpoint-sm) {
 	.table {
 		.header {

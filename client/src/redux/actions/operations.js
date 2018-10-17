@@ -11,13 +11,19 @@ export const requestOperations = createAction(REQUEST_OPERATIONS);
 export const failOperations = createAction(FAIL_OPERATIONS);
 export const receiveOperations = createAction(RECEIVE_OPERATIONS);
 
-export const fetchOperations = params => dispatch => {
+export const fetchOperations = ({ url, ...params }) => dispatch => {
 	dispatch(requestOperations());
-	api({ url: 'operations', params })
+	const apiBody = { url: url ? url : 'operations', params };
+	if (url) {
+		apiBody.baseUrl = '';
+	}
+
+	api(apiBody)
 		.then(response =>
 			dispatch(
 				receiveOperations({
 					operations: response.data._embedded.records,
+					links: response.data._links,
 				})
 			)
 		)
