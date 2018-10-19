@@ -13,7 +13,7 @@ export default function request({
 	stringify = true,
 	timeout = 20000,
 }) {
-	const apiUrl = `${baseUrl}/${url}`;
+	const apiUrl = baseUrl === '' ? url : `${baseUrl}/${url}`;
 
 	const reqHeaders = {
 		Accept: 'application/json',

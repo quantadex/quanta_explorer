@@ -33,3 +33,19 @@ Then you can see frontend is running on localhost:5000
 ```
 
 If you want to add dependency for frontend, then please use `yarn add` in client folder.
+
+# Docker
+
+If you prefer docker, the usual `docker-compose` command will build the docker and start the server.
+
+    docker-compose build
+    docker-compose up
+
+# Configuration
+
+The following environment variable is honored:
+
+* `PORT` (default=5000)
+
+   The listening port of the server.
+

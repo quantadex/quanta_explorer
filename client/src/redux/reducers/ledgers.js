@@ -10,6 +10,11 @@ const initialState = {
 		ledger: {},
 		operations: [],
 	},
+	allLedgers: {
+		ledgers: [],
+		links: {},
+		isFetching: false,
+	},
 };
 
 const ACTION_HANDLERS = {
@@ -26,6 +31,29 @@ const ACTION_HANDLERS = {
 		...state,
 		ledgers: action.payload.ledgers,
 		isFetching: false,
+	}),
+	[Actions.requestAllLedgers]: state => ({
+		...state,
+		allLedgers: {
+			isFetching: true,
+			ledgers: [],
+			links: {},
+		},
+	}),
+	[Actions.failAllLedgers]: state => ({
+		...state,
+		allLedgers: {
+			...state.allLedgers,
+			isFetching: false,
+		},
+	}),
+	[Actions.receiveAllLedgers]: (state, action) => ({
+		...state,
+		allLedgers: {
+			ledgers: action.payload.ledgers,
+			links: action.payload.links,
+			isFetching: false,
+		},
 	}),
 	[Actions.requestLedger]: state => ({
 		...state,

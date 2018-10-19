@@ -10,17 +10,16 @@ import OperationDescription from '@quanta/components/common/OperationDescription
 import { timeDiff } from '@quanta/helpers/utils';
 import tableClasses from '@quanta/styles/tables.scss';
 import operationsClasses from '@quanta/styles/operations.scss';
-import classes from './DExplorer.scss';
+import classes from './Operations.scss';
 
-class DExplorer extends Component {
+class Operations extends Component {
 	componentDidMount() {
 		const { fetchOperations, fetchLedgers, fetchMetrics, fetchNodeCount } = this.props;
-		fetchOperations();
+		fetchOperations({ limit: 15, order: 'desc' });
 		fetchLedgers();
 		fetchMetrics();
 		fetchNodeCount();
 
-		this.operations = [];
 		this.ledgers = [];
 	}
 
@@ -37,16 +36,14 @@ class DExplorer extends Component {
 		setAverageBlockLatency(Math.round(totalLatency / (ledgers.length - 1)));
 	};
 
-	goToOperations = () => {
-		const { history } = this.props;
-
-		history.push('/operations');
+	onNext = () => {
+		const { links, fetchOperations } = this.props;
+		fetchOperations({ url: links.next.href });
 	};
 
-	goToLedgers = () => {
-		const { history } = this.props;
-
-		history.push('/ledgers');
+	onPrev = () => {
+		const { links, fetchOperations } = this.props;
+		fetchOperations({ url: links.prev.href });
 	};
 
 	renderOperationsRecord = operations => {
@@ -94,15 +91,11 @@ class DExplorer extends Component {
 		return (
 			<React.Fragment>
 				{ledgers.map(ledger => (
-					<div key={ledger.id} className={tableClasses.body}>
-						<a href={`/ledgers/${ledger.sequence}`} className={classes.sequence}>
-							{ledger.sequence}
-						</a>
-						<div className={classes.transactions}>{ledger.transaction_count}</div>
-						<div className={classes.operations}>{ledger.operation_count}</div>
-						<div className={classes.created}>{`<  ${Math.ceil(
-							timeDiff(ledger.closed_at)
-						)} min ago`}</div>
+					<div key={ledger.id}>
+						<a href={`/ledgers/${ledger.sequence}`}>{ledger.sequence}</a>
+						<div>{ledger.transaction_count}</div>
+						<div>{ledger.operation_count}</div>
+						<div>{`<  ${Math.ceil(timeDiff(ledger.closed_at))} min ago`}</div>
 					</div>
 				))}
 			</React.Fragment>
@@ -110,52 +103,53 @@ class DExplorer extends Component {
 	};
 
 	renderOprationsHistory = () => {
-		const { operations } = this.props;
+		const { operations, links } = this.props;
 		return (
 			<div className={classNames(operationsClasses.history, classes.operationHistory)}>
-				<div className={operationsClasses.header}>
-					<h2>Operations History</h2>
-					<Button outline color="primary" onClick={this.goToOperations}>
-						View All
-					</Button>
-				</div>
+				<h2>Operations History</h2>
 				<div className={tableClasses.table}>
 					<div className={classNames(tableClasses.header, 'hidden-sm')}>
 						<div className={operationsClasses.id}>Id</div>
 						<div className={operationsClasses.description} />
 						<div className={operationsClasses.created}>Created</div>
 					</div>
-					{operations.length > 0 &&
-						this.operations && (
-							<ReactEventSource
-								url={`${
-									CONFIG.ENVIRONMENT.HORIZON_SERVER
-								}/operations?order=asc&cursor=now`}
-							>
-								{events => {
-									const streamOperations = events
-										.map(event => JSON.parse(event))
-										.sort((a, b) => timeDiff(a.created_at, 'ms', b.created_at));
-									const streamOperationIds = streamOperations.map(
-										operation => operation.id
-									);
-
-									if (this.operations.length === 0) {
-										this.operations = operations;
-									}
-
-									const totalOperations = [
-										...streamOperations,
-										...this.operations.filter(
-											operation => !streamOperationIds.includes(operation.id)
-										),
-									].sort((a, b) => timeDiff(a.created_at, 'ms', b.created_at));
-									return this.renderOperationsRecord(
-										totalOperations.slice(0, CONFIG.SETTINGS.RECENT_ITEM_LENGTH)
-									);
-								}}
-							</ReactEventSource>
-						)}
+					{operations.length > 0 && this.renderOperationsRecord(operations)}
+				</div>
+				<div className={tableClasses.footer}>
+					<Button
+						color="primary"
+						className={classNames(tableClasses.prevButton, 'hidden-sm')}
+						onClick={this.onPrev}
+						disabled={!links.prev}
+					>
+						Prev
+					</Button>
+					<Button
+						color="primary"
+						className={classNames(tableClasses.prevButton, 'show-sm')}
+						onClick={this.onPrev}
+						disabled={!links.prev}
+						size="sm"
+					>
+						Prev
+					</Button>
+					<Button
+						color="primary"
+						className="hidden-sm"
+						onClick={this.onNext}
+						disabled={!links.next}
+					>
+						Next
+					</Button>
+					<Button
+						color="primary"
+						className="show-sm"
+						onClick={this.onNext}
+						disabled={!links.next}
+						size="sm"
+					>
+						Next
+					</Button>
 				</div>
 			</div>
 		);
@@ -165,19 +159,19 @@ class DExplorer extends Component {
 		const { ledgers } = this.props;
 
 		return (
-			<div className={classes.history}>
-				<div className={classes.header}>
+			<div className="hidden">
+				<div>
 					<h2>Ledger History</h2>
-					<Button outline color="primary" onClick={this.goToLedgers}>
+					<Button outline color="primary">
 						View All
 					</Button>
 				</div>
-				<div className={tableClasses.table}>
-					<div className={tableClasses.header}>
-						<div className={classes.sequence}>Sequence</div>
-						<div className={classes.transactions}>Transactions</div>
-						<div className={classes.operations}>Operations</div>
-						<div className={classes.created}>Created</div>
+				<div>
+					<div>
+						<div>Sequence</div>
+						<div>Transactions</div>
+						<div>Operations</div>
+						<div>Created</div>
 					</div>
 					{ledgers.length > 0 &&
 						this.ledgers && (
@@ -252,16 +246,17 @@ class DExplorer extends Component {
 }
 
 const { func, arrayOf, object, shape, number } = PropTypes;
-DExplorer.propTypes = {
+Operations.propTypes = {
 	fetchOperations: func.isRequired,
 	fetchLedgers: func.isRequired,
 	fetchMetrics: func.isRequired,
 	setAverageBlockLatency: func.isRequired,
 	fetchNodeCount: func.isRequired,
 	operations: arrayOf(object).isRequired,
+	links: shape({}).isRequired,
 	ledgers: arrayOf(object).isRequired,
 	metrics: shape({}).isRequired,
 	averageBlockLatency: number.isRequired,
 	nodeCount: number.isRequired,
 };
-export default DExplorer;
+export default Operations;
