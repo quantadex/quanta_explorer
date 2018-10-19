@@ -6,7 +6,7 @@ const ENVIRONMENT = {
 		},
 		betanet: {},
 	},
-	HORIZON_SERVER: 'https://horizon-testnet.stellar.org',
+	HORIZON_SERVER: 'http://testnet-02.quantachain.io:8000',
 };
 
 const SETTINGS = {

@@ -3,4 +3,6 @@ npm-debug.log
 Dockerfile
 docker-compose.yml
 client/build
+client/node_modules
 build-docker.sh
+build
