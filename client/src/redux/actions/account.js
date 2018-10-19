@@ -36,15 +36,9 @@ export const fetchAccount = ({ id }) => dispatch => {
 	dispatch(requestAccount());
 	api({ url: `accounts/${id}` })
 		.then(response => {
-			const { data } = response;
-			data.balances.push({
-				balance: '894.8783755',
-				asset_type: 'XLM',
-				asset_issuer: 'QAHXFPFJ33VV4C4BTXECIQCNI7CXRKA6KKG5FP3TJFNWGE7YUC4MBNFB',
-			});
 			dispatch(
 				receiveAccount({
-					account: data,
+					account: response.data,
 				})
 			);
 		})
