@@ -6,7 +6,7 @@ const ENVIRONMENT = {
 		},
 		betanet: {},
 	},
-	HORIZON_SERVER: 'https://horizon-testnet.stellar.org',
+	HORIZON_SERVER: 'http://testnet-02.quantachain.io:8000',
 };
 
 const SETTINGS = {
@@ -14,6 +14,7 @@ const SETTINGS = {
 	RECENT_ITEM_LENGTH: 8,
 	ASSET_TYPE_NATIVE: 'QDEX',
 	QUANTA_ISSUER: 'GD5WLLS33NCP7Q4DRTJLGS5NT6GVVJWHC22QGCIBB2W72LIAJYCPEG5A',
+	ACCOUT_START_WITH: 'G',
 };
 
 module.exports = {

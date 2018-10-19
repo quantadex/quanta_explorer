@@ -8,8 +8,7 @@ import urlParse from 'url-parse';
 import CONFIG from '@quanta/config';
 import OperationDescription from '@quanta/components/common/OperationDescription';
 import LabelText from '@quanta/components/common/LabelText';
-import { dateToString } from '@quanta/helpers/utils';
-import { timeDiff } from '@quanta/helpers/utils';
+import { dateToString, timeDiff } from '@quanta/helpers/utils';
 import tableClasses from '@quanta/styles/tables.scss';
 import operationsClasses from '@quanta/styles/operations.scss';
 import classes from '@quanta/styles/template.scss';
@@ -110,36 +109,37 @@ class Ledger extends Component {
 						<div className={operationsClasses.description} />
 						<div className={operationsClasses.created}>Created</div>
 					</div>
-					{operations.length > 0 && (
-						<ReactEventSource
-							url={`${
-								CONFIG.ENVIRONMENT.HORIZON_SERVER
-							}/ledgers/${id}/operations?order=asc&cursor=now`}
-						>
-							{events => {
-								const streamOperations = events
-									.map(event => JSON.parse(event))
-									.sort((a, b) => timeDiff(a.created_at, 'ms', b.created_at));
-								const streamOperationIds = streamOperations.map(
-									operation => operation.id
-								);
+					{operations.length > 0 &&
+						this.operations && (
+							<ReactEventSource
+								url={`${
+									CONFIG.ENVIRONMENT.HORIZON_SERVER
+								}/ledgers/${id}/operations?order=asc&cursor=now`}
+							>
+								{events => {
+									const streamOperations = events
+										.map(event => JSON.parse(event))
+										.sort((a, b) => timeDiff(a.created_at, 'ms', b.created_at));
+									const streamOperationIds = streamOperations.map(
+										operation => operation.id
+									);
 
-								if (this.operations.length === 0) {
-									this.operations = operations;
-								}
+									if (this.operations.length === 0) {
+										this.operations = operations;
+									}
 
-								const totalOperations = [
-									...streamOperations,
-									...this.operations.filter(
-										operation => !streamOperationIds.includes(operation.id)
-									),
-								].sort((a, b) => timeDiff(a.created_at, 'ms', b.created_at));
-								return this.renderOperationsRecord(
-									totalOperations.slice(0, CONFIG.SETTINGS.RECENT_ITEM_LENGTH)
-								);
-							}}
-						</ReactEventSource>
-					)}
+									const totalOperations = [
+										...streamOperations,
+										...this.operations.filter(
+											operation => !streamOperationIds.includes(operation.id)
+										),
+									].sort((a, b) => timeDiff(a.created_at, 'ms', b.created_at));
+									return this.renderOperationsRecord(
+										totalOperations.slice(0, CONFIG.SETTINGS.RECENT_ITEM_LENGTH)
+									);
+								}}
+							</ReactEventSource>
+						)}
 				</div>
 			</div>
 		);

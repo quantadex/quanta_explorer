@@ -155,7 +155,12 @@ class Transaction extends Component {
 	};
 
 	render() {
-		const { isFetching, transaction } = this.props;
+		const { isFetching, transaction, hasError } = this.props;
+
+		if (hasError) {
+			return <div className={classes.noFound}>No transaction found.</div>;
+		}
+
 		return isFetching || !transaction ? (
 			<React.Fragment />
 		) : (
@@ -179,6 +184,7 @@ Transaction.propTypes = {
 	transaction: shape({}),
 	operations: arrayOf(object),
 	isFetching: bool.isRequired,
+	hasError: bool.isRequired,
 };
 
 Transaction.defaultProps = {

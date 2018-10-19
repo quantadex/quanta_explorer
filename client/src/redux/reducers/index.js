@@ -6,8 +6,10 @@ import ledgersReducer from './ledgers';
 import metricsReducer from './metrics';
 import globalReducer from './global';
 import transactionReducer from './transactions';
+import accountReducer from './account';
 
 const reducers = combineReducers({
+	account: accountReducer,
 	operations: operationsReducer,
 	ledgers: ledgersReducer,
 	header: headerReducer,

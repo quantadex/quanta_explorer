@@ -15,6 +15,10 @@ const ACTION_HANDLERS = {
 		...state,
 		environmentType: action.payload,
 	}),
+	[Actions.changeSearchKey]: (state, action) => ({
+		...state,
+		searchKey: action.payload.searchKey,
+	}),
 };
 
 export default handleActions(ACTION_HANDLERS, initialState);

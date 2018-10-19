@@ -3,6 +3,7 @@
 .details {
 	background-color: $quanta-color-gray1;
 	padding: 12px $global-padding-left 12px $global-padding-right;
+	border-bottom: solid 1px $quanta-color-border3;
 	height: 65px;
 
 	display: flex;

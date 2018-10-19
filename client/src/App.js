@@ -3,7 +3,6 @@ import { Route, Switch } from 'react-router-dom';
 
 import AsyncComponent from '@quanta/components/common/AsyncComponent';
 
-import 'bootstrap/scss/bootstrap.scss';
 import classes from './App.scss';
 
 const AsyncDExplorer = AsyncComponent(() => import('@quanta/containers/pages/DExplorerContainer'));
@@ -13,6 +12,7 @@ const AsyncTransaction = AsyncComponent(() =>
 const AsyncOperations = AsyncComponent(() =>
 	import('@quanta/containers/pages/OperationsContainer')
 );
+const AsyncAccount = AsyncComponent(() => import('@quanta/containers/pages/AccountContainer'));
 const AsyncLedgers = AsyncComponent(() => import('@quanta/containers/pages/LedgersContainer'));
 const AsyncLedger = AsyncComponent(() => import('@quanta/containers/pages/LedgerContainer'));
 const AsyncHeader = AsyncComponent(() => import('@quanta/containers/common/HeaderContainer'));
@@ -29,6 +29,7 @@ const App = () => (
 					<Route exact path="/ledgers" component={AsyncLedgers} />
 					<Route exact path="/transactions/:id" component={AsyncTransaction} />
 					<Route exact path="/ledgers/:id" component={AsyncLedger} />
+					<Route exact path="/account/:id" component={AsyncAccount} />
 				</Switch>
 			</div>
 			<AsyncFooter />

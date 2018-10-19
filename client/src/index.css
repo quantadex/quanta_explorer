@@ -15,6 +15,19 @@ body {
 	display: none;
 }
 
+.nav-tabs {
+	border-bottom: none;
+}
+
+.modal-content {
+	background: transparent;
+	border: none;
+}
+
+.modal.fade {
+	background-color: #0f0d2a;
+	opacity: 0.82;
+}
 @media screen and (min-width: 769px) {
 	.show-sm {
 		display: none !important;

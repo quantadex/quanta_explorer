@@ -36,18 +36,6 @@ const getDescription = operation => {
 					<QuantaAddress address={operation.into} />
 				</React.Fragment>
 			);
-		case 'path_payment':
-			return 'Path Payment';
-		case 'manage_offer':
-			return 'Manage Offer';
-		case 'create_passive_offer':
-			return `Create Passive Offer`;
-		case 'set_options':
-			return 'Set Options';
-		case 'allow_trust':
-			return 'Allow Trust';
-		case 'inflation':
-			return 'Inflation';
 		case 'manage_data':
 			return (
 				<React.Fragment>
@@ -55,15 +43,13 @@ const getDescription = operation => {
 					{` updated data ${operation.name} to ${operation.value}`}
 				</React.Fragment>
 			);
-		case 'bump_sequence':
+		default:
 			return (
 				<React.Fragment>
 					<QuantaAddress address={operation.source_account} />
-					{` called Bump Sequence`};
+					{` called ${operation.type}`};
 				</React.Fragment>
 			);
-		default:
-			return operation.type;
 	}
 };
 

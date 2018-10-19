@@ -6,6 +6,7 @@ import Transaction from '@quanta/components/pages/Transaction';
 const mapStateToProps = state => ({
 	transaction: state.transactions.transaction.transaction,
 	isFetching: state.transactions.transaction.isFetching,
+	hasError: state.transactions.transaction.hasError,
 	operations: state.transactions.transaction.operations,
 });
 

@@ -5,6 +5,7 @@ const initialState = {
 	transaction: {
 		transaction: {},
 		isFetching: false,
+		hasError: false,
 		isFetchingOperations: false,
 		operations: [],
 	},
@@ -17,6 +18,7 @@ const ACTION_HANDLERS = {
 			...state.transaction,
 			transaction: {},
 			isFetching: true,
+			hasError: false,
 		},
 	}),
 	[Actions.failTransaction]: state => ({
@@ -25,6 +27,7 @@ const ACTION_HANDLERS = {
 			...state.transaction,
 			transaction: {},
 			isFetching: false,
+			hasError: true,
 		},
 	}),
 	[Actions.receiveTransaction]: (state, action) => ({
@@ -33,6 +36,7 @@ const ACTION_HANDLERS = {
 			...state.transaction,
 			transaction: action.payload.transaction,
 			isFetching: false,
+			hasError: false,
 		},
 	}),
 	[Actions.requestTransactionOperations]: state => ({

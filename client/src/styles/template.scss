@@ -3,6 +3,7 @@
 .details {
 	background-color: $quanta-color-gray1;
 	padding: 50px $global-padding-left 50px $global-padding-right;
+	border-bottom: solid 1px $quanta-color-border3;
 
 	h2 {
 		margin-bottom: 17px;
@@ -15,6 +16,15 @@
 
 .main {
 	padding: 56px $global-padding-left;
+}
+
+.noFound {
+	width: 100%;
+	flex: 1;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 @media screen and (max-width: $breakpoint-sm) {
