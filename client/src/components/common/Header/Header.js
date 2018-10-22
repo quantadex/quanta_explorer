@@ -52,7 +52,7 @@ class Header extends React.PureComponent {
 					/>
 					<Button color="primary" onClick={this.onGo}>
 						<img src={Search} alt="search" />
-						<span>Search</span>
+						<span>Go</span>
 					</Button>
 				</div>
 			</div>
