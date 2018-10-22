@@ -29,7 +29,9 @@ class Header extends React.PureComponent {
 		return (
 			<div className={classes.header}>
 				<div className={classes.details}>
-					<img src={Logo} alt="logo" />
+					<a href="/">
+						<img src={Logo} alt="logo" />
+					</a>
 					<QuantaSelect
 						isSearchable={false}
 						options={CONFIG.ENVIRONMENT.TYPE.map(environment => ({
