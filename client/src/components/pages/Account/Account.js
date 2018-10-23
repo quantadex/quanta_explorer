@@ -198,7 +198,7 @@ class Account extends Component {
 	renderToken = token => (
 		<div className={classes.token}>
 			<Row>
-				<Col sm={4} md={2} className={classNames(classes.tokenCell, classes.first)}>
+				<Col xs={4} sm={4} md={2} className={classNames(classes.tokenCell, classes.first)}>
 					{this.renderLabelText(
 						'Token',
 						token.asset_type === 'native'
@@ -206,7 +206,12 @@ class Account extends Component {
 							: token.asset_type
 					)}
 				</Col>
-				<Col sm={8} md={3} className={classNames(classes.tokenCell, classes.balance)}>
+				<Col
+					xs={8}
+					sm={8}
+					md={3}
+					className={classNames(classes.tokenCell, classes.balance)}
+				>
 					{this.renderLabelText('Balance', token.balance)}
 				</Col>
 				<Col
