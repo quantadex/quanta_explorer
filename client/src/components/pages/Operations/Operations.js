@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import moment from 'moment';
 import ReactEventSource from 'react-eventsource';
 import { Button } from 'reactstrap';
 import urlParse from 'url-parse';
@@ -61,9 +62,9 @@ class Operations extends Component {
 							<div className={operationsClasses.description}>
 								<OperationDescription operation={operation} />
 							</div>
-							<div className={operationsClasses.created}>{`<  ${Math.ceil(
-								timeDiff(operation.created_at)
-							)} min ago`}</div>
+							<div className={operationsClasses.created}>{`< ${moment(
+								operation.created_at
+							).toNow(true)} ago`}</div>
 						</div>
 						<div className={classNames(tableClasses.body, 'show-sm', 'flex-column')}>
 							<div className="d-flex justify-content-between w-100">
@@ -73,9 +74,9 @@ class Operations extends Component {
 								>
 									{operation.id}
 								</a>
-								<div className={operationsClasses.created}>{`<  ${Math.ceil(
-									timeDiff(operation.created_at)
-								)} min ago`}</div>
+								<div className={operationsClasses.created}>{`< ${moment(
+									operation.created_at
+								).toNow(true)} ago`}</div>
 							</div>
 							<div className={operationsClasses.description}>
 								<OperationDescription operation={operation} />

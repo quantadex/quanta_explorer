@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 import classNames from 'classnames';
 import ReactEventSource from 'react-eventsource';
 import { Button } from 'reactstrap';
@@ -53,9 +54,9 @@ class Ledgers extends Component {
 						</a>
 						<div className={classes.transactions}>{ledger.transaction_count}</div>
 						<div className={classes.operations}>{ledger.operation_count}</div>
-						<div className={classes.created}>{`<  ${Math.ceil(
-							timeDiff(ledger.closed_at)
-						)} min ago`}</div>
+						<div className={classes.created}>{`< ${moment(ledger.closed_at).toNow(
+							true
+						)} ago`}</div>
 					</div>
 				))}
 			</React.Fragment>

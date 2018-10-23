@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 import classNames from 'classnames';
 import { Row, Col } from 'reactstrap';
 import ReactEventSource from 'react-eventsource';
@@ -69,9 +70,9 @@ class Ledger extends Component {
 							<div className={operationsClasses.description}>
 								<OperationDescription operation={operation} />
 							</div>
-							<div className={operationsClasses.created}>{`<  ${Math.ceil(
-								timeDiff(operation.created_at)
-							)} min ago`}</div>
+							<div className={operationsClasses.created}>{`< ${moment(
+								operation.created_at
+							).toNow(true)} ago`}</div>
 						</div>
 						<div className={classNames(tableClasses.body, 'show-sm', 'flex-column')}>
 							<div className="d-flex justify-content-between w-100">
@@ -81,9 +82,9 @@ class Ledger extends Component {
 								>
 									{operation.id}
 								</a>
-								<div className={operationsClasses.created}>{`<  ${Math.ceil(
-									timeDiff(operation.created_at)
-								)} min ago`}</div>
+								<div className={operationsClasses.created}>{`< ${moment(
+									operation.created_at
+								).toNow(true)} ago`}</div>
 							</div>
 							<div className={operationsClasses.description}>
 								<OperationDescription operation={operation} />
