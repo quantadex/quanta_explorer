@@ -11,6 +11,7 @@ import CONFIG from '@quanta/config';
 import OperationDescription from '@quanta/components/common/OperationDescription';
 import QuantaAddress from '@quanta/components/common/QuantaAddress';
 import LabelText from '@quanta/components/common/LabelText';
+import NoMatchesFound from '@quanta/components/common/NoMatchesFound';
 import { dateToString } from '@quanta/helpers/utils';
 import { timeDiff } from '@quanta/helpers/utils';
 import tableClasses from '@quanta/styles/tables.scss';
@@ -298,9 +299,9 @@ class Account extends Component {
 
 	render() {
 		const { isFetching, account, hasError } = this.props;
-
+		const { id } = this.props.match.params;
 		if (hasError) {
-			return <div className={templateClasses.noFound}>No account found.</div>;
+			return <NoMatchesFound keyword={id} />;
 		}
 
 		return isFetching || !account ? (

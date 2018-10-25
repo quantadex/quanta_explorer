@@ -5,7 +5,6 @@ import QuantaSelect from '@quanta/components/common/QuantaSelect';
 import CONFIG from '@quanta/config';
 
 import Logo from '@quanta/assets/images/logo.svg';
-import Search from '@quanta/assets/images/search.svg';
 import classes from './Header.scss';
 
 class Header extends React.PureComponent {
@@ -51,7 +50,6 @@ class Header extends React.PureComponent {
 						onChange={this.onKeyChange}
 					/>
 					<Button color="primary" onClick={this.onGo}>
-						<img src={Search} alt="search" />
 						<span>Go</span>
 					</Button>
 				</div>
