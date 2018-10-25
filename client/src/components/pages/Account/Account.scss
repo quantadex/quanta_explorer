@@ -33,7 +33,7 @@
 	margin-right: 9px;
 }
 
-.tabs.operation {
+.tabs.tabSigners {
 	margin-right: 0;
 }
 
@@ -131,6 +131,36 @@
 	}
 }
 
+.signers {
+	display: flex;
+	align-items: center;
+	margin-bottom: 39px;
+}
+
+.item {
+	margin-right: 41px;
+
+	font-size: $font-size1;
+	line-height: $font-size1;
+	font-weight: $font-weight-bold;
+	letter-spacing: 0.5px;
+	color: $quanta-color-black1;
+
+	.value {
+		font-weight: $font-weight-normal;
+	}
+}
+
+.publicKey {
+	flex: 1;
+	word-break: break-all;
+}
+
+.weight {
+	width: 100px;
+	text-align: right;
+}
+
 @media screen and (max-width: $breakpoint-sm) {
 	.history {
 		padding-top: 28px;
@@ -142,5 +172,22 @@
 
 	.tokenCell.tokenIssuer {
 		border-top: solid 1px $quanta-color-border2;
+	}
+
+	.signers {
+		flex-direction: column;
+		align-items: unset;
+		justify-content: center;
+
+		margin-bottom: 18px;
+	}
+
+	.tabs {
+		padding: 8px 18px;
+	}
+
+	.item {
+		margin-left: 0;
+		margin-bottom: 14px;
 	}
 }

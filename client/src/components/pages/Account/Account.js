@@ -242,6 +242,49 @@ class Account extends Component {
 		);
 	};
 
+	renderSigners = () => {
+		const { account } = this.props;
+
+		return (
+			<div className={classNames(operationsClasses.history, classes.history)}>
+				{account.thresholds && (
+					<div className={classes.signers}>
+						<div className={classes.item}>
+							Low Threadhold:{' '}
+							<span className={classes.value}>
+								{account.thresholds.low_threshold}
+							</span>
+						</div>
+						<div className={classes.item}>
+							Medium Threadhold:{' '}
+							<span className={classes.value}>
+								{account.thresholds.med_threshold}
+							</span>
+						</div>
+						<div className={classes.item}>
+							High Threadhold:{' '}
+							<span className={classes.value}>
+								{account.thresholds.high_threshold}
+							</span>
+						</div>
+					</div>
+				)}
+				<div className={tableClasses.table}>
+					<div className={tableClasses.header}>
+						<div className={classes.publicKey}>Public Key</div>
+						<div className={classes.weight}>Weight</div>
+					</div>
+					{(account.signers || []).map(signer => (
+						<div className={tableClasses.body}>
+							<div className={classes.publicKey}>{signer.public_key}</div>
+							<div className={classes.weight}>{signer.weight}</div>
+						</div>
+					))}
+				</div>
+			</div>
+		);
+	};
+
 	renderTabs = () => {
 		const { activeTab } = this.state;
 		return (
@@ -259,7 +302,7 @@ class Account extends Component {
 					</NavItem>
 					<NavItem>
 						<NavLink
-							className={classNames(classes.tabs, classes.operation, {
+							className={classNames(classes.tabs, {
 								[classes.selected]: activeTab === 'operation',
 							})}
 							onClick={() => this.selectTab('operation')}
@@ -267,10 +310,21 @@ class Account extends Component {
 							Operations
 						</NavLink>
 					</NavItem>
+					<NavItem>
+						<NavLink
+							className={classNames(classes.tabs, classes.tabSigners, {
+								[classes.selected]: activeTab === 'signers',
+							})}
+							onClick={() => this.selectTab('signers')}
+						>
+							Signers
+						</NavLink>
+					</NavItem>
 				</Nav>
 				<TabContent activeTab={activeTab}>
 					<TabPane tabId="balance">{this.renderTokens()}</TabPane>
 					<TabPane tabId="operation">{this.renderOprationsHistory()}</TabPane>
+					<TabPane tabId="signers">{this.renderSigners()}</TabPane>
 				</TabContent>
 			</div>
 		);
