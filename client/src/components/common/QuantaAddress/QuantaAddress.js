@@ -5,15 +5,38 @@ import { trimAccountId } from '@quanta/helpers/string';
 import CONFIG from '@quanta/config';
 import classes from './QuantaAddress.scss';
 
+const renderString = (address, showOriginal) => {
+	switch (address) {
+		case CONFIG.SETTINGS.QUANTA_ISSUER:
+			return 'QUANTA ISSUER';
+		case CONFIG.SETTINGS.QUANTA_ORDERBOOK:
+			return 'QUANTA ORDERBOOK';
+		default:
+			return showOriginal ? address : trimAccountId(address);
+	}
+};
+
 const QuantaAddress = ({ address, className, showOriginal, isLong }) => (
 	<React.Fragment>
 		<a
 			href={`/account/${address}`}
-			className={classNames(className, { [classes.isLong]: isLong })}
+			className={classNames(
+				{
+					className: !(
+						address === CONFIG.SETTINGS.QUANTA_ISSUER ||
+						address === CONFIG.SETTINGS.QUANTA_ORDERBOOK
+					),
+				},
+				{ [classes.isLong]: isLong },
+				{
+					[classes.hasBorder]:
+						address === CONFIG.SETTINGS.QUANTA_ISSUER ||
+						address === CONFIG.SETTINGS.QUANTA_ORDERBOOK,
+				}
+			)}
 		>
-			{showOriginal ? address : trimAccountId(address)}
+			{renderString(address, showOriginal)}
 		</a>
-		{address === CONFIG.QUANTA_ISSUER && ' [QUANTA ISSUER]'}
 	</React.Fragment>
 );
 

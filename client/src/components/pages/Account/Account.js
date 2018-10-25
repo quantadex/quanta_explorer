@@ -24,7 +24,7 @@ class Account extends Component {
 		super(props);
 
 		this.state = {
-			activeTab: 'token',
+			activeTab: 'balance',
 			showQRModal: false,
 		};
 
@@ -187,12 +187,7 @@ class Account extends Component {
 
 	renderLabelTextIssuer = accountId => (
 		<React.Fragment>
-			<div className="d-flex justify-content-between align-items-end">
-				<div className={classes.label}>Issuer</div>
-				{accountId === CONFIG.SETTINGS.QUANTA_ISSUER && (
-					<div className={classes.issuer}>QUANTER ISSUER</div>
-				)}
-			</div>
+			<div className={classes.label}>Issuer</div>
 			<QuantaAddress className={classes.text} address={accountId} showOriginal isLong />
 		</React.Fragment>
 	);
@@ -255,11 +250,11 @@ class Account extends Component {
 					<NavItem>
 						<NavLink
 							className={classNames(classes.tabs, {
-								[classes.selected]: activeTab === 'token',
+								[classes.selected]: activeTab === 'balance',
 							})}
-							onClick={() => this.selectTab('token')}
+							onClick={() => this.selectTab('balance')}
 						>
-							Tokens
+							Balance
 						</NavLink>
 					</NavItem>
 					<NavItem>
@@ -274,7 +269,7 @@ class Account extends Component {
 					</NavItem>
 				</Nav>
 				<TabContent activeTab={activeTab}>
-					<TabPane tabId="token">{this.renderTokens()}</TabPane>
+					<TabPane tabId="balance">{this.renderTokens()}</TabPane>
 					<TabPane tabId="operation">{this.renderOprationsHistory()}</TabPane>
 				</TabContent>
 			</div>

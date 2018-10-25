@@ -1,3 +1,20 @@
+@import 'variables.scss';
+
 .isLong {
 	word-break: break-all;
+}
+
+.hasBorder {
+	border-radius: 12px;
+	border: solid 2px $quanta-color-purple1;
+
+	font-size: $font-size4;
+	line-height: $font-size4;
+	font-weight: $font-weight-semibold;
+	padding: 4px 10px;
+
+	&:hover {
+		text-decoration: none;
+		color: $quanta-color-purple1;
+	}
 }
