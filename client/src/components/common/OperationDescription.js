@@ -20,7 +20,7 @@ const getDescription = operation => {
 				<React.Fragment>
 					Payment from <QuantaAddress address={operation.from} /> to{' '}
 					<QuantaAddress address={operation.to} />
-					{` for ${operation.asset_type} ${operation.amount}`}
+					{` for ${operation.asset_code} ${operation.amount}`}
 				</React.Fragment>
 			);
 		case 'change_trust':
