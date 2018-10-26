@@ -42,8 +42,13 @@ fi
 docker build -t $image -f $dockerfile .
 docker tag $image $REPO/$name:latest
 docker tag $image $name:latest
-docker push $image
-docker push $REPO/$name:latest
+
+if [[ ${NOPUSH:-"0"} == "0" ]]; then
+  docker push $image
+  docker push $REPO/$name:latest
+else
+  echo "push skipped (NOPUSH=${NOPUSH})"
+fi
 
 echo "... done: $image"
 echo
