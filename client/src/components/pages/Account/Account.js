@@ -200,7 +200,7 @@ class Account extends Component {
 						'Token',
 						token.asset_type === 'native'
 							? CONFIG.SETTINGS.ASSET_TYPE_NATIVE
-							: token.asset_type
+							: token.asset_code
 					)}
 				</Col>
 				<Col

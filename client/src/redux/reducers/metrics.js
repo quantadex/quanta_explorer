@@ -10,7 +10,6 @@ const ACTION_HANDLERS = {
 	[Actions.requestMetrics]: state => ({
 		...state,
 		isFetching: true,
-		metrics: {},
 	}),
 	[Actions.failMetrics]: state => ({
 		...state,

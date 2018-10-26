@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import moment from 'moment';
-import ReactEventSource from 'react-eventsource';
 import { Button } from 'reactstrap';
 import urlParse from 'url-parse';
 
@@ -14,6 +13,17 @@ import operationsClasses from '@quanta/styles/operations.scss';
 import classes from './Operations.scss';
 
 class Operations extends Component {
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			ledgersSource: new EventSource(
+				`${CONFIG.ENVIRONMENT.HORIZON_SERVER}/ledgers?order=asc&cursor=now`
+			),
+			ledgers: props.ledgers || [],
+		};
+	}
+
 	componentDidMount() {
 		const { fetchOperations, fetchLedgers, fetchMetrics, fetchNodeCount } = this.props;
 		fetchOperations({ limit: 15, order: 'desc' });
@@ -21,11 +31,37 @@ class Operations extends Component {
 		fetchMetrics();
 		fetchNodeCount();
 
-		this.ledgers = [];
+		this.state.ledgersSource.addEventListener(['message'], message => {
+			const { ledgers } = this.state;
+			if (this.state.ledgers.length > 0) {
+				ledgers.unshift(JSON.parse(message.data));
+				this.getBlockAverageLatency();
+				fetchMetrics();
+				this.setState({
+					ledgers: ledgers.slice(0, CONFIG.SETTINGS.RECENT_ITEM_LENGTH),
+				});
+			}
+		});
 	}
 
-	getBlockAverageLatency = ledgers => {
+	componentWillReceiveProps(nextProps) {
+		if (this.props.ledgers !== nextProps.ledgers) {
+			this.setState(
+				{
+					ledgers: nextProps.ledgers.sort((a, b) =>
+						timeDiff(a.closed_at, 'ms', b.closed_at)
+					),
+				},
+				() => {
+					this.getBlockAverageLatency();
+				}
+			);
+		}
+	}
+
+	getBlockAverageLatency = () => {
 		const { setAverageBlockLatency } = this.props;
+		const { ledgers } = this.state;
 
 		let totalLatency = 0;
 		ledgers.forEach((ledger, index) => {
@@ -156,62 +192,25 @@ class Operations extends Component {
 		);
 	};
 
-	renderLedgerHistory = () => {
-		const { ledgers } = this.props;
-
-		return (
-			<div className="hidden">
-				<div>
-					<h2>Ledger History</h2>
-					<Button outline color="primary">
-						View All
-					</Button>
-				</div>
-				<div>
-					<div>
-						<div>Sequence</div>
-						<div>Transactions</div>
-						<div>Operations</div>
-						<div>Created</div>
-					</div>
-					{ledgers.length > 0 &&
-						this.ledgers && (
-							<ReactEventSource
-								url={`${
-									CONFIG.ENVIRONMENT.HORIZON_SERVER
-								}/ledgers?order=asc&cursor=now`}
-							>
-								{events => {
-									const streamLedgers = events
-										.map(event => JSON.parse(event))
-										.sort((a, b) => timeDiff(a.closed_at, 'ms', b.closed_at));
-									const streamLedgerIds = streamLedgers.map(
-										operation => operation.id
-									);
-
-									if (this.ledgers.length === 0) {
-										this.ledgers = ledgers;
-									}
-
-									const totalLedgers = [
-										...streamLedgers,
-										...this.ledgers.filter(
-											operation => !streamLedgerIds.includes(operation.id)
-										),
-									].sort((a, b) => timeDiff(a.closed_at, 'ms', b.closed_at));
-									this.getBlockAverageLatency(
-										totalLedgers.slice(0, CONFIG.SETTINGS.RECENT_ITEM_LENGTH)
-									);
-									return this.renderLedgersRecord(
-										totalLedgers.slice(0, CONFIG.SETTINGS.RECENT_ITEM_LENGTH)
-									);
-								}}
-							</ReactEventSource>
-						)}
-				</div>
+	renderLedgerHistory = () => (
+		<div className="hidden">
+			<div>
+				<h2>Ledger History</h2>
+				<Button outline color="primary">
+					View All
+				</Button>
 			</div>
-		);
-	};
+			<div>
+				<div>
+					<div>Sequence</div>
+					<div>Transactions</div>
+					<div>Operations</div>
+					<div>Created</div>
+				</div>
+				{this.renderLedgersRecord(this.state.ledgers)}
+			</div>
+		</div>
+	);
 
 	render() {
 		const { metrics, averageBlockLatency, nodeCount } = this.props;
