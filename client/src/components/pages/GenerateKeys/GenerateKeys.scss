@@ -1,0 +1,57 @@
+@import 'variables.scss';
+
+.tools {
+	flex: 1;
+}
+
+.content {
+	font-size: $font-size1;
+	line-height: $line-height7;
+	font-weight: $font-weight-normal;
+	letter-spacing: 0.5px;
+	color: $quanta-color-black1;
+
+	padding-left: 47px;
+	flex: 1;
+}
+
+.content h2 {
+	margin-bottom: 32px;
+}
+
+.description {
+	margin-bottom: 35px;
+}
+
+.caution {
+	padding: 12px 0;
+
+	display: flex;
+	align-items: flex-start;
+	border-top: 2px solid $quanta-color-red1;
+	border-bottom: 2px solid $quanta-color-red1;
+
+	margin-bottom: 36px;
+}
+
+.caution img {
+	margin-right: 13px;
+
+	position: relative;
+	top: 4px;
+}
+
+.title {
+	margin-bottom: 11px;
+}
+
+.key {
+	margin-bottom: 27px;
+	word-break: break-all;
+}
+
+@media screen and (max-width: $breakpoint-sm) {
+	.content {
+		padding-left: 0;
+	}
+}

@@ -29,6 +29,10 @@ a {
 	font-weight: $font-weight-bold;
 }
 
+button {
+	font-weight: $font-weight-bold !important;
+}
+
 @media screen and (max-width: $breakpoint-sm) {
 	table {
 		font-size: $font-size4;
@@ -36,5 +40,9 @@ a {
 
 	table th {
 		text-transform: none;
+	}
+
+	h2 {
+		font-size: 22px;
 	}
 }

@@ -24,6 +24,7 @@ $header-padding-bottom: 19px;
 
 .details {
 	display: flex;
+	align-items: center;
 	margin-right: 15%;
 
 	img {
@@ -56,6 +57,14 @@ $header-padding-bottom: 19px;
 	}
 }
 
+.tools {
+	font-size: $font-size1;
+	line-height: $line-height3;
+	letter-spacing: 0.5px;
+	font-weight: normal;
+	margin-left: 29px;
+}
+
 @media screen and (max-width: $breakpoint-sm) {
 	.header {
 		display: block;
@@ -67,15 +76,8 @@ $header-padding-bottom: 19px;
 		margin-right: 0;
 	}
 
-	.search {
-		button {
-			img {
-				margin-right: 0;
-			}
-
-			span {
-				display: none;
-			}
-		}
+	.tools {
+		margin-left: 0;
+		margin-right: 17px;
 	}
 }
