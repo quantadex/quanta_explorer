@@ -3,6 +3,7 @@ const ENVIRONMENT = {
 	SERVERS: {
 		testnet: {
 			SERVER_URL: 'http://testnet-02.quantachain.io:7000',
+			REQUEST_FRIENDBOT: 'http://testnet-02.quantachain.io:8004',
 		},
 		betanet: {},
 	},

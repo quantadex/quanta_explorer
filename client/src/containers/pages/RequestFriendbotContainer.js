@@ -1,11 +1,8 @@
 import { connect } from 'react-redux';
 import RequestFriendbot from '@quanta/components/pages/RequestFriendbot';
 
-const mapStateToProps = state => ({});
+const mapStateToProps = state => ({
+	environmentType: state.header.environmentType,
+});
 
-const mapActionCreators = dispatch => ({});
-
-export default connect(
-	mapStateToProps,
-	mapActionCreators
-)(RequestFriendbot);
+export default connect(mapStateToProps)(RequestFriendbot);

@@ -1,0 +1,55 @@
+@import 'variables.scss';
+
+.tools {
+	flex: 1;
+}
+
+.content {
+	font-size: $font-size1;
+	line-height: $line-height7;
+	font-weight: $font-weight-normal;
+	letter-spacing: 0.5px;
+	color: $quanta-color-black1;
+
+	padding-left: 47px;
+	flex: 1;
+}
+
+.content h2 {
+	margin-bottom: 32px;
+}
+
+.description {
+	margin-bottom: 33px;
+}
+
+.quantaAddress {
+	font-size: $font-size6;
+	line-height: $line-height4;
+	letter-spacing: 0.4px;
+	font-weight: $font-weight-normal;
+	opacity: 0.81;
+	margin-bottom: 8px;
+}
+
+.quantaAddressInput {
+	margin-bottom: 16px;
+}
+
+@media screen and (max-width: $breakpoint-sm) {
+	.content {
+		padding-left: 0;
+	}
+
+	.content h2 {
+		margin-bottom: 12px;
+	}
+
+	.description {
+		margin-bottom: 26px;
+	}
+
+	.quantaAddressInput {
+		margin-bottom: 8px;
+	}
+}
