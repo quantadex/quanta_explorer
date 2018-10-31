@@ -22,7 +22,7 @@ const QuantaAddress = ({ address, className, showOriginal, isLong }) => (
 			href={`/account/${address}`}
 			className={classNames(
 				{
-					className: !(
+					[className]: !(
 						address === CONFIG.SETTINGS.QUANTA_ISSUER ||
 						address === CONFIG.SETTINGS.QUANTA_ORDERBOOK
 					),
