@@ -223,15 +223,18 @@ class Account extends Component {
 				</Col>
 				<Col md={4} className={classNames(classes.tokenCell, classes.last, 'hidden-sm')}>
 					{token.asset_code === 'ETH' &&
+						token.asset_issuer === CONFIG.SETTINGS.QUANTA_ISSUER &&
 						this.renderLabelText(
 							'Deposit Address',
 							<a
 								href={`${
 									CONFIG.ENVIRONMENT.SERVERS[this.props.environmentType.value]
 										.CROSSCHAING_ADDRESS
-								}/${token.asset_code.toLowerCase()}/${token.asset_issuer}`}
+								}/${token.asset_code.toLowerCase()}/${
+									CONFIG.SETTINGS.QUANTA_ISSUER
+								}`}
 							>
-								{token.asset_issuer}
+								{CONFIG.SETTINGS.QUANTA_ISSUER}
 							</a>
 						)}
 				</Col>
