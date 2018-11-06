@@ -8,6 +8,7 @@ const mapStateToProps = state => ({
 	isFetching: state.account.isFetching,
 	hasError: state.account.hasError,
 	operations: state.account.operations,
+	environmentType: state.header.environmentType,
 });
 
 const mapActionCreators = dispatch => ({

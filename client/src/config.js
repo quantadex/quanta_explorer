@@ -4,6 +4,7 @@ const ENVIRONMENT = {
 		testnet: {
 			SERVER_URL: 'http://testnet-02.quantachain.io:7000',
 			REQUEST_FRIENDBOT: 'http://testnet-02.quantachain.io:8004',
+			CROSSCHAING_ADDRESS: 'http://testnet-02.quantachain.io:5001/api/address',
 		},
 		betanet: {},
 	},

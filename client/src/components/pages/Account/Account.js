@@ -221,18 +221,25 @@ class Account extends Component {
 						? 'Native Token'
 						: this.renderLabelTextIssuer(token.asset_issuer)}
 				</Col>
-				<Col md={4}
-					className={classNames(classes.tokenCell, classes.last, 'hidden-sm')}
-				>
+				<Col md={4} className={classNames(classes.tokenCell, classes.last, 'hidden-sm')}>
 					{token.asset_code === 'ETH' &&
-						this.renderLabelText('Deposit Address', <a href="https://ropsten.etherscan.io/address/0xb59e4b94e4ed7331ee0520e9377967614ca2dc98">0xb59e4b94e4ed7331ee0520e9377967614ca2dc98</a>)
-					}
+						this.renderLabelText(
+							'Deposit Address',
+							<a
+								href={`${
+									CONFIG.ENVIRONMENT.SERVERS[this.props.environmentType.value]
+										.CROSSCHAING_ADDRESS
+								}/${token.asset_code.toLowerCase()}/${token.asset_issuer}`}
+							>
+								{token.asset_issuer}
+							</a>
+						)}
 				</Col>
 			</Row>
 			<div className={classNames(classes.tokenCell, classes.tokenIssuer, 'show-sm')}>
-					{token.asset_code === 'ETH' && token.asset_issuer
+				{token.asset_code === 'ETH' && token.asset_issuer
 					? 'Native Token'
-						: this.renderLabelText(token.asset_issuer)}
+					: this.renderLabelText(token.asset_issuer)}
 			</div>
 		</div>
 	);
@@ -380,6 +387,7 @@ Account.propTypes = {
 	hasError: bool.isRequired,
 	fetchAccount: func.isRequired,
 	fetchAccountOperations: func.isRequired,
+	environmentType: shape({}).isRequired,
 };
 
 Account.defaultProps = {};
