@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import { Button, Input } from 'reactstrap';
 import QuantaSelect from '@quanta/components/common/QuantaSelect';
 import CONFIG from '@quanta/config';
@@ -31,6 +32,9 @@ class Header extends React.PureComponent {
 					<a href="/">
 						<img src={Logo} alt="logo" />
 					</a>
+					<a href="/tools" className={classNames(classes.tools, 'show-sm')}>
+						Tools
+					</a>
 					<QuantaSelect
 						isSearchable={false}
 						options={CONFIG.ENVIRONMENT.TYPE.map(environment => ({
@@ -41,6 +45,9 @@ class Header extends React.PureComponent {
 						className={classes.category}
 						onChange={changeEnvironmentType}
 					/>
+					<a href="/tools" className={classNames(classes.tools, 'hidden-sm')}>
+						Tools
+					</a>
 				</div>
 				<div className={classes.search}>
 					<Input

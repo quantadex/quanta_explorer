@@ -1,6 +1,6 @@
 {
   "name": "quanta",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "scripts": {
     "client": "cd client && yarn install && yarn start",
     "client_build": "cd client &&  yarn install && yarn build",

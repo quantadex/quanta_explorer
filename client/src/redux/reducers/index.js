@@ -7,6 +7,7 @@ import metricsReducer from './metrics';
 import globalReducer from './global';
 import transactionReducer from './transactions';
 import accountReducer from './account';
+import toolsReducer from './tools';
 
 const reducers = combineReducers({
 	account: accountReducer,
@@ -16,6 +17,7 @@ const reducers = combineReducers({
 	metrics: metricsReducer,
 	global: globalReducer,
 	transactions: transactionReducer,
+	tools: toolsReducer,
 });
 
 export default reducers;

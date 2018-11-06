@@ -1,0 +1,92 @@
+@import 'variables.scss';
+
+.tools {
+	flex: 1;
+}
+
+.content {
+	font-size: $font-size1;
+	line-height: $line-height7;
+	font-weight: $font-weight-normal;
+	letter-spacing: 0.5px;
+	color: $quanta-color-black1;
+
+	padding-left: 47px;
+	flex: 1;
+}
+
+.content h2 {
+	margin-bottom: 32px;
+}
+
+.description {
+	margin-bottom: 33px;
+}
+
+.quantaAddress {
+	font-size: $font-size6;
+	line-height: $line-height4;
+	letter-spacing: 0.4px;
+	font-weight: $font-weight-normal;
+	opacity: 0.81;
+	margin-bottom: 8px;
+}
+
+.quantaAddressInput {
+	margin-bottom: 16px;
+}
+
+.ethereumAddress {
+	margin-top: 16px;
+	opacity: 0.49;
+	line-height: $font-size1;
+	word-break: break-all;
+}
+
+.actionArea {
+	display: flex;
+	align-items: center;
+}
+
+.caution {
+	display: flex;
+	align-items: center;
+	margin-left: 24px;
+}
+
+.caution img {
+	margin-right: 8.5px;
+}
+
+@media screen and (max-width: $breakpoint-sm) {
+	.content {
+		padding-left: 0;
+	}
+
+	.content h2 {
+		margin-bottom: 12px;
+	}
+
+	.description {
+		margin-bottom: 26px;
+	}
+
+	.quantaAddressInput {
+		margin-bottom: 8px;
+	}
+
+	.ethereumAddress {
+		margin-top: 8px;
+		opacity: 0.49;
+	}
+
+	.actionArea {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.caution {
+		margin-left: 0;
+		margin-top: 16px;
+	}
+}

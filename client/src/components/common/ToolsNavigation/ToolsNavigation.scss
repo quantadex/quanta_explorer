@@ -1,0 +1,34 @@
+@import 'variables.scss';
+
+.toolsNavigation {
+	padding-right: 47px;
+	border-right: solid 2px $quanta-color-gray3;
+}
+
+.toolsNavigation h2 {
+	margin-bottom: 30px;
+}
+
+.toolsNavigation a {
+	display: block;
+	margin-bottom: 11px;
+
+	font-size: $font-size1;
+	line-height: $line-height7;
+	font-weight: $font-weight-normal;
+}
+
+.toolsNavigation a:last-child {
+	margin-bottom: 0;
+}
+
+@media screen and (max-width: $breakpoint-sm) {
+	.toolsNavigation {
+		border-right: none;
+		padding-right: 0;
+	}
+
+	.toolsNavigation h2 {
+		margin-bottom: 24px;
+	}
+}
