@@ -212,8 +212,8 @@ class Account extends Component {
 					{this.renderLabelText('Balance', token.balance)}
 				</Col>
 				<Col
-					md={7}
-					className={classNames(classes.tokenCell, classes.last, 'hidden-sm', {
+					md={3}
+					className={classNames(classes.tokenCell, 'hidden-sm', {
 						[classes.centerAligned]: token.asset_type === 'native',
 					})}
 				>
@@ -221,11 +221,18 @@ class Account extends Component {
 						? 'Native Token'
 						: this.renderLabelTextIssuer(token.asset_issuer)}
 				</Col>
+				<Col md={4}
+					className={classNames(classes.tokenCell, classes.last, 'hidden-sm')}
+				>
+					{token.asset_code === 'ETH' &&
+						this.renderLabelText('Deposit Address', <a href="https://ropsten.etherscan.io/address/0xb59e4b94e4ed7331ee0520e9377967614ca2dc98">0xb59e4b94e4ed7331ee0520e9377967614ca2dc98</a>)
+					}
+				</Col>
 			</Row>
 			<div className={classNames(classes.tokenCell, classes.tokenIssuer, 'show-sm')}>
-				{token.asset_type === 'native'
+					{token.asset_code === 'ETH' && token.asset_issuer
 					? 'Native Token'
-					: this.renderLabelTextIssuer(token.asset_issuer)}
+						: this.renderLabelText(token.asset_issuer)}
 			</div>
 		</div>
 	);
