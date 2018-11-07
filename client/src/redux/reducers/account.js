@@ -7,6 +7,7 @@ const initialState = {
 	hasError: false,
 	isFetchingOperations: false,
 	operations: [],
+	crossChainAddress: [],
 };
 
 const ACTION_HANDLERS = {
@@ -15,6 +16,7 @@ const ACTION_HANDLERS = {
 		account: {},
 		isFetching: true,
 		hasError: false,
+		crossChainAddress: [],
 	}),
 	[Actions.failAccount]: state => ({
 		...state,
@@ -42,6 +44,10 @@ const ACTION_HANDLERS = {
 		...state,
 		operations: action.payload.operations,
 		isFetchingOperations: false,
+	}),
+	[Actions.setCrossChainAddress]: (state, action) => ({
+		...state,
+		crossChainAddress: action.payload.crossChainAddress,
 	}),
 };
 

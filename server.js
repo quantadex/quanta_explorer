@@ -41,6 +41,37 @@ app.get('/nodeCount', (req, res) => {
 		});
 });
 
+app.get('/crosschain/eth/:id', (req, res) => {
+	const { network } = req.query;
+	const { id } = req.params;
+
+	switch (network) {
+		case 'testnet':
+		case 'betanet':
+			break;
+		default:
+			res.status(400).json({
+				code: 'Bad Request',
+				message: 'Invalid network!',
+			});
+			return;
+	}
+
+	axios({
+		url: `${CONFIG.ENVIRONMENT.SERVERS[network].CROSSCHAING_ADDRESS}/eth/${id}`,
+		method: 'get',
+	})
+		.then(response => {
+			res.status(200).json(response.data);
+		})
+		.catch(() => {
+			res.status(500).json({
+				code: 'Interval server error',
+				message: 'Something went wrong!',
+			});
+		});
+});
+
 app.get('*', (req, res) => {
 	res.sendFile(path.join(__dirname, 'client/build/index.html'));
 });

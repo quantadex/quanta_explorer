@@ -90,6 +90,8 @@
 	line-height: $line-height2;
 	letter-spacing: 0.5px;
 	word-break: break-all;
+	display: flex;
+	flex-direction: column;
 }
 
 .issuer {

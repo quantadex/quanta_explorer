@@ -9,6 +9,7 @@ const mapStateToProps = state => ({
 	hasError: state.account.hasError,
 	operations: state.account.operations,
 	environmentType: state.header.environmentType,
+	crossChainAddress: state.account.crossChainAddress,
 });
 
 const mapActionCreators = dispatch => ({

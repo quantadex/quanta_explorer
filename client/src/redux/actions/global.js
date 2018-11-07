@@ -11,7 +11,7 @@ export const setNodeCount = createAction(SET_NODE_COUNT);
 export const fetchNodeCount = () => (dispatch, getState) => {
 	const { environmentType } = getState().header;
 	api({
-		url: `nodeCount?network=${environmentType.value}`,
+		url: `/nodeCount?network=${environmentType.value}`,
 		baseUrl: '',
 	}).then(response =>
 		dispatch(

@@ -214,35 +214,45 @@ class Account extends Component {
 				<Col
 					md={3}
 					className={classNames(classes.tokenCell, 'hidden-sm', {
-						[classes.centerAligned]: token.asset_type === 'native',
+						[classes.centerAligned]:
+							token.asset_code === 'ETH' &&
+							token.asset_issuer === CONFIG.SETTINGS.QUANTA_ISSUER,
 					})}
 				>
-					{token.asset_type === 'native'
+					{token.asset_code === 'ETH' &&
+					token.asset_issuer === CONFIG.SETTINGS.QUANTA_ISSUER
 						? 'Native Token'
-						: this.renderLabelTextIssuer(token.asset_issuer)}
+						: this.renderLabelTextIssuer(token.asset_issuer ? token.asset_issuer : '')}
 				</Col>
 				<Col md={4} className={classNames(classes.tokenCell, classes.last, 'hidden-sm')}>
 					{token.asset_code === 'ETH' &&
 						token.asset_issuer === CONFIG.SETTINGS.QUANTA_ISSUER &&
 						this.renderLabelText(
 							'Deposit Address',
-							<a
-								href={`${
-									CONFIG.ENVIRONMENT.SERVERS[this.props.environmentType.value]
-										.CROSSCHAING_ADDRESS
-								}/${token.asset_code.toLowerCase()}/${
-									CONFIG.SETTINGS.QUANTA_ISSUER
-								}`}
-							>
-								{CONFIG.SETTINGS.QUANTA_ISSUER}
-							</a>
+							this.props.crossChainAddress.map(address => (
+								<a href={`https://ropsten.etherscan.io/address/${address}`}>
+									{address}
+								</a>
+							))
 						)}
 				</Col>
 			</Row>
 			<div className={classNames(classes.tokenCell, classes.tokenIssuer, 'show-sm')}>
-				{token.asset_code === 'ETH' && token.asset_issuer
+				{token.asset_code === 'ETH' &&
+					token.asset_issuer === CONFIG.SETTINGS.QUANTA_ISSUER &&
+					this.renderLabelText(
+						'Deposit Address',
+						this.props.crossChainAddress.map(address => (
+							<a href={`https://ropsten.etherscan.io/address/${address}`}>
+								{address}
+							</a>
+						))
+					)}
+			</div>
+			<div className={classNames(classes.tokenCell, classes.tokenIssuer, 'show-sm')}>
+				{token.asset_code === 'ETH' && token.asset_issuer === CONFIG.SETTINGS.QUANTA_ISSUER
 					? 'Native Token'
-					: this.renderLabelText(token.asset_issuer)}
+					: this.renderLabelTextIssuer(token.asset_issuer ? token.asset_issuer : '')}
 			</div>
 		</div>
 	);
@@ -382,7 +392,7 @@ class Account extends Component {
 	}
 }
 
-const { func, shape, bool, arrayOf, object } = PropTypes;
+const { func, shape, bool, arrayOf, object, string } = PropTypes;
 Account.propTypes = {
 	isFetching: bool.isRequired,
 	account: shape({}).isRequired,
@@ -391,6 +401,7 @@ Account.propTypes = {
 	fetchAccount: func.isRequired,
 	fetchAccountOperations: func.isRequired,
 	environmentType: shape({}).isRequired,
+	crossChainAddress: arrayOf(string).isRequired,
 };
 
 Account.defaultProps = {};
