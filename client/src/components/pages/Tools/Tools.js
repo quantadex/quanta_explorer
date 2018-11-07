@@ -12,8 +12,8 @@ class Tools extends Component {
 	onGenerate = () => {
 		const { generateKeys } = this.props;
 		const keys = window.StellarBase.Keypair.random();
-		const publicKey = window.StellarBase.StrKey.encodeEd25519PublicKey(keys._publicKey);
-		const secretKey = window.StellarBase.StrKey.encodeEd25519PublicKey(keys._secretKey);
+		const publicKey = keys.publicKey();
+		const secretKey = keys.secret();
 		generateKeys({ publicKey, secretKey });
 	};
 	render() {
