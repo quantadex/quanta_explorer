@@ -24,6 +24,12 @@ class Header extends React.PureComponent {
 		}
 	};
 
+	onKeyUp = event => {
+		if (event.keyCode === 13) {
+			this.onGo();
+		}
+	};
+
 	render() {
 		const { environmentType, changeEnvironmentType, searchKey } = this.props;
 		return (
@@ -55,6 +61,7 @@ class Header extends React.PureComponent {
 						value={searchKey}
 						placeholder="Address, Account or Transaction"
 						onChange={this.onKeyChange}
+						onKeyUp={this.onKeyUp}
 					/>
 					<Button color="primary" onClick={this.onGo}>
 						<span>Go</span>
