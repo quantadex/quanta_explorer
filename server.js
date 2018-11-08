@@ -57,17 +57,19 @@ app.get('/crosschain/eth/:id', (req, res) => {
 			return;
 	}
 
+	const proxyUrl = `${CONFIG.ENVIRONMENT.SERVERS[network].CROSSCHAING_ADDRESS}/eth/${id}`;
 	axios({
-		url: `${CONFIG.ENVIRONMENT.SERVERS[network].CROSSCHAING_ADDRESS}/eth/${id}`,
+		url: proxyUrl,
 		method: 'get',
 	})
 		.then(response => {
 			res.status(200).json(response.data);
 		})
-		.catch(() => {
+		.catch((err) => {
+			console.log("Caught error: err=" + err + ", proxyUrl=" + proxyUrl);
 			res.status(500).json({
 				code: 'Interval server error',
-				message: 'Something went wrong!',
+				message: 'Something went wrong! err=' + err,
 			});
 		});
 });
