@@ -255,78 +255,25 @@ class Account extends Component {
 	);
 
 	renderTokens = () => {
-		const { balances } = this.props.account;
+		let { balances } = this.props.account;
 
+		balances = balances || [];
+		if (
+			!balances.find(
+				balance =>
+					balance.asset_code === 'ETH' &&
+					balance.asset_issuer === CONFIG.SETTINGS.QUANTA_ISSUER
+			)
+		) {
+			balances.splice(0, 0, {
+				asset_code: 'ETH',
+				asset_issuer: CONFIG.SETTINGS.QUANTA_ISSUER,
+				balance: 0.0,
+			});
+		}
 		return (
 			<div className={classNames(operationsClasses.history, classes.history)}>
-				{!(balances || []).find(
-					balance =>
-						balance.asset_code === 'ETH' &&
-						balance.asset_issuer === CONFIG.SETTINGS.QUANTA_ISSUER
-				) && (
-					<div className={classes.token}>
-						<Row>
-							<Col
-								xs={4}
-								sm={4}
-								md={2}
-								className={classNames(classes.tokenCell, classes.first)}
-							>
-								{this.renderLabelText('Token', 'ETH')}
-							</Col>
-							<Col
-								xs={8}
-								sm={8}
-								md={3}
-								className={classNames(classes.tokenCell, classes.balance)}
-							>
-								{this.renderLabelText('Balance', '0.0')}
-							</Col>
-							<Col md={3} className={classNames(classes.tokenCell, 'hidden-sm')}>
-								{this.renderLabelTextIssuer(CONFIG.SETTINGS.QUANTA_ISSUER)}
-							</Col>
-							<Col
-								md={4}
-								className={classNames(classes.tokenCell, classes.last, 'hidden-sm')}
-							>
-								{this.renderLabelText(
-									'Deposit Address',
-									this.props.crossChainAddress.map(address => (
-										<a href={`https://ropsten.etherscan.io/address/${address}`}>
-											{address}
-										</a>
-									))
-								)}
-							</Col>
-						</Row>
-						<div
-							className={classNames(
-								classes.tokenCell,
-								classes.tokenIssuer,
-								'show-sm'
-							)}
-						>
-							{this.renderLabelText(
-								'Deposit Address',
-								this.props.crossChainAddress.map(address => (
-									<a href={`https://ropsten.etherscan.io/address/${address}`}>
-										{address}
-									</a>
-								))
-							)}
-						</div>
-						<div
-							className={classNames(
-								classes.tokenCell,
-								classes.tokenIssuer,
-								'show-sm'
-							)}
-						>
-							{this.renderLabelTextIssuer(CONFIG.SETTINGS.QUANTA_ISSUER)}
-						</div>
-					</div>
-				)}
-				{(balances || []).map(balance => {
+				{balances.map(balance => {
 					return this.renderToken(balance);
 				})}
 			</div>
