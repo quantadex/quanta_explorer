@@ -225,16 +225,14 @@ class Account extends Component {
 						: this.renderLabelTextIssuer(token.asset_issuer ? token.asset_issuer : '')}
 				</Col>
 				<Col md={4} className={classNames(classes.tokenCell, classes.last, 'hidden-sm')}>
-					{token.asset_code === 'ETH' &&
-						token.asset_issuer === CONFIG.SETTINGS.QUANTA_ISSUER &&
-						this.renderLabelText(
-							'Deposit Address',
-							this.props.crossChainAddress.map(address => (
-								<a href={`https://ropsten.etherscan.io/address/${address}`}>
-									{address}
-								</a>
-							))
-						)}
+					{this.renderLabelText(
+						'Deposit Address',
+						this.props.crossChainAddress.map(address => (
+							<a href={`https://ropsten.etherscan.io/address/${address}`}>
+								{address}
+							</a>
+						))
+					)}
 				</Col>
 			</Row>
 			<div className={classNames(classes.tokenCell, classes.tokenIssuer, 'show-sm')}>
