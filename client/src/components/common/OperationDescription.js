@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import QuantaAddress from '@quanta/components/common/QuantaAddress';
 import CONFIG from '@quanta/config';
+import QuantaAsset from '@quanta/components/common/QuantaAsset.js';
 
 const getDescription = operation => {
 	switch (operation.type) {
@@ -43,6 +44,20 @@ const getDescription = operation => {
 					{` updated data ${operation.name} to ${operation.value}`}
 				</React.Fragment>
 			);
+		case 'settlement':
+					if (operation.matched_orders && operation.matched_orders.length == 1) {						
+						return (
+							<React.Fragment>
+								<b>Settled</b>{` between buyer `}<QuantaAddress address={operation.matched_orders[0].buyer} />{` ${operation.matched_orders[0].amount_buy} `}
+								<QuantaAsset issuer={operation.matched_orders[0].buying_asset_issuer} code={operation.matched_orders[0].buying_asset_code} />
+								{` and seller `}<QuantaAddress address={operation.matched_orders[0].seller} />{` ${operation.matched_orders[0].amount_sell} `}
+								<QuantaAsset issuer={operation.matched_orders[0].selling_asset_issuer} code={operation.matched_orders[0].selling_asset_code} />
+							</React.Fragment>
+						);
+					} if (operation.matched_orders && operation.matched_orders.length > 1) {
+						return (<React.Fragment>Settled multiple orders.</React.Fragment>)
+					}
+				
 		default:
 			return (
 				<React.Fragment>
