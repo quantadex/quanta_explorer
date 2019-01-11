@@ -16,7 +16,7 @@ suggest_brain_key
 */
 
 export function registerAccount(userId, publicKey) {
-	const pKey = PrivateKey.fromWif("5JL9T8v3io5QFxpHxQ9DVCGSyap5iCfvjLPkqcJyKtST3pjNk5p")  //process.env.KEY);
+	const pKey = PrivateKey.fromWif(process.env.KEY);
 	return Apis
 		.instance(wsString, true, 3000, { enableOrders: true })
 		.init_promise
