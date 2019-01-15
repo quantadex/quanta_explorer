@@ -8,6 +8,7 @@ import configureStore from './redux/store';
 import * as serviceWorker from './serviceWorker';
 import App from './App';
 import './index.css';
+require("babel-polyfill")
 
 const store = configureStore();
 

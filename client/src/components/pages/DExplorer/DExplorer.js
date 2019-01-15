@@ -62,6 +62,13 @@ class DExplorer extends Component {
 		}
 	}
 
+	async randomFunc() {
+		await new Promise((res, rej) => {
+			// test
+			res()
+		})
+	}
+
 	getBlockAverageLatency = () => {
 		const { setAverageBlockLatency } = this.props;
 		const { ledgers } = this.state;
