@@ -7,13 +7,14 @@ import ToolsNavigation from '@quanta/components/common/ToolsNavigation';
 import Caution from '@quanta/assets/images/caution.svg';
 import templateClasses from '@quanta/styles/template.scss';
 import classes from './GenerateKeys.scss';
+import WalletApi from "@quanta/api/WalletApi";
 
 class GenerateKeys extends Component {
 	onGenerate = () => {
 		const { generateKeys } = this.props;
-		const keys = window.StellarBase.Keypair.random();
-		const publicKey = keys.publicKey();
-		const secretKey = keys.secret();
+		const keys = WalletApi.generate_key();
+		const publicKey = keys.publicKey;
+		const secretKey = keys.privateKey;
 		generateKeys({ publicKey, secretKey });
 	};
 	render() {

@@ -36,6 +36,10 @@
 	margin-bottom: 16px;
 }
 
+.error {
+	color: #f0185c;
+}
+
 @media screen and (max-width: $breakpoint-sm) {
 	.content {
 		padding-left: 0;
