@@ -87,6 +87,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "babel-polyfill": "^6.26.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-config-prettier": "^3.1.0",
     "eslint-plugin-jest": "^21.24.1"
