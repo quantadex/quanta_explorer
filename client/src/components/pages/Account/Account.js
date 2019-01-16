@@ -42,7 +42,14 @@ class Account extends Component {
 		});
 	};
 
+	getName(id) {
+		return Apis.instance().db_api().exec("get_accounts", [[id]]).then(e => {
+			return e[0].name
+		})
+	}
+
 	componentDidMount() {
+		const self = this;
 		const { id } = this.props.match.params;
 
 		Apis.instance(wsString, true, 3000, { enableOrders: true }).init_promise.then(e => {
@@ -53,11 +60,18 @@ class Account extends Component {
 					window.assetsBySymbol = lodash.keyBy(assets, "symbol")
 					return assets;
 				}).then(e => {
-					Apis.instance().db_api().exec("get_full_accounts", [[id], false]).then(e => {
+					Apis.instance().db_api().exec("get_full_accounts", [[id], false]).then(async e => {
 						console.log(e[0][1])
 						const acc_data = e[0][1].account
 						const accInfo = { name: acc_data.name, id: acc_data.id, address: acc_data.options.memo_key }
-						this.setState({ accountInfo: accInfo, accountBalance: e[0][1].balances })
+						const issuer = {}
+
+						for (let asset of e[0][1].balances) {
+							let name = await self.getName(window.assets[asset.asset_type].issuer)
+							issuer[asset.asset_type] = name
+						}
+
+						this.setState({ accountInfo: accInfo, accountBalance: e[0][1].balances, issuer: issuer })
 						return
 					})
 				})
@@ -235,9 +249,9 @@ class Account extends Component {
 						[classes.centerAligned]: token.asset_type === 'native',
 					})}
 				>
-					{token.asset_type === 'native'
+					{this.state.issuer[token.asset_type] === 'null-account'
 						? 'Native Token'
-						: this.renderLabelTextIssuer(token.asset_issuer ? token.asset_issuer : '')}
+						: this.renderLabelTextIssuer(this.state.issuer[token.asset_type])}
 				</Col>
 			</Row>
 			<div className={classNames(classes.tokenCell, classes.tokenIssuer, 'show-sm')}>
