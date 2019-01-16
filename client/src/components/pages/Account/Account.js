@@ -18,6 +18,10 @@ import tableClasses from '@quanta/styles/tables.scss';
 import operationsClasses from '@quanta/styles/operations.scss';
 import templateClasses from '@quanta/styles/template.scss';
 import classes from './Account.scss';
+import lodash from 'lodash';
+import { Apis } from "@quantadex/bitsharesjs-ws";
+
+var wsString = "wss://testnet-01.quantachain.io:8095";
 
 class Account extends Component {
 	constructor(props) {
@@ -26,6 +30,7 @@ class Account extends Component {
 		this.state = {
 			activeTab: 'balance',
 			showQRModal: false,
+			accountInfo: { name: "", id: "", address: "" },
 		};
 
 		this.operations = [];
@@ -38,10 +43,25 @@ class Account extends Component {
 	};
 
 	componentDidMount() {
-		const { fetchAccount, fetchAccountOperations } = this.props;
 		const { id } = this.props.match.params;
-		fetchAccount({ id });
-		fetchAccountOperations({ id });
+
+		Apis.instance(wsString, true, 3000, { enableOrders: true }).init_promise.then(e => {
+			Apis.instance().
+				db_api().exec("list_assets", ["A", 100]).then((assets) => {
+					// console.log("assets ", assets);
+					window.assets = lodash.keyBy(assets, "id")
+					window.assetsBySymbol = lodash.keyBy(assets, "symbol")
+					return assets;
+				}).then(e => {
+					Apis.instance().db_api().exec("get_full_accounts", [[id], false]).then(e => {
+						console.log(e[0][1])
+						const acc_data = e[0][1].account
+						const accInfo = { name: acc_data.name, id: acc_data.id, address: acc_data.options.memo_key }
+						this.setState({ accountInfo: accInfo, accountBalance: e[0][1].balances })
+						return
+					})
+				})
+		})
 	}
 
 	toggleQRModal = () => {
@@ -57,7 +77,7 @@ class Account extends Component {
 			<div className={classNames(templateClasses.details, classes.accountDetails)}>
 				<div className={classes.content}>
 					<div className={classes.header}>
-						<h2>Account</h2>
+						<h2>{this.state.accountInfo.name} | {this.state.accountInfo.id}</h2>
 						<div
 							className={classNames(classes.qrCode, 'show-sm')}
 							onClick={this.toggleQRModal}
@@ -67,7 +87,7 @@ class Account extends Component {
 					</div>
 					<Row>
 						<Col sm={12} md={8} className={templateClasses.section}>
-							<LabelText label="QUANTA ADDRESS" text={account.id} isLong />
+							<LabelText label="QUANTA ADDRESS" text={this.state.accountInfo.address} isLong />
 						</Col>
 						<Col
 							sm={12}
@@ -147,7 +167,7 @@ class Account extends Component {
 						<ReactEventSource
 							url={`${
 								CONFIG.ENVIRONMENT.HORIZON_SERVER
-							}/transactions/${id}/operations?order=asc&cursor=now`}
+								}/transactions/${id}/operations?order=asc&cursor=now`}
 						>
 							{events => {
 								const streamOperations = events
@@ -198,9 +218,7 @@ class Account extends Component {
 				<Col xs={4} sm={4} md={2} className={classNames(classes.tokenCell, classes.first)}>
 					{this.renderLabelText(
 						'Token',
-						token.asset_type === 'native'
-							? CONFIG.SETTINGS.ASSET_TYPE_NATIVE
-							: token.asset_code
+						window.assets[token.asset_type].symbol
 					)}
 				</Col>
 				<Col
@@ -209,7 +227,7 @@ class Account extends Component {
 					md={3}
 					className={classNames(classes.tokenCell, classes.balance)}
 				>
-					{this.renderLabelText('Balance', token.balance)}
+					{this.renderLabelText('Balance', (token.balance / Math.pow(10, window.assets[token.asset_type].precision)))}
 				</Col>
 				<Col
 					md={3}
@@ -220,18 +238,6 @@ class Account extends Component {
 					{token.asset_type === 'native'
 						? 'Native Token'
 						: this.renderLabelTextIssuer(token.asset_issuer ? token.asset_issuer : '')}
-				</Col>
-				<Col md={4} className={classNames(classes.tokenCell, classes.last, 'hidden-sm')}>
-					{token.asset_code === 'ETH' &&
-						token.asset_issuer === CONFIG.SETTINGS.QUANTA_ISSUER &&
-						this.renderLabelText(
-							'Deposit Address',
-							this.props.crossChainAddress.map(address => (
-								<a href={`https://ropsten.etherscan.io/address/${address}`}>
-									{address}
-								</a>
-							))
-						)}
 				</Col>
 			</Row>
 			<div className={classNames(classes.tokenCell, classes.tokenIssuer, 'show-sm')}>
@@ -255,22 +261,10 @@ class Account extends Component {
 	);
 
 	renderTokens = () => {
-		let { balances } = this.props.account;
+		let balances = this.state.accountBalance;
 
 		balances = balances || [];
-		if (
-			!balances.find(
-				balance =>
-					balance.asset_code === 'ETH' &&
-					balance.asset_issuer === CONFIG.SETTINGS.QUANTA_ISSUER
-			)
-		) {
-			balances.splice(0, 0, {
-				asset_code: 'ETH',
-				asset_issuer: CONFIG.SETTINGS.QUANTA_ISSUER,
-				balance: 0.0,
-			});
-		}
+
 		return (
 			<div className={classNames(operationsClasses.history, classes.history)}>
 				{balances.map(balance => {
@@ -394,12 +388,12 @@ class Account extends Component {
 		return isFetching || !account ? (
 			<React.Fragment />
 		) : (
-			<React.Fragment>
-				{this.renderDetails()}
-				{this.renderTabs()}
-				{this.renderQRModal()}
-			</React.Fragment>
-		);
+				<React.Fragment>
+					{this.renderDetails()}
+					{this.renderTabs()}
+					{this.renderQRModal()}
+				</React.Fragment>
+			);
 	}
 }
 

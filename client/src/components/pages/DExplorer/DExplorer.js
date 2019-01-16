@@ -47,13 +47,13 @@ class DExplorer extends Component {
 			});
 		})
 			.then((e) => {
-				return Promise.all([Apis.instance().
+				Apis.instance().
 					db_api().exec("list_assets", ["A", 100]).then((assets) => {
 						// console.log("assets ", assets);
 						window.assets = lodash.keyBy(assets, "id")
 						window.assetsBySymbol = lodash.keyBy(assets, "symbol")
 						return assets;
-					})]);
+					})
 			})
 			.then((e) => {
 				action()
@@ -102,7 +102,7 @@ class DExplorer extends Component {
 
 								let newBlock = {
 									block: e.head_block_number, witness: name,
-									transactions: res.transactions[0] && res.transactions[0].operations.length || res.transactions.length,
+									transactions: res.transactions.length,
 									timestamp: res.timestamp
 								}
 
