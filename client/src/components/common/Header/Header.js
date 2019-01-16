@@ -16,12 +16,7 @@ class Header extends React.PureComponent {
 
 	onGo = () => {
 		const { searchKey, history } = this.props;
-
-		if (searchKey.startsWith(CONFIG.SETTINGS.ACCOUT_START_WITH)) {
-			history.push(`/account/${searchKey}`);
-		} else {
-			history.push(`/transactions/${searchKey}`);
-		}
+		history.push(`/account/${searchKey}`);
 	};
 
 	onKeyUp = event => {
@@ -59,7 +54,7 @@ class Header extends React.PureComponent {
 					<Input
 						type="text"
 						value={searchKey}
-						placeholder="Address, Account or Transaction"
+						placeholder="Search Account"
 						onChange={this.onKeyChange}
 						onKeyUp={this.onKeyUp}
 					/>
