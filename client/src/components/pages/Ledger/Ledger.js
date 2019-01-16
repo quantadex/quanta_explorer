@@ -13,15 +13,72 @@ import { dateToString, timeDiff } from '@quanta/helpers/utils';
 import tableClasses from '@quanta/styles/tables.scss';
 import operationsClasses from '@quanta/styles/operations.scss';
 import classes from '@quanta/styles/template.scss';
+import { Apis } from "@quantadex/bitsharesjs-ws";
+import lodash from 'lodash';
+
+var wsString = "wss://testnet-01.quantachain.io:8095";
 
 class Ledger extends Component {
-	componentDidMount() {
-		const { id } = this.props.match.params;
-		const { fetchLedger, fetchLedgerOperations } = this.props;
+	constructor(props) {
+		super(props);
 
-		fetchLedger({ id });
-		fetchLedgerOperations({ id });
-		this.operations = [];
+		this.state = {
+			operations: []
+		};
+	}
+
+	componentDidMount() {
+		const self = this;
+		const { id } = this.props.match.params;
+		const names = {};
+		self.setState({ sequence: id })
+
+		function getName(id) {
+			return Apis.instance().db_api().exec("get_accounts", [[id]]).then(e => {
+				names[id] = e[0].name
+				return e[0].name
+			})
+		}
+
+		Apis.instance(wsString, true, 3000, { enableOrders: false }).init_promise.then((res) => {
+			Apis.instance().db_api().exec("list_assets", ["A", 100]).then((assets) => {
+				// console.log("assets ", assets);
+				window.assets = lodash.keyBy(assets, "id")
+				window.assetsBySymbol = lodash.keyBy(assets, "symbol")
+				return assets;
+			}).then(e => {
+				Apis.instance().db_api().exec("get_block", [id]).then(async e => {
+					console.log(e)
+					const opList = []
+					for (let tx of e.transactions) {
+						for (let i = 0; i < tx.operation_results.length; i++) {
+							let name = {};
+							if (tx.operation_results[i][0] == 1) {
+								let seller = tx.operations[i][1].seller
+								if (names[seller] === undefined) {
+									name[seller] = await getName(seller)
+								} else {
+									name[seller] = names[seller]
+								}
+							}
+
+							opList.push({
+								id: tx.operation_results[i][1], type: tx.operation_results[i][0],
+								data: tx.operations[i][1], names: name
+							})
+						}
+					}
+					console.log(opList)
+					self.setState({
+						hash: e.transaction_merkle_root,
+						timestamp: e.timestamp,
+						transactions: e.transactions,
+						operations: opList
+					})
+				})
+			})
+
+		})
 	}
 
 	renderDetails = () => {
@@ -31,38 +88,48 @@ class Ledger extends Component {
 				<h2>Ledger</h2>
 				<Row>
 					<Col xs={6} sm={6} md={2} className={classes.section}>
-						<LabelText label="SEQUENCE" text={ledger.sequence} />
+						<LabelText label="SEQUENCE" text={this.state.sequence} />
 					</Col>
 					<Col md={7} className={classNames(classes.section, 'hidden-sm')}>
-						<LabelText label="HASH" text={ledger.hash} isLong />
+						<LabelText label="HASH" text={this.state.hash} isLong />
 					</Col>
 					<Col xs={6} sm={6} md={3} className={classes.section}>
-						<LabelText label="CLOSED AT" text={dateToString(ledger.closed_at)} />
+						<LabelText label="CLOSED AT" text={dateToString(this.state.timestamp)} />
 					</Col>
 					<Col xs={12} sm={12} className={classNames(classes.section, 'show-sm')}>
-						<LabelText label="HASH" text={ledger.hash} isLong />
+						<LabelText label="HASH" text={this.state.hash} isLong />
 					</Col>
 				</Row>
 				<Row>
 					<Col xs={6} sm={6} md={2} className={classes.section}>
-						<LabelText label="TRANSACTIONS" text={ledger.transaction_count} />
+						<LabelText label="TRANSACTIONS" text={this.state.transactions && this.state.transactions.length} />
 					</Col>
 					<Col xs={6} sm={6} md={2} className={classes.section}>
-						<LabelText label="OPERATIONS" text={ledger.operation_count} />
+						<LabelText label="OPERATIONS" text={this.state.operations && this.state.operations.length} />
 					</Col>
 				</Row>
 			</div>
 		);
 	};
 
+	timeAgo(t, adjust = 0) {
+		const expr = new Date(t + "z");
+		const old_date = new Date(expr.setFullYear(expr.getFullYear() - adjust));
+		const now = new Date();
+		const timeDiff = ((now.getTime() - old_date.getTime()) / 1000).toFixed(0)
+		return timeDiff < 60 * 60 ? timeDiff + " seconds" :
+			timeDiff < 60 * 60 * 24 ? Math.round(timeDiff / 60 / 60) + " hours" :
+				Math.round(timeDiff / 60 / 60 / 24) + "days"
+	}
+
 	renderOperationsRecord = operations => {
 		return (
 			<React.Fragment>
 				{operations.map(operation => (
-					<React.Fragment key={operation.id}>
+					< React.Fragment key={operation.id} >
 						<div className={classNames(tableClasses.body, 'hidden-sm')}>
 							<a
-								href={urlParse(operation._links.transaction.href).pathname}
+								href=""
 								className={operationsClasses.id}
 							>
 								{operation.id}
@@ -70,21 +137,17 @@ class Ledger extends Component {
 							<div className={operationsClasses.description}>
 								<OperationDescription operation={operation} />
 							</div>
-							<div className={operationsClasses.created}>{`< ${moment(
-								operation.created_at
-							).toNow(true)} ago`}</div>
+							<div className={operationsClasses.created}>{this.timeAgo(operation.data.expiration, 5)} ago</div>
 						</div>
 						<div className={classNames(tableClasses.body, 'show-sm', 'flex-column')}>
 							<div className="d-flex justify-content-between w-100">
 								<a
-									href={urlParse(operation._links.transaction.href).pathname}
+									href=""
 									className={operationsClasses.id}
 								>
 									{operation.id}
 								</a>
-								<div className={operationsClasses.created}>{`< ${moment(
-									operation.created_at
-								).toNow(true)} ago`}</div>
+								<div className={operationsClasses.created}>{this.timeAgo(operation.data.expiration, 5)} ago</div>
 							</div>
 							<div className={operationsClasses.description}>
 								<OperationDescription operation={operation} />
@@ -97,7 +160,7 @@ class Ledger extends Component {
 	};
 
 	renderOprationsHistory = () => {
-		const { operations } = this.props;
+		const { operations } = this.state;
 		const { id } = this.props.match.params;
 		return (
 			<div className={classNames(operationsClasses.history)}>
@@ -110,37 +173,7 @@ class Ledger extends Component {
 						<div className={operationsClasses.description} />
 						<div className={operationsClasses.created}>Created</div>
 					</div>
-					{operations.length > 0 &&
-						this.operations && (
-							<ReactEventSource
-								url={`${
-									CONFIG.ENVIRONMENT.HORIZON_SERVER
-								}/ledgers/${id}/operations?order=asc&cursor=now`}
-							>
-								{events => {
-									const streamOperations = events
-										.map(event => JSON.parse(event))
-										.sort((a, b) => timeDiff(a.created_at, 'ms', b.created_at));
-									const streamOperationIds = streamOperations.map(
-										operation => operation.id
-									);
-
-									if (this.operations.length === 0) {
-										this.operations = operations;
-									}
-
-									const totalOperations = [
-										...streamOperations,
-										...this.operations.filter(
-											operation => !streamOperationIds.includes(operation.id)
-										),
-									].sort((a, b) => timeDiff(a.created_at, 'ms', b.created_at));
-									return this.renderOperationsRecord(
-										totalOperations.slice(0, CONFIG.SETTINGS.RECENT_ITEM_LENGTH)
-									);
-								}}
-							</ReactEventSource>
-						)}
+					{this.renderOperationsRecord(operations)}
 				</div>
 			</div>
 		);
@@ -151,11 +184,11 @@ class Ledger extends Component {
 		return isFetching || !ledger ? (
 			<React.Fragment />
 		) : (
-			<React.Fragment>
-				{this.renderDetails()}
-				<div className={classes.main}>{this.renderOprationsHistory()}</div>
-			</React.Fragment>
-		);
+				<React.Fragment>
+					{this.renderDetails()}
+					<div className={classes.main}>{this.renderOprationsHistory()}</div>
+				</React.Fragment>
+			);
 	}
 }
 

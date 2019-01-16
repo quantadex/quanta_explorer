@@ -52,7 +52,7 @@ class Account extends Component {
 		const self = this;
 		const { id } = this.props.match.params;
 
-		Apis.instance(wsString, true, 3000, { enableOrders: true }).init_promise.then(e => {
+		Apis.instance(wsString, true, 3000, { enableOrders: false }).init_promise.then(e => {
 			Apis.instance().
 				db_api().exec("list_assets", ["A", 100]).then((assets) => {
 					// console.log("assets ", assets);

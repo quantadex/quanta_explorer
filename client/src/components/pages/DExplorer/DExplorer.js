@@ -38,7 +38,7 @@ class DExplorer extends Component {
 		var last_block = null;
 		const blockTimes = [];
 
-		Apis.instance(wsString, true, 3000, { enableOrders: true }).init_promise.then((res) => {
+		Apis.instance(wsString, true, 3000, { enableOrders: false }).init_promise.then((res) => {
 			// console.log("connected to:", res[0].network);
 			initAPI = true;
 
