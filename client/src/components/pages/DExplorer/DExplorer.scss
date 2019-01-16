@@ -1,128 +1,42 @@
 @import 'variables.scss';
 
-.details {
-	background-color: $quanta-color-gray1;
-	padding: 12px $global-padding-left 12px $global-padding-right;
-	border-bottom: solid 1px $quanta-color-border3;
-	height: 65px;
-
+.status {
 	display: flex;
-	align-items: center;
-}
+	justify-content: center;
+	color: #999;
+	text-align: center;
+	padding: 20px;
+	background-color: #f8f8fa;
+	border-bottom: 1px solid #ddd;
 
+	div {
+		padding: 0 50px;
+	}
+	div:nth-child(2) {
+		border-left: 1px solid #ccc;
+		border-right: 1px solid #ccc;
+	}
+	span {
+		font-size: 20px;
+		font-weight: bold;
+		color: #110e36;
+		margin-left: 10px;
+	}
+}
 .content {
 	width: 100%;
-	padding: 0 4%;
-	display: flex;
+	max-width: 1000px;
+	margin: 20px auto;
+	padding: 0 10px;
 
-	.item {
-		flex: 1 1 auto;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-
-		border-left: solid 1px $quanta-color-border1;
-
-		font-size: $font-size1;
-		color: $quanta-color-black1;
-
-		.value {
-			margin-left: 15px;
-			font-size: $font-size3;
-			font-weight: $font-weight-semibold;
+	table {
+		width: 100%;
+		td {
+			padding: 5px 0;
 		}
 	}
 
-	.item:first-child {
-		border-left: none;
-	}
-}
-
-.main {
-	padding: 56px $global-padding-left;
-}
-
-.history {
-	.header {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-end;
-
-		margin-bottom: 24px;
-		h2 {
-			margin-bottom: 0;
-		}
-
-		button {
-			font-size: $font-size1;
-			line-height: 16px;
-		}
-	}
-}
-
-.operationHistory {
-	margin-bottom: 70px;
-}
-
-.id {
-	width: 150px;
-}
-
-.description {
-	flex: 1;
-	padding-left: 5%;
-}
-
-.created {
-	width: 100px;
-	text-align: right;
-}
-
-.sequence {
-	flex: 1;
-}
-
-.transactions,
-.operations {
-	width: 150px;
-	text-align: center;
-}
-
-@media screen and (max-width: $breakpoint-sm) {
-	.content {
-		padding: 0;
-		justify-content: space-between;
-
-		.item {
-			flex: unset;
-			display: block;
-			text-align: center;
-			border-left: none;
-
-			font-size: $font-size4;
-			line-height: 1.7;
-
-			.value {
-				margin-left: 0;
-				font-size: $font-size5;
-			}
-		}
-	}
-
-	.main {
-		padding: 40px $global-padding-left;
-	}
-
-	.history {
-		.operationHistory.header {
-			margin-bottom: 0;
-			padding-bottom: 18px;
-			border-bottom: solid 2px $quanta-color-border2;
-		}
-	}
-
-	.description {
-		padding-left: 0;
-		margin-top: 8px;
+	.opList, .blocksList {
+		margin-bottom: 20px;
 	}
 }

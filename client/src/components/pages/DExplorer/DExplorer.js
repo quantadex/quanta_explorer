@@ -1,262 +1,256 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
-import moment from 'moment';
-import ReactEventSource from 'react-eventsource';
-import { Button } from 'reactstrap';
-import urlParse from 'url-parse';
-
-import CONFIG from '@quanta/config';
-import OperationDescription from '@quanta/components/common/OperationDescription';
-import { timeDiff } from '@quanta/helpers/utils';
-import tableClasses from '@quanta/styles/tables.scss';
-import operationsClasses from '@quanta/styles/operations.scss';
 import classes from './DExplorer.scss';
+
+import lodash from 'lodash';
+import { Apis } from "@quantadex/bitsharesjs-ws";
+import { ChainStore } from "@quantadex/bitsharesjs";
+
+var initAPI = false;
+var wsString = "wss://testnet-01.quantachain.io:8095";
 
 class DExplorer extends Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			ledgersSource: new EventSource(
-				`${CONFIG.ENVIRONMENT.HORIZON_SERVER}/ledgers?order=asc&cursor=now`
-			),
-			ledgers: props.ledgers || [],
+			operationsList: [],
+			blocksList: [],
+			nodes: 0
 		};
 	}
 
-	componentDidMount() {
-		const { fetchOperations, fetchLedgers, fetchMetrics, fetchNodeCount } = this.props;
-		fetchOperations();
-		fetchLedgers();
-		fetchMetrics();
-		fetchNodeCount();
+	updateChainState() {
+		const object = ChainStore.getObject("2.1.0");
 
-		this.operations = [];
+		if (object == null) {
+			return;
+		}
 
-		this.state.ledgersSource.addEventListener(['message'], message => {
-			const { ledgers } = this.state;
-			if (this.state.ledgers.length > 0) {
-				ledgers.unshift(JSON.parse(message.data));
-				this.getBlockAverageLatency();
-				fetchMetrics();
-				this.setState({
-					ledgers: ledgers.slice(0, CONFIG.SETTINGS.RECENT_ITEM_LENGTH),
-				});
-			}
-		});
-	}
-
-	componentWillReceiveProps(nextProps) {
-		if (this.props.ledgers !== nextProps.ledgers) {
-			this.setState(
-				{
-					ledgers: nextProps.ledgers.sort((a, b) =>
-						timeDiff(a.closed_at, 'ms', b.closed_at)
-					),
-				},
-				() => {
-					this.getBlockAverageLatency();
-				}
-			);
+		if (this.state.nodes != object.size) {
+			this.setState({ nodes: object.size })
 		}
 	}
 
-	async randomFunc() {
-		await new Promise((res, rej) => {
-			// test
-			res()
+	componentDidMount() {
+		const self = this;
+		const names = {};
+		var last_block = null;
+		const blockTimes = [];
+
+		Apis.instance(wsString, true, 3000, { enableOrders: true }).init_promise.then((res) => {
+			// console.log("connected to:", res[0].network);
+			initAPI = true;
+
+			ChainStore.init(false).then(() => {
+				ChainStore.subscribe(this.updateChainState.bind(this));
+			});
 		})
+			.then((e) => {
+				return Promise.all([Apis.instance().
+					db_api().exec("list_assets", ["A", 100]).then((assets) => {
+						// console.log("assets ", assets);
+						window.assets = lodash.keyBy(assets, "id")
+						window.assetsBySymbol = lodash.keyBy(assets, "symbol")
+						return assets;
+					})]);
+			})
+			.then((e) => {
+				action()
+			})
+
+		function getName(id) {
+			return Apis.instance().db_api().exec("get_accounts", [[id]]).then(e => {
+				names[id] = e[0].name
+				return e[0].name
+			})
+		}
+
+		function getWitnessName(id) {
+			return Apis.instance().db_api().exec("get_witnesses", [[id]]).then(async e => {
+				let name = await getName(e[0].witness_account)
+				names[id] = name
+				return name
+			})
+		}
+
+		function timeDiff(t1, t2) {
+			const time1 = new Date(t1);
+			const time2 = new Date(t2);
+			return (time1 - time2)
+		}
+
+		function action() {
+			const transactionsList = []
+			Apis.instance().
+				db_api().exec("get_dynamic_global_properties", []).then((res) => {
+					// console.log("properties ", res);
+					return res
+				})
+				.then((e) => {
+					if (e.head_block_number !== last_block) {
+						last_block = e.head_block_number;
+						Apis.instance().
+							db_api().exec("get_block", [e.head_block_number]).then(async (res) => {
+								// console.log("block ", e.head_block_number, res);
+								let name = undefined;
+								if (names[res.witness] === undefined) {
+									name = await getWitnessName(res.witness)
+								} else {
+									name = names[res.witness]
+								}
+
+								let newBlock = {
+									block: e.head_block_number, witness: name,
+									transactions: res.transactions[0] && res.transactions[0].operations.length || res.transactions.length,
+									timestamp: res.timestamp
+								}
+
+								let oldList = self.state.blocksList;
+
+								if (oldList.length > 0) {
+									if (blockTimes.length >= 100) {
+										blockTimes.shift()
+									}
+									blockTimes.push(timeDiff(res.timestamp, oldList[0].timestamp))
+									self.setState({ averageBlockLatency: Math.round(blockTimes.reduce((a, b) => a + b, 0) / blockTimes.length) })
+								}
+
+								while (oldList.length >= 10) {
+									oldList.pop()
+								}
+								oldList.unshift(newBlock)
+
+								self.setState({ blocksList: oldList })
+
+								return [res, e.head_block_number]
+							})
+							.then(async (e) => {
+								for (var item of e[0].transactions) {
+									// console.log(e)
+									try {
+										const op_id = item.operation_results
+										const op = item.operations
+										for (let i = 0; i < op_id.length; i++) {
+											let name = undefined
+											if (names[op[i][1].seller] === undefined) {
+												name = await getName(op[i][1].seller)
+											} else {
+												name = names[op[i][1].seller]
+											}
+											let data = { block: e[1], id: op_id[i][1], username: name, type: op[i][0], data: op[i][1] }
+											transactionsList.push(data)
+										}
+									} catch {
+										console.log('item', item)
+									}
+								};
+
+								if (transactionsList.length > 0) {
+									let oldList = self.state.operationsList
+									while (oldList.length >= 10) {
+										oldList.pop()
+									}
+									let newList = transactionsList.concat(oldList)
+									self.setState({ operationsList: newList })
+									// console.log('state', self.state)
+								}
+
+								action()
+							})
+					} else {
+						setTimeout(() => action(), 500);
+					}
+				})
+		}
+
 	}
 
-	getBlockAverageLatency = () => {
-		const { setAverageBlockLatency } = this.props;
-		const { ledgers } = this.state;
+	timeAgo(t, adjust = 0) {
+		const expr = new Date(t + "z");
+		const old_date = new Date(expr.setFullYear(expr.getFullYear() - adjust));
+		const now = new Date();
+		return ((now.getTime() - old_date.getTime()) / 1000).toFixed(0)
+	}
 
-		let totalLatency = 0;
-		ledgers.forEach((ledger, index) => {
-			if (index === ledgers.length - 1) {
-				return;
-			}
-			totalLatency += timeDiff(ledgers[index + 1].closed_at, 'ms', ledger.closed_at);
-		});
-		setAverageBlockLatency(Math.round(totalLatency / (ledgers.length - 1)));
-	};
+	typeToAction(type, data) {
+		switch (type) {
+			case 1:
+				return (
+					<tr key={data.id}>
+						<td><a href={"/ledgers/" + data.block}>{data.block}</a></td>
+						<td>
+							<a href={"/account/" + data.username}>{data.username}</a> wants&nbsp;
+					{data.data.min_to_receive.amount / Math.pow(10, window.assets[data.data.min_to_receive.asset_id].precision)}
+							&nbsp;{window.assets[data.data.min_to_receive.asset_id].symbol} for&nbsp;
+					{data.data.amount_to_sell.amount / Math.pow(10, window.assets[data.data.amount_to_sell.asset_id].precision)}
+							&nbsp;{window.assets[data.data.amount_to_sell.asset_id].symbol}
+						</td>
 
-	goToOperations = () => {
-		const { history } = this.props;
-
-		history.push('/operations');
-	};
-
-	goToLedgers = () => {
-		const { history } = this.props;
-
-		history.push('/ledgers');
-	};
-
-	renderOperationsRecord = operations => {
-		return (
-			<React.Fragment>
-				{operations.map(operation => (
-					<React.Fragment key={operation.id}>
-						<div className={classNames(tableClasses.body, 'hidden-sm')}>
-							<a
-								href={urlParse(operation._links.transaction.href).pathname}
-								className={operationsClasses.id}
-							>
-								{operation.id}
-							</a>
-							<div className={operationsClasses.description}>
-								<OperationDescription operation={operation} />
-							</div>
-							<div className={operationsClasses.created}>{`< ${moment(
-								operation.created_at
-							).toNow(true)} ago`}</div>
-						</div>
-						<div className={classNames(tableClasses.body, 'show-sm', 'flex-column')}>
-							<div className="d-flex justify-content-between w-100">
-								<a
-									href={urlParse(operation._links.transaction.href).pathname}
-									className={operationsClasses.id}
-								>
-									{operation.id}
-								</a>
-								<div className={operationsClasses.created}>{`< ${moment(
-									operation.created_at
-								).toNow(true)} ago`}</div>
-							</div>
-							<div className={operationsClasses.description}>
-								<OperationDescription operation={operation} />
-							</div>
-						</div>
-					</React.Fragment>
-				))}
-			</React.Fragment>
-		);
-	};
-
-	renderLedgersRecord = ledgers => {
-		return (
-			<React.Fragment>
-				{ledgers.map(ledger => (
-					<div key={ledger.id} className={tableClasses.body}>
-						<a href={`/ledgers/${ledger.sequence}`} className={classes.sequence}>
-							{ledger.sequence}
-						</a>
-						<div className={classes.transactions}>{ledger.transaction_count}</div>
-						<div className={classes.operations}>{ledger.operation_count}</div>
-						<div className={classes.created}>{`< ${moment(ledger.closed_at).toNow(
-							true
-						)} ago`}</div>
-					</div>
-				))}
-			</React.Fragment>
-		);
-	};
-
-	renderOprationsHistory = () => {
-		const { operations } = this.props;
-		return (
-			<div className={classNames(operationsClasses.history, classes.operationHistory)}>
-				<div className={operationsClasses.header}>
-					<h2>Operations History</h2>
-					<Button outline color="primary" onClick={this.goToOperations}>
-						View All
-					</Button>
-				</div>
-				<div className={tableClasses.table}>
-					<div className={classNames(tableClasses.header, 'hidden-sm')}>
-						<div className={operationsClasses.id}>Id</div>
-						<div className={operationsClasses.description} />
-						<div className={operationsClasses.created}>Created</div>
-					</div>
-					{operations.length > 0 &&
-						this.operations && (
-							<ReactEventSource
-								url={`${
-									CONFIG.ENVIRONMENT.HORIZON_SERVER
-								}/operations?order=asc&cursor=now`}
-							>
-								{events => {
-									const streamOperations = events
-										.map(event => JSON.parse(event))
-										.sort((a, b) => timeDiff(a.created_at, 'ms', b.created_at));
-									const streamOperationIds = streamOperations.map(
-										operation => operation.id
-									);
-
-									if (this.operations.length === 0) {
-										this.operations = operations;
-									}
-
-									const totalOperations = [
-										...streamOperations,
-										...this.operations.filter(
-											operation => !streamOperationIds.includes(operation.id)
-										),
-									].sort((a, b) => timeDiff(a.created_at, 'ms', b.created_at));
-									return this.renderOperationsRecord(
-										totalOperations.slice(0, CONFIG.SETTINGS.RECENT_ITEM_LENGTH)
-									);
-								}}
-							</ReactEventSource>
-						)}
-				</div>
-			</div>
-		);
-	};
-
-	renderLedgerHistory = () => (
-		<div className={classes.history}>
-			<div className={classes.header}>
-				<h2>Ledger History</h2>
-				<Button outline color="primary" onClick={this.goToLedgers}>
-					View All
-				</Button>
-			</div>
-			<div className={tableClasses.table}>
-				<div className={tableClasses.header}>
-					<div className={classes.sequence}>Sequence</div>
-					<div className={classes.transactions}>Transactions</div>
-					<div className={classes.operations}>Operations</div>
-					<div className={classes.created}>Created</div>
-				</div>
-				{this.renderLedgersRecord(this.state.ledgers)}
-			</div>
-		</div>
-	);
+						<td className="text-right">{this.timeAgo(data.data.expiration, 5)} seconds ago</td>
+					</tr>
+				)
+			default:
+				return "not map"
+		}
+	}
 
 	render() {
-		const { metrics, averageBlockLatency, nodeCount } = this.props;
 		return (
-			<React.Fragment>
-				<div className={classes.details}>
-					<div className={classes.content}>
-						<div className={classes.item}>
-							Highest Block
-							{metrics['history.latest_ledger'] && (
-								<div className={classes.value}>
-									{metrics['history.latest_ledger'].value}
-								</div>
-							)}
-						</div>
-						<div className={classes.item}>
-							Average Block Latency
-							<div className={classes.value}>{`${averageBlockLatency}ms`}</div>
-						</div>
-						<div className={classes.item}>
-							Number of Nodes
-							<div className={classes.value}>{nodeCount}</div>
-						</div>
+			<div>
+				<div className={classes.status}>
+					<div>Highest Block <span>{this.state.blocksList[0] ? this.state.blocksList[0].block : ""}</span></div>
+					<div>Average Block Latency <span>{this.state.averageBlockLatency} ms</span></div>
+					<div>Number of Nodes <span>{this.state.nodes}</span></div>
+				</div>
+
+				<div className={classes.content}>
+					<h3>Transaction History</h3>
+					<div className={classes.opList}>
+						<table>
+							<thead>
+								<tr>
+									<th>BLOCK #</th>
+									<th></th>
+									<th className="text-right">CREATED</th>
+								</tr>
+							</thead>
+							<tbody>
+								{this.state.operationsList.map(row => {
+									return this.typeToAction(row.type, row)
+								})}
+							</tbody>
+						</table>
+					</div>
+
+					<h3>Block History</h3>
+					<div className={classes.blocksList}>
+						<table>
+							<thead>
+								<tr>
+									<th>BLOCK #</th>
+									<th className="text-center">TRANSACTIONS</th>
+									<th className="text-center">WITNESS</th>
+									<th className="text-right">CREATED</th>
+								</tr>
+							</thead>
+							<tbody>
+								{this.state.blocksList.map(row => {
+									return (
+										<tr key={row.block}>
+											<td><a href={"/ledgers/" + row.block}>{row.block}</a></td>
+											<td className="text-center">{row.transactions}</td>
+											<td className="text-center">{row.witness}</td>
+											<td className="text-right">{this.timeAgo(row.timestamp)} seconds ago</td>
+										</tr>
+									)
+								})}
+							</tbody>
+						</table>
 					</div>
 				</div>
-				<div className={classes.main}>
-					{this.renderOprationsHistory()}
-					{this.renderLedgerHistory()}
-				</div>
-			</React.Fragment>
-		);
+			</div>
+		)
 	}
 }
 
