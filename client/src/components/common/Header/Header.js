@@ -27,15 +27,28 @@ class Header extends React.PureComponent {
 
 	render() {
 		const { environmentType, changeEnvironmentType, searchKey } = this.props;
+		const Menu = () => {
+			return (
+				<div className={classes.menu}>
+					More
+					<div className={classes.menuItems}>
+						<a href="/tools">Tools</a><br />
+						<a href="/witness">Witnesses</a><br />
+						<a href="/committee">Committee</a>
+					</div>
+				</div>
+			)
+		}
+
 		return (
 			<div className={classes.header}>
 				<div className={classes.details}>
 					<a href="/">
 						<img src={Logo} alt="logo" />
 					</a>
-					<a href="/tools" className={classNames(classes.tools, 'show-sm')}>
+					{/* <a href="/tools" className={classNames(classes.tools, 'show-sm')}>
 						Tools
-					</a>
+					</a> */}
 					<QuantaSelect
 						isSearchable={false}
 						options={CONFIG.ENVIRONMENT.TYPE.map(environment => ({
@@ -46,9 +59,10 @@ class Header extends React.PureComponent {
 						className={classes.category}
 						onChange={changeEnvironmentType}
 					/>
-					<a href="/tools" className={classNames(classes.tools, 'hidden-sm')}>
+					{/* <a href="/tools" className={classNames(classes.tools, 'hidden-sm')}>
 						Tools
-					</a>
+					</a> */}
+					<Menu />
 				</div>
 				<div className={classes.search}>
 					<Input

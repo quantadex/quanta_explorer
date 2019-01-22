@@ -57,6 +57,31 @@ $header-padding-bottom: 19px;
 	}
 }
 
+.menu {
+	position: relative;
+	font-weight: bold;
+	color: #5045d2;
+	margin-left: 20px;
+    padding-right: 20px;
+	background: url("@quanta/assets/images/down_arrow.svg") no-repeat 100% 50%;
+	cursor: pointer;
+
+	.menuItems {
+		display: none;
+		position: absolute;
+		font-size: 15px;
+		background-color: #fff;
+		border: 1px solid;
+		padding: 5px 10px;
+	}
+}
+
+.menu:hover {
+	.menuItems {
+		display: block;
+	}
+}
+
 .tools {
 	font-size: $font-size1;
 	line-height: $line-height3;
