@@ -35,7 +35,7 @@ $header-padding-bottom: 19px;
 
 .category {
 	flex: 1;
-	min-width: 120px;
+	width: 120px;
 }
 
 .search {
@@ -61,18 +61,24 @@ $header-padding-bottom: 19px;
 	position: relative;
 	font-weight: bold;
 	color: #5045d2;
-	margin-left: 20px;
     padding-right: 20px;
 	background: url("@quanta/assets/images/down_arrow.svg") no-repeat 100% 50%;
 	cursor: pointer;
+	z-index: 9;
 
 	.menuItems {
 		display: none;
 		position: absolute;
 		font-size: 15px;
 		background-color: #fff;
-		border: 1px solid;
+		border: 1px solid #ccc;
+		border-radius: 3px;
 		padding: 5px 10px;
+		box-shadow: 0 3px 10px rgba(0,0,0,0.09);
+		
+		a {
+			color: #444;
+		}
 	}
 }
 
