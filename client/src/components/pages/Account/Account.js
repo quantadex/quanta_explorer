@@ -48,10 +48,29 @@ class Account extends Component {
 		})
 	}
 
-	componentDidMount() {
-		const self = this;
-		const { id } = this.props.match.params;
+	getAccount(id) {
+		console.log(id)
+		return Apis.instance().db_api().exec("get_full_accounts", [[id], false]).then(async e => {
+			// console.log(e[0][1])
+			const acc_data = e[0][1].account
+			const accInfo = { name: acc_data.name, id: acc_data.id, address: acc_data.options.memo_key }
+			const issuer = {}
 
+			for (let asset of e[0][1].balances) {
+				let name = await this.getName(window.assets[asset.asset_type].issuer)
+				issuer[asset.asset_type] = name
+			}
+
+			this.setState({ accountInfo: accInfo, accountBalance: e[0][1].balances, issuer: issuer })
+		})
+	}
+
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.match.params.id != this.state.accountInfo.name) {
+			this.getAccount(nextProps.match.params.id)
+		}
+	}
+	componentDidMount() {
 		Apis.instance(wsString, true, 3000, { enableOrders: false }).init_promise.then(e => {
 			Apis.instance().
 				db_api().exec("list_assets", ["A", 100]).then((assets) => {
@@ -60,20 +79,8 @@ class Account extends Component {
 					window.assetsBySymbol = lodash.keyBy(assets, "symbol")
 					return assets;
 				}).then(e => {
-					Apis.instance().db_api().exec("get_full_accounts", [[id], false]).then(async e => {
-						console.log(e[0][1])
-						const acc_data = e[0][1].account
-						const accInfo = { name: acc_data.name, id: acc_data.id, address: acc_data.options.memo_key }
-						const issuer = {}
-
-						for (let asset of e[0][1].balances) {
-							let name = await self.getName(window.assets[asset.asset_type].issuer)
-							issuer[asset.asset_type] = name
-						}
-
-						this.setState({ accountInfo: accInfo, accountBalance: e[0][1].balances, issuer: issuer })
-						return
-					})
+					const { id } = this.props.match.params;
+					this.getAccount(id)
 				})
 		})
 	}
