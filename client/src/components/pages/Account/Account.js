@@ -49,7 +49,6 @@ class Account extends Component {
 	}
 
 	getAccount(id) {
-		console.log(id)
 		return Apis.instance().db_api().exec("get_full_accounts", [[id], false]).then(async e => {
 			// console.log(e[0][1])
 			const acc_data = e[0][1].account

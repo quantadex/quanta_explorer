@@ -34,7 +34,8 @@ class Header extends React.PureComponent {
 					<div className={classes.menuItems}>
 						<a href="/tools">Tools</a><br />
 						<a href="/witness">Witnesses</a><br />
-						<a href="/committee">Committee</a>
+						<a href="/committee">Committee</a><br />
+						<a href="/crosschain/node1">Crosschain</a>
 					</div>
 				</div>
 			)
