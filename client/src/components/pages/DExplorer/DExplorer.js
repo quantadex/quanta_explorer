@@ -5,6 +5,7 @@ import classes from './DExplorer.scss';
 import lodash from 'lodash';
 import { Apis } from "@quantadex/bitsharesjs-ws";
 import { ChainStore } from "@quantadex/bitsharesjs";
+import OperationDescription from '@quanta/components/common/OperationDescription';
 
 var initAPI = false;
 var wsString = "wss://testnet-01.quantachain.io:8095";
@@ -60,24 +61,98 @@ class DExplorer extends Component {
 			})
 
 		function getName(id) {
-			return Apis.instance().db_api().exec("get_accounts", [[id]]).then(e => {
-				names[id] = e[0].name
-				return e[0].name
-			})
+			if (names[id] !== undefined) {
+				return names[id]
+			} else {
+				return Apis.instance().db_api().exec("get_accounts", [[id]]).then(e => {
+					names[id] = e[0].name
+					return e[0].name
+				})
+			}
 		}
 
 		function getWitnessName(id) {
-			return Apis.instance().db_api().exec("get_witnesses", [[id]]).then(async e => {
-				let name = await getName(e[0].witness_account)
-				names[id] = name
-				return name
-			})
+			if (names[id] !== undefined) {
+				return names[id]
+			} else {
+				return Apis.instance().db_api().exec("get_witnesses", [[id]]).then(async e => {
+					let name = await getName(e[0].witness_account)
+					names[id] = name
+					return name
+				})
+			}
 		}
 
 		function timeDiff(t1, t2) {
 			const time1 = new Date(t1);
 			const time2 = new Date(t2);
 			return (time1 - time2)
+		}
+
+		async function operationData(op) {
+			let type = op[0]
+			let operation = op[1]
+			let name1, name2, uid, uid2
+			uid2 = false
+
+			switch (type) {
+				case 0:
+					uid = operation.from
+					uid2 = operation.to
+					break
+				case 1:
+					uid = operation.seller
+					break
+				case 2:
+					uid = operation.fee_paying_account
+					break
+				case 3:
+					uid = operation.funding_account
+					break
+				case 4:
+					uid = operation.account_id
+					break
+				case 5:
+					uid = operation.registrar
+					uid2 = operation.referrer
+					break
+				case 6:
+					uid = operation.account
+					break
+				case 14:
+					uid = operation.issuer
+					uid2 = operation.issue_to_account
+					break
+				case 15:
+					uid = operation.payer
+					break
+				case 19:
+					uid = operation.publisher
+					break
+				case 22:
+					uid = operation.fee_paying_account
+					break
+				case 23:
+					uid = operation.fee_paying_account
+					break
+				case 33:
+					uid = operation.owner
+					break
+				case 37:
+					uid = operation.deposit_to_account
+					break
+
+				default:
+					throw op
+			}
+			if (uid) {
+				name1 = await getName(uid)
+			}
+			if (uid2) {
+				name2 = await getName(uid2)
+			}
+
+			return { name1: name1, name2: name2, type: type, data: operation }
 		}
 
 		function action() {
@@ -127,22 +202,14 @@ class DExplorer extends Component {
 							})
 							.then(async (e) => {
 								for (var item of e[0].transactions) {
-									// console.log(e)
 									try {
-										const op_id = item.operation_results
-										const op = item.operations
-										for (let i = 0; i < op_id.length; i++) {
-											let name = undefined
-											if (names[op[i][1].seller] === undefined) {
-												name = await getName(op[i][1].seller)
-											} else {
-												name = names[op[i][1].seller]
-											}
-											let data = { block: e[1], id: op_id[i][1], username: name, type: op[i][0], data: op[i][1] }
-											transactionsList.push(data)
+										for (let i = 0; i < item.operations.length; i++) {
+											let opData = await operationData(item.operations[i])
+											let blockData = { block: e[1], timestamp: e[0].timestamp, id: e[1] + '.' + i }
+											transactionsList.push({ ...opData, ...blockData })
 										}
-									} catch {
-										console.log('item', item)
+									} catch (e) {
+										console.log('item', e, item)
 									}
 								};
 
@@ -174,23 +241,32 @@ class DExplorer extends Component {
 	}
 
 	typeToAction(type, data) {
+
 		switch (type) {
 			case 1:
 				return (
 					<tr key={data.id}>
 						<td><a href={"/ledgers/" + data.block}>{data.block}</a></td>
 						<td>
-							<a href={"/account/" + data.username}>{data.username}</a> wants&nbsp;
-					{data.data.min_to_receive.amount / Math.pow(10, window.assets[data.data.min_to_receive.asset_id].precision)}
-							&nbsp;{window.assets[data.data.min_to_receive.asset_id].symbol} for&nbsp;
-					{data.data.amount_to_sell.amount / Math.pow(10, window.assets[data.data.amount_to_sell.asset_id].precision)}
-							&nbsp;{window.assets[data.data.amount_to_sell.asset_id].symbol}
+							<OperationDescription operation={data} />
 						</td>
 
-						<td className="text-right">{this.timeAgo(data.data.expiration, 5)} seconds ago</td>
+						<td className="text-right">{this.timeAgo(data.timestamp)} seconds ago</td>
+					</tr>
+				)
+			case 2:
+				return (
+					<tr key={data.id}>
+						<td><a href={"/ledgers/" + data.block}>{data.block}</a></td>
+						<td>
+							<OperationDescription operation={data} />
+						</td>
+
+						<td className="text-right">{this.timeAgo(data.timestamp)} seconds ago</td>
 					</tr>
 				)
 			default:
+				console.log(type, data)
 				return "not map"
 		}
 	}
@@ -199,9 +275,9 @@ class DExplorer extends Component {
 		return (
 			<div>
 				<div className={classes.status}>
-					<div>Highest Block <span>{this.state.blocksList[0] ? this.state.blocksList[0].block : ""}</span></div>
-					<div>Average Block Latency <span>{this.state.averageBlockLatency} ms</span></div>
-					<div>Number of Nodes <span>{this.state.nodes}</span></div>
+					<div>Highest Block <br /> <span>{this.state.blocksList[0] ? this.state.blocksList[0].block : ""}</span></div>
+					<div>Average Block Latency <br /> <span>{this.state.averageBlockLatency} ms</span></div>
+					<div>Number of Nodes <br /> <span>{this.state.nodes}</span></div>
 				</div>
 
 				<div className={classes.content}>
@@ -216,8 +292,17 @@ class DExplorer extends Component {
 								</tr>
 							</thead>
 							<tbody>
-								{this.state.operationsList.map(row => {
-									return this.typeToAction(row.type, row)
+								{this.state.operationsList.map(data => {
+									return (
+										<tr key={data.id}>
+											<td><a href={"/ledgers/" + data.block}>{data.block}</a></td>
+											<td>
+												<OperationDescription operation={data} />
+											</td>
+
+											<td className="text-right">{this.timeAgo(data.timestamp)} seconds ago</td>
+										</tr>
+									)
 								})}
 							</tbody>
 						</table>
