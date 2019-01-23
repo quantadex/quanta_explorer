@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import classes from './Crosschain.scss';
 import QuantaSelect from '@quanta/components/common/QuantaSelect';
+// import Pagination from '@quanta/components/common/Pagination';
 import { Apis } from "@quantadex/bitsharesjs-ws";
 import lodash from 'lodash';
 
@@ -13,6 +14,7 @@ class Crosschain extends Component {
 
 		this.state = {
 			list: [],
+			currentPage: 1,
 			status: undefined,
 		};
 	}
@@ -20,17 +22,15 @@ class Crosschain extends Component {
 	getNode(id) {
 		this.setState({ selected: id })
 		fetch(url + id + "/status").then(e => e.json()).then(e => {
-			console.log(e)
 			this.setState({ status: e })
 			fetch(url + id + "/history").then(e => e.json()).then(e => {
-				console.log(e)
 				this.setState({ list: e })
 			})
 		})
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (nextProps.match.params.id != this.state.selected) {
+		if (nextProps.match.params.id !== this.state.selected) {
 			this.getNode(nextProps.match.params.id)
 		}
 	}
@@ -39,20 +39,18 @@ class Crosschain extends Component {
 		const { id } = this.props.match.params;
 
 		Apis.instance(wsString, true, 3000, { enableOrders: false }).init_promise.then((res) => {
-			Apis.instance().
-				db_api().exec("list_assets", ["A", 100]).then((assets) => {
-					// console.log("assets ", assets);
-					window.assets = lodash.keyBy(assets, "id")
-					window.assetsBySymbol = lodash.keyBy(assets, "symbol")
-					return assets;
-				}).then(e => {
-					this.getNode(id)
-				})
+			Apis.instance().db_api().exec("list_assets", ["A", 100]).then((assets) => {
+				// console.log("assets ", assets);
+				window.assets = lodash.keyBy(assets, "id")
+				window.assetsBySymbol = lodash.keyBy(assets, "symbol")
+				return assets;
+			}).then(e => {
+				this.getNode(id)
+			})
 		})
 	}
 
 	changeNode(e) {
-		console.log(this.props)
 		this.props.history.push(`/crosschain/${e.value}`)
 	}
 
@@ -76,7 +74,7 @@ class Crosschain extends Component {
 	handleCoin(coin) {
 		let c = coin.split("0X")
 
-		if (c.length == 2) {
+		if (c.length === 2) {
 			return (
 				<a href={"https://ropsten.etherscan.io/token/0x" + c[1]} title={coin} target="_blank"> {c[0]}</a >
 			)
@@ -84,13 +82,16 @@ class Crosschain extends Component {
 		return coin
 	}
 
+
+
 	render() {
 		const nodes = { node1: "Node 1", node2: "Node 2", node3: "Node 3" }
+
 		return (
 			<div className={classes.container}>
 				<h3>Crosschain</h3>
 				<div className="d-flex justify-content-between">
-					<div>
+					<div className="small">
 						<b>CurrentBlockETH:</b> {this.state.status && this.state.status["CURRENTBLOCK:ETH"]}<br />
 						<b>CurrentBlockQuanta:</b> {this.state.status && this.state.status["CURRENTBLOCK:QUANTA"]}<br />
 						<b>Public Key:</b> {this.state.status && this.state.status.PUBLIC_KEY}
@@ -133,7 +134,7 @@ class Crosschain extends Component {
 									<td></td>
 									<td><a href={(row.Type == "deposit" ? "http://testnet.quantadex.com/account/" : "https://ropsten.etherscan.io/address/") + row.To} title={row.To} target="_blank">{this.shorten(row.To)}</a></td>
 									<td className="text-right">{this.handleCoin(row.Coin)}</td>
-									<td className="text-right">{row.Amount / Math.pow(10, window.assetsBySymbol[row.Coin] ? window.assetsBySymbol[row.Coin].precision : 0)}</td>
+									<td className="text-right">{row.Amount / Math.pow(10, row.Type == "withdrawal" ? 5 : (window.assetsBySymbol[row.Coin] ? window.assetsBySymbol[row.Coin].precision : 0))}</td>
 									<td className="text-right text-capitalize">{String(row.IsBounced)}</td>
 									<td className="text-right text-capitalize">{row.SubmitState}</td>
 									<td className="text-right">{this.timeAgo(row.SubmitDate)} ago</td>
@@ -142,6 +143,8 @@ class Crosschain extends Component {
 						})}
 					</tbody>
 				</table>
+
+				{/* <Pagination length={Math.ceil(this.state.list.length / 10)} current={this.state.currentPage} onClick={this.goToPage}/> */}
 			</div>
 		)
 	}
