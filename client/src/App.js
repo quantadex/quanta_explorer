@@ -47,7 +47,7 @@ const App = () => (
 					<Route exact path="/tools/generate_keys" component={AsyncGenerateKeys} />
 					<Route exact path="/witness" component={AsyncWitness} />
 					<Route exact path="/committee" component={AsyncCommittee} />
-					<Route exact path="/crosschain/:id" component={AsyncCrosschain} />
+					<Route exact path="/crosschain/:id/:page" component={AsyncCrosschain} />
 					<Route
 						exact
 						path="/tools/request_friendbot"

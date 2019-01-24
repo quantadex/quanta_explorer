@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import classes from './Crosschain.scss';
 import QuantaSelect from '@quanta/components/common/QuantaSelect';
-// import Pagination from '@quanta/components/common/Pagination';
+import Pagination from '@quanta/components/common/Pagination';
 import { Apis } from "@quantadex/bitsharesjs-ws";
 import lodash from 'lodash';
 
@@ -14,8 +14,9 @@ class Crosschain extends Component {
 
 		this.state = {
 			list: [],
-			currentPage: 1,
+			currentPage: Number(this.props.match.params.page),
 			status: undefined,
+			rowPerPage: 15,
 		};
 	}
 
@@ -29,15 +30,26 @@ class Crosschain extends Component {
 		})
 	}
 
+	changeNode(e) {
+		this.props.history.push(`/crosschain/${e.value}/1`)
+	}
+
+	goToPage(e) {
+		// this.setState({ currentPage: e })
+		this.props.history.push(`/crosschain/${this.props.match.params.id}/${e}`)
+	}
+
 	componentWillReceiveProps(nextProps) {
 		if (nextProps.match.params.id !== this.state.selected) {
 			this.getNode(nextProps.match.params.id)
+		}
+		if (nextProps.match.params.page !== this.state.currentPage) {
+			this.setState({ currentPage: Number(nextProps.match.params.page) })
 		}
 	}
 
 	componentDidMount() {
 		const { id } = this.props.match.params;
-
 		Apis.instance(wsString, true, 3000, { enableOrders: false }).init_promise.then((res) => {
 			Apis.instance().db_api().exec("list_assets", ["A", 100]).then((assets) => {
 				// console.log("assets ", assets);
@@ -48,10 +60,6 @@ class Crosschain extends Component {
 				this.getNode(id)
 			})
 		})
-	}
-
-	changeNode(e) {
-		this.props.history.push(`/crosschain/${e.value}`)
 	}
 
 	timeAgo(t, adjust = 0) {
@@ -81,8 +89,6 @@ class Crosschain extends Component {
 		}
 		return coin
 	}
-
-
 
 	render() {
 		const nodes = { node1: "Node 1", node2: "Node 2", node3: "Node 3" }
@@ -125,7 +131,7 @@ class Crosschain extends Component {
 						</tr>
 					</thead>
 					<tbody>
-						{this.state.list.map(row => {
+						{this.state.list.slice((this.state.currentPage - 1) * this.state.rowPerPage, this.state.currentPage * this.state.rowPerPage).map(row => {
 							return (
 								<tr key={row.Type + row.Tx}>
 									<td className="text-uppercase">{row.Type}</td>
@@ -144,7 +150,7 @@ class Crosschain extends Component {
 					</tbody>
 				</table>
 
-				{/* <Pagination length={Math.ceil(this.state.list.length / 10)} current={this.state.currentPage} onClick={this.goToPage}/> */}
+				<Pagination length={Math.ceil(this.state.list.length / this.state.rowPerPage)} current={this.state.currentPage} onClick={this.goToPage.bind(this)} />
 			</div>
 		)
 	}

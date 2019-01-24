@@ -35,7 +35,7 @@ class Header extends React.PureComponent {
 						<a href="/tools">Tools</a><br />
 						<a href="/witness">Witnesses</a><br />
 						<a href="/committee">Committee</a><br />
-						<a className="show-sm" href="/crosschain/node1">Crosschain</a>
+						<a className="show-sm" href="/crosschain/node1/1">Crosschain</a>
 					</div>
 				</div>
 			)
@@ -58,7 +58,7 @@ class Header extends React.PureComponent {
 						className={classes.category}
 						onChange={changeEnvironmentType}
 					/>
-					<a className="hidden-sm ml-4" href="/crosschain/node1">Crosschain</a>
+					<a className="hidden-sm ml-4" href="/crosschain/node1/1">Crosschain</a>
 					<Menu className="hidden-sm ml-4" />
 				</div>
 				<div className={classes.search}>

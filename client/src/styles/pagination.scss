@@ -1,0 +1,18 @@
+@import 'variables.scss';
+
+.paginate {
+    margin-top: 20px;
+}
+
+.pagenum {
+    font-weight: bold;
+    padding: 5px 15px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.pagenum.active {
+    color: #fff;
+    background-color: $quanta-color-purple1;
+}
