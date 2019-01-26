@@ -135,10 +135,10 @@ class Crosschain extends Component {
 							return (
 								<tr key={row.Type + row.Tx}>
 									<td className="text-uppercase">{row.Type}</td>
-									<td><a href={(row.Type == "deposit" ? "https://ropsten.etherscan.io/tx/" + row.Tx : "http://testnet.quantadex.com/ledgers/" + row.Tx.split("_")[0])} title={row.Tx} target="_blank">{this.shorten(row.Tx)}</a></td>
-									<td><a href={(row.Type == "deposit" ? "https://ropsten.etherscan.io/address/" : "http://testnet.quantadex.com/account/") + row.From} title={row.From} target="_blank">{this.shorten(row.From)}</a></td>
-									<td></td>
-									<td><a href={(row.Type == "deposit" ? "http://testnet.quantadex.com/account/" : "https://ropsten.etherscan.io/address/") + row.To} title={row.To} target="_blank">{this.shorten(row.To)}</a></td>
+									<td><a href={(row.Type == "deposit" && !row.IsBounced ? "https://ropsten.etherscan.io/tx/" : "http://testnet.quantadex.com/ledgers/") + row.Tx.split("_")[0]} title={row.Tx} target="_blank">{this.shorten(row.Tx)}</a></td>
+									<td><a href={(row.Type == "deposit" && !row.IsBounced ? "https://ropsten.etherscan.io/address/" : "http://testnet.quantadex.com/account/") + row.From} title={row.From} target="_blank">{this.shorten(row.From)}</a></td>
+									<td><a href={(row.Type == "deposit" || row.IsBounced ? "http://testnet.quantadex.com/ledgers/" : "https://ropsten.etherscan.io/tx/") + row.SubmitTxHash.split("_")[0]} title={row.SubmitTxHash} target="_blank">{this.shorten(row.SubmitTxHash)}</a></td>
+									<td><a href={(row.Type == "deposit" || row.IsBounced ? "http://testnet.quantadex.com/account/" : "https://ropsten.etherscan.io/address/") + row.To} title={row.To} target="_blank">{this.shorten(row.To)}</a></td>
 									<td className="text-right">{this.handleCoin(row.Coin)}</td>
 									<td className="text-right">{row.Amount / Math.pow(10, row.Type == "withdrawal" ? 5 : (window.assetsBySymbol[row.Coin] ? window.assetsBySymbol[row.Coin].precision : 0))}</td>
 									<td className="text-right text-capitalize">{String(row.IsBounced)}</td>
