@@ -84,7 +84,10 @@ class Crosschain extends Component {
 
 		if (c.length === 2) {
 			return (
-				<a href={"https://ropsten.etherscan.io/token/0x" + c[1]} title={coin} target="_blank"> {c[0]}</a >
+				<div className={classes.sToken}>
+					<a href={"https://ropsten.etherscan.io/token/0x" + c[1]} target="_blank"> {c[0]}</a>
+					<div className={classes.coinToken}>0X{c[1]}</div>
+				</div>
 			)
 		}
 		return coin

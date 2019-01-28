@@ -4,18 +4,18 @@ import classes from '@quanta/styles/pagination.scss';
 class Pagination extends Component {
 
     render() {
-        var arr;
-        const a = Array.apply(null, { length: this.props.length }).map(Number.call, Number)
-
-        let start = 0
+        var arr = [];
+        let start = 1
         let end = this.props.length
 
         if (this.props.length > 7) {
-            end = Math.max(this.props.current + 3, 7)
+            end = Math.max(Math.min(this.props.current + 3, this.props.length), 7)
             start = Math.min(Math.max(this.props.current - 4, 0), this.props.length - 7)
         }
 
-        arr = a.slice(start, end)
+        for (let i = start; i < end; i++) {
+            arr.push(i)
+        }
 
         return (
             <div className={classes.paginate + " d-flex justify-content-center"}>
