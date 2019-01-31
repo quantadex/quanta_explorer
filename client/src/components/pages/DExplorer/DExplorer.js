@@ -201,24 +201,27 @@ class DExplorer extends Component {
 								return [res, e.head_block_number]
 							})
 							.then(async (e) => {
+								var i = 0;
 								for (var item of e[0].transactions) {
+									if (i > 10) {
+										break
+									}
 									try {
-										for (let i = 0; i < item.operations.length; i++) {
-											let opData = await operationData(item.operations[i])
-											let blockData = { block: e[1], timestamp: e[0].timestamp, id: e[1] + '.' + i }
-											transactionsList.push({ ...opData, ...blockData })
-										}
+										let opData = await operationData(item.operations[0])
+										let blockData = { block: e[1], timestamp: e[0].timestamp, id: e[1] + '.' + i }
+										transactionsList.push({ ...opData, ...blockData })
 									} catch (e) {
 										console.log('item', e, item)
 									}
+									i++;
 								};
 
 								if (transactionsList.length > 0) {
 									let oldList = self.state.operationsList
-									while (oldList.length >= 10) {
-										oldList.pop()
-									}
 									let newList = transactionsList.concat(oldList)
+									while (newList.length > 10) {
+										newList.pop()
+									}
 									self.setState({ operationsList: newList })
 									// console.log('state', self.state)
 								}
