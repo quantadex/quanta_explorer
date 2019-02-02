@@ -65,22 +65,21 @@ class Account extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (nextProps.match.params.id != this.state.accountInfo.name) {
+		if (nextProps.match.params.id !== this.state.accountInfo.name) {
 			this.getAccount(nextProps.match.params.id)
 		}
 	}
 	componentDidMount() {
 		Apis.instance(wsString, true, 3000, { enableOrders: false }).init_promise.then(e => {
-			Apis.instance().
-				db_api().exec("list_assets", ["A", 100]).then((assets) => {
-					// console.log("assets ", assets);
-					window.assets = lodash.keyBy(assets, "id")
-					window.assetsBySymbol = lodash.keyBy(assets, "symbol")
-					return assets;
-				}).then(e => {
-					const { id } = this.props.match.params;
-					this.getAccount(id)
-				})
+			Apis.instance().db_api().exec("list_assets", ["A", 100]).then((assets) => {
+				// console.log("assets ", assets);
+				window.assets = lodash.keyBy(assets, "id")
+				window.assetsBySymbol = lodash.keyBy(assets, "symbol")
+				return assets;
+			}).then(e => {
+				const { id } = this.props.match.params;
+				this.getAccount(id)
+			})
 		})
 	}
 

@@ -1,7 +1,7 @@
 import ApplicationApi from "@quanta/api/ApplicationApi";
 import { Apis } from "@quantadex/bitsharesjs-ws";
 import { signAndBroadcast } from "@quanta/api/Transactions";
-import { PrivateKey, PublicKey, Aes, key, ChainStore } from "@quantadex/bitsharesjs";
+import { PrivateKey } from "@quantadex/bitsharesjs";
 
 var wsString = "ws://testnet-01.quantachain.io:8090";
 const registrar = "1.2.6";

@@ -30,6 +30,7 @@ const AsyncFooter = AsyncComponent(() => import('@quanta/components/common/Foote
 const AsyncWitness = AsyncComponent(() => import('@quanta/components/pages/Witness'));
 const AsyncCommittee = AsyncComponent(() => import('@quanta/components/pages/Committee'));
 const AsyncCrosschain = AsyncComponent(() => import('@quanta/components/pages/Crosschain'));
+const AsyncObject = AsyncComponent(() => import('@quanta/components/pages/Object'));
 
 const App = () => (
 	<div className={classes.app}>
@@ -47,6 +48,7 @@ const App = () => (
 					<Route exact path="/tools/generate_keys" component={AsyncGenerateKeys} />
 					<Route exact path="/witness" component={AsyncWitness} />
 					<Route exact path="/committee" component={AsyncCommittee} />
+					<Route exact path="/object/:id" component={AsyncObject} />
 					<Route exact path="/crosschain/:id/:page" component={AsyncCrosschain} />
 					<Route
 						exact

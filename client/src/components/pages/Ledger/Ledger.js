@@ -1,15 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
 import classNames from 'classnames';
 import { Row, Col } from 'reactstrap';
-import ReactEventSource from 'react-eventsource';
-import urlParse from 'url-parse';
 
-import CONFIG from '@quanta/config';
 import OperationDescription from '@quanta/components/common/OperationDescription';
 import LabelText from '@quanta/components/common/LabelText';
-import { dateToString, timeDiff } from '@quanta/helpers/utils';
+import { dateToString } from '@quanta/helpers/utils';
 import tableClasses from '@quanta/styles/tables.scss';
 import operationsClasses from '@quanta/styles/operations.scss';
 import classes from '@quanta/styles/template.scss';
@@ -142,7 +138,6 @@ class Ledger extends Component {
 	}
 
 	renderDetails = () => {
-		const { ledger } = this.props;
 		return (
 			<div className={classes.details}>
 				<h2>Ledger</h2>
@@ -188,10 +183,7 @@ class Ledger extends Component {
 				{operations.map((operation, index) => (
 					< React.Fragment key={index} >
 						<div className={classNames(tableClasses.body, 'hidden-sm')}>
-							<a
-								href=""
-								className={operationsClasses.id}
-							>
+							<a href={"/ledgers/" + operation.id.split(".")[0]} className={operationsClasses.id}>
 								{operation.id}
 							</a>
 							<div className={operationsClasses.description}>
@@ -201,10 +193,7 @@ class Ledger extends Component {
 						</div>
 						<div className={classNames(tableClasses.body, 'show-sm', 'flex-column')}>
 							<div className="d-flex justify-content-between w-100">
-								<a
-									href=""
-									className={operationsClasses.id}
-								>
+								<a href={"/ledgers/" + operation.id.split(".")[0]} className={operationsClasses.id}>
 									{operation.id}
 								</a>
 								<div className={operationsClasses.created}>{this.timeAgo(operation.timestamp)} ago</div>
@@ -221,7 +210,7 @@ class Ledger extends Component {
 
 	renderOprationsHistory = () => {
 		const { operations } = this.state;
-		const { id } = this.props.match.params;
+		// const { id } = this.props.match.params;
 		return (
 			<div className={classNames(operationsClasses.history)}>
 				<div className={operationsClasses.header}>

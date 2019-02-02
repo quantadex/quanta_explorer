@@ -4,7 +4,6 @@ import classNames from 'classnames';
 import { Button, Input } from 'reactstrap';
 import { registerAccount } from './register.js'
 
-import CONFIG from '@quanta/config';
 import ToolsNavigation from '@quanta/components/common/ToolsNavigation';
 import templateClasses from '@quanta/styles/template.scss';
 import classes from './RequestFriendbot.scss';
@@ -20,7 +19,6 @@ class RequestFriendbot extends Component {
 		};
 	}
 	onRequest = () => {
-		const { environmentType } = this.props;
 		const { username, quantaAddress } = this.state;
 		// window.location.href = `${
 		// 	CONFIG.ENVIRONMENT.SERVERS[environmentType.value].REQUEST_FRIENDBOT
@@ -103,7 +101,7 @@ class RequestFriendbot extends Component {
 						onChange={this.onChangeQuantaAddress}
 						placeholder="Example:  QBS4…. 6S3K"
 					/>
-					<Button color="primary" onClick={this.onRequest} disabled={this.state.processing || this.state.registered || this.state.quantaAddress.length == 0 || this.state.username.length == 0}>
+					<Button color="primary" onClick={this.onRequest} disabled={this.state.processing || this.state.registered || this.state.quantaAddress.length === 0 || this.state.username.length === 0}>
 						{this.state.processing ? "Requesting..." : this.state.registered ? "Activated" : "Request"}
 					</Button> <span className={classes.error} hidden={!this.state.error}>{this.state.message}</span>
 				</div>
