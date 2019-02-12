@@ -16,7 +16,11 @@ class Header extends React.PureComponent {
 
 	onGo = () => {
 		const { searchKey, history } = this.props;
-		history.push(`/account/${searchKey}`);
+		if (searchKey.match(/\d+.\d+.\d+/g)) {
+			history.push(`/object/${searchKey}`);
+		} else {
+			history.push(`/account/${searchKey}`);
+		}
 	};
 
 	onKeyUp = event => {
@@ -65,7 +69,7 @@ class Header extends React.PureComponent {
 					<Input
 						type="text"
 						value={searchKey}
-						placeholder="Search Account"
+						placeholder="Search Account, Object"
 						onChange={this.onKeyChange}
 						onKeyUp={this.onKeyUp}
 					/>

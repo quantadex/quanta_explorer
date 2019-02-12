@@ -12,8 +12,7 @@ import OperationDescription from '@quanta/components/common/OperationDescription
 import QuantaAddress from '@quanta/components/common/QuantaAddress';
 import LabelText from '@quanta/components/common/LabelText';
 import NoMatchesFound from '@quanta/components/common/NoMatchesFound';
-import { dateToString } from '@quanta/helpers/utils';
-import { timeDiff } from '@quanta/helpers/utils';
+import { dateToString, operationData, timeAgo } from '@quanta/helpers/utils';
 import tableClasses from '@quanta/styles/tables.scss';
 import operationsClasses from '@quanta/styles/operations.scss';
 import templateClasses from '@quanta/styles/template.scss';
@@ -31,6 +30,7 @@ class Account extends Component {
 			activeTab: 'balance',
 			showQRModal: false,
 			accountInfo: { name: "", id: "", address: "" },
+			operations: []
 		};
 
 		this.operations = [];
@@ -49,7 +49,8 @@ class Account extends Component {
 	}
 
 	getAccount(id) {
-		return Apis.instance().db_api().exec("get_full_accounts", [[id], false]).then(async e => {
+		const opList = []
+		Apis.instance().db_api().exec("get_full_accounts", [[id], false]).then(async e => {
 			// console.log(e[0][1])
 			const acc_data = e[0][1].account
 			const accInfo = { name: acc_data.name, id: acc_data.id, address: acc_data.options.memo_key }
@@ -61,7 +62,28 @@ class Account extends Component {
 			}
 
 			this.setState({ accountInfo: accInfo, accountBalance: e[0][1].balances, issuer: issuer })
+
+			fetch("https://wya99cec1d.execute-api.us-east-1.amazonaws.com/testnet/account?operation_type=5&size=1&account_id=" + acc_data.id)
+				.then(e => e.json())
+				.then(data => {
+					const time = new Date(data[0].block_data.block_time)
+					this.setState({ registeredTimes: time })
+				})
+
+			fetch("https://wya99cec1d.execute-api.us-east-1.amazonaws.com/testnet/account?size=100&account_id=" + acc_data.id)
+				.then(e => e.json())
+				.then(async (data) => {
+					for (var item of data) {
+						let opData = await operationData([item.operation_type, item.operation_history.op_object], Apis)
+						// console.log(opData)
+						let blockData = { block: item.block_data.block_num, timestamp: item.block_data.block_time, id: item.account_history.operation_id }
+						opList.push({ ...opData, ...blockData })
+					}
+
+					this.setState({ operations: opList })
+				})
 		})
+
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -97,12 +119,12 @@ class Account extends Component {
 				<div className={classes.content}>
 					<div className={classes.header}>
 						<h2>{this.state.accountInfo.name} | {this.state.accountInfo.id}</h2>
-						<div
+						{/* <div
 							className={classNames(classes.qrCode, 'show-sm')}
 							onClick={this.toggleQRModal}
 						>
 							<QRCode value={account.id} size={68} />
-						</div>
+						</div> */}
 					</div>
 					<Row>
 						<Col sm={12} md={8} className={templateClasses.section}>
@@ -113,16 +135,16 @@ class Account extends Component {
 							md={4}
 							className={classNames(templateClasses.section, 'hidden-sm')}
 						>
-							<LabelText label="CREATED AT" text={dateToString(account.created_at)} />
+							<LabelText label="CREATED AT" text={dateToString(this.state.registeredTimes)} />
 						</Col>
 					</Row>
 				</div>
-				<div
+				{/* <div
 					className={classNames(classes.qrCode, 'hidden-sm')}
 					onClick={this.toggleQRModal}
 				>
 					<QRCode value={account.id} size={151} />
-				</div>
+				</div> */}
 			</div>
 		);
 	};
@@ -134,29 +156,25 @@ class Account extends Component {
 					<React.Fragment key={operation.id}>
 						<div className={classNames(tableClasses.body, 'hidden-sm')}>
 							<a
-								href={urlParse(operation._links.transaction.href).pathname}
+								href={"/ledgers/" + operation.block}
 								className={operationsClasses.id}
 							>
-								{operation.id}
+								{operation.block}
 							</a>
 							<div className={operationsClasses.description}>
 								<OperationDescription operation={operation} />
 							</div>
-							<div className={operationsClasses.created}>{`< ${moment(
-								operation.created_at
-							).toNow(true)} ago`}</div>
+							<div className={operationsClasses.created}>{timeAgo(operation.timestamp)} ago</div>
 						</div>
 						<div className={classNames(tableClasses.body, 'show-sm', 'flex-column')}>
 							<div className="d-flex justify-content-between w-100">
 								<a
-									href={urlParse(operation._links.transaction.href).pathname}
+									href={"/object/" + operation.id}
 									className={operationsClasses.id}
 								>
 									{operation.id}
 								</a>
-								<div className={operationsClasses.created}>{`< ${moment(
-									operation.created_at
-								).toNow(true)} ago`}</div>
+								<div className={operationsClasses.created}>{timeAgo(operation.timestamp)} ago</div>
 							</div>
 							<div className={operationsClasses.description}>
 								<OperationDescription operation={operation} />
@@ -168,8 +186,8 @@ class Account extends Component {
 		);
 	};
 
-	renderOprationsHistory = () => {
-		const { operations } = this.props;
+	renderOperationsHistory = () => {
+		const { operations } = this.state;
 		const { id } = this.props.match.params;
 		return (
 			<div className={classNames(operationsClasses.history, classes.history)}>
@@ -182,36 +200,7 @@ class Account extends Component {
 						<div className={operationsClasses.description} />
 						<div className={operationsClasses.created}>Created</div>
 					</div>
-					{operations.length > 0 && (
-						<ReactEventSource
-							url={`${
-								CONFIG.ENVIRONMENT.HORIZON_SERVER
-								}/transactions/${id}/operations?order=asc&cursor=now`}
-						>
-							{events => {
-								const streamOperations = events
-									.map(event => JSON.parse(event))
-									.sort((a, b) => timeDiff(a.created_at, 'ms', b.created_at));
-								const streamOperationIds = streamOperations.map(
-									operation => operation.id
-								);
-
-								if (this.operations.length === 0) {
-									this.operations = operations;
-								}
-
-								const totalOperations = [
-									...streamOperations,
-									...this.operations.filter(
-										operation => !streamOperationIds.includes(operation.id)
-									),
-								].sort((a, b) => timeDiff(a.created_at, 'ms', b.created_at));
-								return this.renderOperationsRecord(
-									totalOperations.slice(0, CONFIG.SETTINGS.RECENT_ITEM_LENGTH)
-								);
-							}}
-						</ReactEventSource>
-					)}
+					{operations.length > 0 && this.renderOperationsRecord(operations)}
 				</div>
 			</div>
 		);
@@ -232,7 +221,7 @@ class Account extends Component {
 	);
 
 	renderToken = token => (
-		<div className={classes.token}>
+		<div key={token.asset_type} className={classes.token}>
 			<Row>
 				<Col xs={4} sm={4} md={2} className={classNames(classes.tokenCell, classes.first)}>
 					{this.renderLabelText(
@@ -374,7 +363,7 @@ class Account extends Component {
 				</Nav>
 				<TabContent activeTab={activeTab}>
 					<TabPane tabId="balance">{this.renderTokens()}</TabPane>
-					<TabPane tabId="operation">{this.renderOprationsHistory()}</TabPane>
+					<TabPane tabId="operation">{this.renderOperationsHistory()}</TabPane>
 					<TabPane tabId="signers">{this.renderSigners()}</TabPane>
 				</TabContent>
 			</div>
@@ -410,7 +399,7 @@ class Account extends Component {
 				<React.Fragment>
 					{this.renderDetails()}
 					{this.renderTabs()}
-					{this.renderQRModal()}
+					{/* {this.renderQRModal()} */}
 				</React.Fragment>
 			);
 	}

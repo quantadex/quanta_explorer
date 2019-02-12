@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classes from './DExplorer.scss';
-
+import { operationData } from '@quanta/helpers/utils';
 import lodash from 'lodash';
 import { Apis } from "@quantadex/bitsharesjs-ws";
 import { ChainStore } from "@quantadex/bitsharesjs";
@@ -84,72 +84,6 @@ class DExplorer extends Component {
 			return (time1 - time2)
 		}
 
-		async function operationData(op) {
-			let type = op[0]
-			let operation = op[1]
-			let name1, name2, uid, uid2
-			uid2 = false
-
-			switch (type) {
-				case 0:
-					uid = operation.from
-					uid2 = operation.to
-					break
-				case 1:
-					uid = operation.seller
-					break
-				case 2:
-					uid = operation.fee_paying_account
-					break
-				case 3:
-					uid = operation.funding_account
-					break
-				case 4:
-					uid = operation.account_id
-					break
-				case 5:
-					uid = operation.registrar
-					uid2 = operation.referrer
-					break
-				case 6:
-					uid = operation.account
-					break
-				case 14:
-					uid = operation.issuer
-					uid2 = operation.issue_to_account
-					break
-				case 15:
-					uid = operation.payer
-					break
-				case 19:
-					uid = operation.publisher
-					break
-				case 22:
-					uid = operation.fee_paying_account
-					break
-				case 23:
-					uid = operation.fee_paying_account
-					break
-				case 33:
-					uid = operation.owner
-					break
-				case 37:
-					uid = operation.deposit_to_account
-					break
-
-				default:
-					throw op
-			}
-			if (uid) {
-				name1 = await getName(uid)
-			}
-			if (uid2) {
-				name2 = await getName(uid2)
-			}
-
-			return { name1: name1, name2: name2, type: type, data: operation }
-		}
-
 		function action() {
 			const transactionsList = []
 			Apis.instance().db_api().exec("get_dynamic_global_properties", []).then((res) => {
@@ -199,7 +133,7 @@ class DExplorer extends Component {
 									break
 								}
 								try {
-									let opData = await operationData(item.operations[0])
+									let opData = await operationData(item.operations[0], Apis)
 									let blockData = { block: e[1], timestamp: e[0].timestamp, id: e[1] + '.' + i }
 									transactionsList.push({ ...opData, ...blockData })
 								} catch (e) {

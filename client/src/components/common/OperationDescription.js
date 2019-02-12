@@ -13,11 +13,11 @@ function getDescription(op) {
 	switch (op.type) {
 		case 0:
 			return (
-				<React.Fragment>
-					<a href={"/account/" + op.name1}>{op.name1}</a> sent&nbsp;
-					{op.data.amount.amount / Math.pow(10, AssetPrecision(op.data.amount.asset_id))} {AssetSymbol(op.data.amount.asset_id)} to&nbsp;
+				< React.Fragment >
+					<a href={"/account/" + op.name1}>{op.name1}</a> sent &nbsp;
+					{op.data.amount_.amount / Math.pow(10, AssetPrecision(op.data.amount_.asset_id))} {AssetSymbol(op.data.amount_.asset_id)} to &nbsp;
 					<a href={"/account/" + op.name2}>{op.name2}</a>
-				</React.Fragment>
+				</React.Fragment >
 			);
 		case 1:
 			return (

@@ -13,15 +13,25 @@ class BsObject extends Component {
         };
     }
 
+    getObject(id) {
+        Apis.instance().db_api().exec("get_objects", [[id]]).then(e => {
+            return JSON.stringify(e[0], null, 4)
+        }).then(e => {
+            this.setState({ object: e, id: id })
+        })
+    }
+
     componentDidMount() {
         const { id } = this.props.match.params
         Apis.instance(wsString, true, 3000, { enableOrders: false }).init_promise.then((res) => {
-            Apis.instance().db_api().exec("get_objects", [[id]]).then(e => {
-                return JSON.stringify(e[0], null, 4)
-            }).then(e => {
-                this.setState({ object: e })
-            })
+            this.getObject(id)
         })
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.match.params.id !== this.state.id) {
+            this.getObject(nextProps.match.params.id)
+        }
     }
 
     render() {
