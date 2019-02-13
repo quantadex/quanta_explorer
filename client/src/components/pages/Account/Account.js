@@ -70,7 +70,7 @@ class Account extends Component {
 					this.setState({ registeredTimes: time })
 				})
 
-			fetch("https://wya99cec1d.execute-api.us-east-1.amazonaws.com/testnet/account?size=100&account_id=" + acc_data.id)
+			fetch("https://wya99cec1d.execute-api.us-east-1.amazonaws.com/testnet/account?size=200&account_id=" + acc_data.id)
 				.then(e => e.json())
 				.then(async (data) => {
 					for (var item of data) {
