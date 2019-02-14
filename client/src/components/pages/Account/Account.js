@@ -1,10 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
 import classNames from 'classnames';
 import { Row, Col, Nav, NavItem, NavLink, TabContent, TabPane, Modal, ModalBody } from 'reactstrap';
-import ReactEventSource from 'react-eventsource';
-import urlParse from 'url-parse';
 import QRCode from 'qrcode-react';
 
 import CONFIG from '@quanta/config';
@@ -21,6 +18,7 @@ import lodash from 'lodash';
 import { Apis } from "@quantadex/bitsharesjs-ws";
 
 var wsString = "wss://testnet-01.quantachain.io:8095";
+var dataSize = 100
 
 class Account extends Component {
 	constructor(props) {
@@ -30,7 +28,10 @@ class Account extends Component {
 			activeTab: 'balance',
 			showQRModal: false,
 			accountInfo: { name: "", id: "", address: "" },
-			operations: []
+			operations: [],
+			loading: false,
+			end: false,
+			page: 0
 		};
 
 		this.operations = [];
@@ -49,7 +50,12 @@ class Account extends Component {
 	}
 
 	getAccount(id) {
-		const opList = []
+		this.setState({
+			operations: [],
+			loading: false,
+			end: false,
+			page: 0
+		})
 		Apis.instance().db_api().exec("get_full_accounts", [[id], false]).then(async e => {
 			// console.log(e[0][1])
 			const acc_data = e[0][1].account
@@ -70,21 +76,41 @@ class Account extends Component {
 					this.setState({ registeredTimes: time })
 				})
 
-			fetch("https://wya99cec1d.execute-api.us-east-1.amazonaws.com/testnet/account?size=200&account_id=" + acc_data.id)
-				.then(e => e.json())
-				.then(async (data) => {
-					for (var item of data) {
-						let opData = await operationData([item.operation_type, item.operation_history.op_object], Apis)
-						// console.log(opData)
-						let blockData = { block: item.block_data.block_num, timestamp: item.block_data.block_time, id: item.account_history.operation_id }
-						opList.push({ ...opData, ...blockData })
-					}
-
-					this.setState({ operations: opList })
-				})
+			this.getOpHistory(0)
 		})
 
 	}
+
+	getOpHistory(page) {
+		this.setState({ loading: true })
+		fetch(`https://wya99cec1d.execute-api.us-east-1.amazonaws.com/testnet/account?size=${dataSize}&account_id=${this.state.accountInfo.id}&from_=${page * dataSize}`)
+			.then(e => e.json())
+			.then(async (data) => {
+				const opList = []
+				for (var item of data) {
+					let opData = await operationData([item.operation_type, item.operation_history.op_object], Apis)
+					// console.log(opData)
+					let blockData = { block: item.block_data.block_num, timestamp: item.block_data.block_time, id: item.account_history.operation_id }
+					opList.push({ ...opData, ...blockData })
+				}
+
+				this.setState({
+					operations: this.state.operations.concat(opList),
+					loading: false,
+					page: page + 1,
+					end: data.length < dataSize
+				})
+			})
+	}
+
+	handleScroll = lodash.throttle((e) => {
+		if (this.state.loading || this.state.end) {
+			return
+		}
+		if (this.state.activeTab === 'operation' && window.scrollY > document.body.scrollHeight - 1500) {
+			this.getOpHistory(this.state.page)
+		}
+	}, 200)
 
 	componentWillReceiveProps(nextProps) {
 		if (nextProps.match.params.id !== this.state.accountInfo.name) {
@@ -113,7 +139,7 @@ class Account extends Component {
 	};
 
 	renderDetails = () => {
-		const { account } = this.props;
+		// const { account } = this.props;
 		return (
 			<div className={classNames(templateClasses.details, classes.accountDetails)}>
 				<div className={classes.content}>
@@ -188,7 +214,7 @@ class Account extends Component {
 
 	renderOperationsHistory = () => {
 		const { operations } = this.state;
-		const { id } = this.props.match.params;
+		// const { id } = this.props.match.params;
 		return (
 			<div className={classNames(operationsClasses.history, classes.history)}>
 				<div className={operationsClasses.header}>
@@ -202,6 +228,7 @@ class Account extends Component {
 					</div>
 					{operations.length > 0 && this.renderOperationsRecord(operations)}
 				</div>
+				{this.state.loading && <div className="text-center mt-3">Loading...</div>}
 			</div>
 		);
 	};
@@ -328,7 +355,7 @@ class Account extends Component {
 	renderTabs = () => {
 		const { activeTab } = this.state;
 		return (
-			<div className={classNames(templateClasses.main, classes.main)}>
+			<div className={classNames(templateClasses.main, classes.main)} onWheel={(e) => this.handleScroll(e.target)}>
 				<Nav tabs>
 					<NavItem>
 						<NavLink

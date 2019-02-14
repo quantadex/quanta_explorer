@@ -26,7 +26,6 @@ class Ledger extends Component {
 	componentDidMount() {
 		const self = this;
 		const { id } = this.props.match.params;
-		const names = {};
 		self.setState({ sequence: id })
 
 		Apis.instance(wsString, true, 3000, { enableOrders: false }).init_promise.then((res) => {

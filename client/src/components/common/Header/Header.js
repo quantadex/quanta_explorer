@@ -69,6 +69,7 @@ class Header extends React.PureComponent {
 					<Input
 						type="text"
 						value={searchKey}
+						spellCheck="false"
 						placeholder="Search Account, Object"
 						onChange={this.onKeyChange}
 						onKeyUp={this.onKeyUp}
