@@ -27,7 +27,7 @@ class Account extends Component {
 		this.state = {
 			activeTab: 'balance',
 			showQRModal: false,
-			accountInfo: { name: "", id: "", address: "" },
+			accountInfo: undefined,
 			operations: [],
 			loading: false,
 			end: false,
@@ -52,11 +52,13 @@ class Account extends Component {
 	getAccount(id) {
 		this.setState({
 			operations: [],
+			isFetching: true,
+			hasError: false,
 			loading: false,
 			end: false,
 			page: 0
 		})
-		Apis.instance().db_api().exec("get_full_accounts", [[id], false]).then(async e => {
+		Apis.instance().db_api().exec("get_full_accounts", [[id.toLowerCase()], false]).then(async e => {
 			// console.log(e[0][1])
 			const acc_data = e[0][1].account
 			const accInfo = { name: acc_data.name, id: acc_data.id, address: acc_data.options.memo_key }
@@ -73,10 +75,13 @@ class Account extends Component {
 				.then(e => e.json())
 				.then(data => {
 					const time = new Date(data[0].block_data.block_time)
-					this.setState({ registeredTimes: time })
+					this.setState({ registeredTimes: time, isFetching: false })
 				})
 
 			this.getOpHistory(0)
+		}).catch(e => {
+			// console.log(e)
+			this.setState({ hasError: true })
 		})
 
 	}
@@ -88,8 +93,14 @@ class Account extends Component {
 			.then(async (data) => {
 				const opList = []
 				for (var item of data) {
-					let opData = await operationData([item.operation_type, item.operation_history.op_object], Apis)
-					// console.log(opData)
+					let opData
+					try {
+						opData = await operationData([item.operation_type, item.operation_history.op_object], Apis)
+						// console.log(opData)
+					} catch (e) {
+						// console.log(e)
+						opData = { type: item.operation_type }
+					}
 					let blockData = { block: item.block_data.block_num, timestamp: item.block_data.block_time, id: item.account_history.operation_id }
 					opList.push({ ...opData, ...blockData })
 				}
@@ -113,7 +124,7 @@ class Account extends Component {
 	}, 200)
 
 	componentWillReceiveProps(nextProps) {
-		if (nextProps.match.params.id !== this.state.accountInfo.name) {
+		if (nextProps.match.params.id !== this.props.match.params.id) {
 			this.getAccount(nextProps.match.params.id)
 		}
 	}
@@ -414,13 +425,12 @@ class Account extends Component {
 	);
 
 	render() {
-		const { isFetching, account, hasError } = this.props;
 		const { id } = this.props.match.params;
-		if (hasError) {
+		if (this.state.hasError) {
 			return <NoMatchesFound keyword={id} />;
 		}
 
-		return isFetching || !account ? (
+		return this.state.isFetching || !this.state.accountInfo ? (
 			<React.Fragment />
 		) : (
 				<React.Fragment>
