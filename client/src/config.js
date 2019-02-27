@@ -9,6 +9,7 @@ const ENVIRONMENT = {
 		betanet: {},
 	},
 	HORIZON_SERVER: 'http://testnet-02.quantachain.io:8000',
+	API_PATH: 'https://wya99cec1d.execute-api.us-east-1.amazonaws.com/testnet/',
 };
 
 const SETTINGS = {

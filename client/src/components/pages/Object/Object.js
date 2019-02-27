@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import classes from './Object.scss';
 import { Apis } from "@quantadex/bitsharesjs-ws";
+import CONFIG from '@quanta/config';
 
 var wsString = "wss://testnet-01.quantachain.io:8095";
 
@@ -14,8 +15,18 @@ class BsObject extends Component {
     }
 
     getObject(id) {
-        Apis.instance().db_api().exec("get_objects", [[id]]).then(e => {
-            return JSON.stringify(e[0], null, 4)
+        Apis.instance().db_api().exec("get_objects", [[id]]).then(async e => {
+            let data = JSON.stringify(e[0], null, 4)
+
+            if (data === "null") {
+                data = await fetch(CONFIG.ENVIRONMENT.API_PATH + `account?filter_field=operation_history__op_object__order_id&filter_value=${id}`)
+                    .then(e => e.json())
+                    .then(e => {
+                        return e[0] && JSON.stringify(e[0].operation_history.op_object, null, 4) || "null"
+                    })
+            }
+
+            return data
         }).then(e => {
             this.setState({ object: e, id: id })
         })
