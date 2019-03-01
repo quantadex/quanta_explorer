@@ -4,6 +4,7 @@ import QuantaSelect from '@quanta/components/common/QuantaSelect';
 import Pagination from '@quanta/components/common/Pagination';
 import { Apis } from "@quantadex/bitsharesjs-ws";
 import lodash from 'lodash';
+import CONFIG from '@quanta/config';
 
 var wsString = "wss://testnet-01.quantachain.io:8095";
 const url = "https://wya99cec1d.execute-api.us-east-1.amazonaws.com/testnet/"
@@ -85,9 +86,9 @@ class Crosschain extends Component {
 		if (c.length === 2) {
 			return (
 				<div className={classes.sToken}>
-					<a href={"https://ropsten.etherscan.io/token/0x" + c[1]} target="_blank" rel="noopener noreferrer"> {c[0]}</a>
+					<a href={CONFIG.ENVIRONMENT.ETHERSCAN_URL + "/token/0x" + c[1]} target="_blank" rel="noopener noreferrer"> {c[0]}</a>
 					<div className={classes.coinToken}>0X{c[1]}</div>
-				</div>
+				</div >
 			)
 		}
 		return coin
@@ -135,13 +136,14 @@ class Crosschain extends Component {
 					</thead>
 					<tbody>
 						{this.state.list.slice((this.state.currentPage - 1) * this.state.rowPerPage, this.state.currentPage * this.state.rowPerPage).map(row => {
+							const COIN_URL = row.Coin == "BTC" ? CONFIG.ENVIRONMENT.BLOCKCYPHER_URL : CONFIG.ENVIRONMENT.ETHERSCAN_URL
 							return (
 								<tr key={row.Type + row.Tx}>
 									<td className="text-uppercase">{row.Type}</td>
-									<td><a href={(row.Type === "deposit" && !row.IsBounced ? "https://ropsten.etherscan.io/tx/" : "http://testnet.quantadex.com/ledgers/") + row.Tx.split("_")[0]} title={row.Tx} target="_blank" rel="noopener noreferrer">{this.shorten(row.Tx)}</a></td>
-									<td><a href={(row.Type === "deposit" && !row.IsBounced ? "https://ropsten.etherscan.io/address/" : "http://testnet.quantadex.com/account/") + row.From} title={row.From} target="_blank" rel="noopener noreferrer">{this.shorten(row.From)}</a></td>
-									<td><a href={(row.Type === "deposit" || row.IsBounced ? "http://testnet.quantadex.com/ledgers/" : "https://ropsten.etherscan.io/tx/") + row.SubmitTxHash.split("_")[0]} title={row.SubmitTxHash} target="_blank" rel="noopener noreferrer">{this.shorten(row.SubmitTxHash)}</a></td>
-									<td><a href={(row.Type === "deposit" || row.IsBounced ? "http://testnet.quantadex.com/account/" : "https://ropsten.etherscan.io/address/") + row.To} title={row.To} target="_blank" rel="noopener noreferrer">{this.shorten(row.To)}</a></td>
+									<td><a href={(row.Type === "deposit" && !row.IsBounced ? COIN_URL + "/tx/" : CONFIG.ENVIRONMENT.EXPLORER_URL + "/ledgers/") + row.Tx.split("_")[0]} title={row.Tx} target="_blank" rel="noopener noreferrer">{this.shorten(row.Tx)}</a></td>
+									<td><a href={(row.Type === "deposit" && !row.IsBounced ? COIN_URL + "/address/" : CONFIG.ENVIRONMENT.EXPLORER_URL + "/account/") + row.From.split(',')[0]} title={row.From.split(',')[0]} target="_blank" rel="noopener noreferrer">{this.shorten(row.From.split(',')[0])}</a></td>
+									<td><a href={(row.Type === "deposit" || row.IsBounced ? CONFIG.ENVIRONMENT.EXPLORER_URL + "/ledgers/" : COIN_URL + "/tx/") + row.SubmitTxHash.split("_")[0]} title={row.SubmitTxHash} target="_blank" rel="noopener noreferrer">{this.shorten(row.SubmitTxHash)}</a></td>
+									<td><a href={(row.Type === "deposit" || row.IsBounced ? CONFIG.ENVIRONMENT.EXPLORER_URL + "/account/" : COIN_URL + "/address/") + row.To.split(',')[0]} title={row.To.split(',')[0]} target="_blank" rel="noopener noreferrer">{this.shorten(row.To.split(',')[0])}</a></td>
 									<td className="text-right">{this.handleCoin(row.Coin)}</td>
 									<td className="text-right">{row.Amount / Math.pow(10, row.Type === "withdrawal" ? 5 : (window.assetsBySymbol[row.Coin] ? window.assetsBySymbol[row.Coin].precision : 0))}</td>
 									<td className="text-right text-capitalize">{String(row.IsBounced)}</td>
