@@ -74,6 +74,10 @@ class Account extends Component {
 			fetch("https://wya99cec1d.execute-api.us-east-1.amazonaws.com/testnet/account?operation_type=5&size=1&account_id=" + acc_data.id)
 				.then(e => e.json())
 				.then(data => {
+					if (data.length == 0) {
+						this.setState({ registeredTimes: 0, isFetching: false })
+						return
+					}
 					const time = new Date(data[0].block_data.block_time)
 					this.setState({ registeredTimes: time, isFetching: false })
 				})
@@ -118,7 +122,7 @@ class Account extends Component {
 		if (this.state.loading || this.state.end) {
 			return
 		}
-		if (this.state.activeTab === 'operation' && window.scrollY > document.body.scrollHeight - 1500) {
+		if (this.state.activeTab === 'operation' && window.scrollY > document.body.scrollHeight - (window.outerHeight + 500)) {
 			this.getOpHistory(this.state.page)
 		}
 	}, 200)
