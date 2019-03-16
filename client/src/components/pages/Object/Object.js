@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import classes from './Object.scss';
 import { Apis } from "@quantadex/bitsharesjs-ws";
 import CONFIG from '@quanta/config';
-
-var wsString = "wss://testnet-01.quantachain.io:8095";
 
 class BsObject extends Component {
     constructor(props) {
@@ -19,7 +18,7 @@ class BsObject extends Component {
             let data = JSON.stringify(e[0], null, 4)
 
             if (data === "null") {
-                data = await fetch(CONFIG.ENVIRONMENT.API_PATH + `account?filter_field=operation_history__op_object__order_id&filter_value=${id}`)
+                data = await fetch(CONFIG.ENVIRONMENT[this.props.environmentType.value].API_PATH + `account?filter_field=operation_history__op_object__order_id&filter_value=${id}`)
                     .then(e => e.json())
                     .then(e => {
                         return e[0] && JSON.stringify(e[0].operation_history.op_object, null, 4) || "null"
@@ -34,7 +33,7 @@ class BsObject extends Component {
 
     componentDidMount() {
         const { id } = this.props.match.params
-        Apis.instance(wsString, true, 3000, { enableOrders: false }).init_promise.then((res) => {
+        Apis.instance(CONFIG.ENVIRONMENT[this.props.environmentType.value].WEBSOCKET_PATH, true, 3000, { enableOrders: false }).init_promise.then((res) => {
             this.getObject(id)
         })
     }
@@ -55,4 +54,8 @@ class BsObject extends Component {
     }
 }
 
-export default BsObject;
+const mapStateToProps = state => ({
+    environmentType: state.header.environmentType,
+});
+
+export default connect(mapStateToProps)(BsObject);

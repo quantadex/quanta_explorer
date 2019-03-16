@@ -6,7 +6,7 @@ const initialState = {
 	searchKey: '',
 	environmentType: {
 		value: CONFIG.ENVIRONMENT.TYPE[0],
-		label: CONFIG.ENVIRONMENT.TYPE[0] === 'testnet' ? 'Testnet' : 'Betanet',
+		label: CONFIG.ENVIRONMENT.TYPE[0],
 	},
 };
 

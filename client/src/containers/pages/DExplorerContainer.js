@@ -12,6 +12,7 @@ const mapStateToProps = state => ({
 	metrics: state.metrics.metrics,
 	averageBlockLatency: state.global.averageBlockLatency,
 	nodeCount: state.global.nodeCount,
+	environmentType: state.header.environmentType,
 });
 
 const mapActionCreators = dispatch => ({
