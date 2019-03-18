@@ -1,18 +1,24 @@
 const ENVIRONMENT = {
-	TYPE: ['testnet', 'betanet'],
-	SERVERS: {
-		testnet: {
-			SERVER_URL: 'http://testnet-02.quantachain.io:7000',
-			REQUEST_FRIENDBOT: 'http://testnet-02.quantachain.io:8004',
-			CROSSCHAING_ADDRESS: 'http://testnet-02.quantachain.io:5001/api/address',
-		},
-		betanet: {},
+	TYPE: ['testnet', 'mainnet'],
+	testnet: {
+		SERVER_URL: 'http://testnet-02.quantachain.io:7000',
+		REQUEST_FRIENDBOT: 'http://testnet-02.quantachain.io:8004',
+		CROSSCHAING_ADDRESS: 'http://testnet-02.quantachain.io:5001/api/address',
+		HORIZON_SERVER: 'http://testnet-02.quantachain.io:8000',
+
+		WEBSOCKET_PATH: "wss://testnet-01.quantachain.io:8095",
+		API_PATH: 'https://wya99cec1d.execute-api.us-east-1.amazonaws.com/testnet/',
+		EXPLORER_URL: "http://testnet.quantadex.com",
+		ETHERSCAN_URL: "https://ropsten.etherscan.io",
+		BLOCKCYPHER_URL: "https://live.blockcypher.com/btc-testnet",
 	},
-	HORIZON_SERVER: 'http://testnet-02.quantachain.io:8000',
-	API_PATH: 'https://wya99cec1d.execute-api.us-east-1.amazonaws.com/testnet/',
-	EXPLORER_URL: "http://testnet.quantadex.com",
-	ETHERSCAN_URL: "https://ropsten.etherscan.io",
-	BLOCKCYPHER_URL: "https://live.blockcypher.com/btc-testnet",
+	mainnet: {
+		WEBSOCKET_PATH: "wss://mainnet-api.quantachain.io:8095",
+		API_PATH: 'https://wya99cec1d.execute-api.us-east-1.amazonaws.com/mainnet/',
+		EXPLORER_URL: "http://testnet.quantadex.com",
+		ETHERSCAN_URL: "https://etherscan.io",
+		BLOCKCYPHER_URL: "https://live.blockcypher.com/btc",
+	}
 };
 
 const SETTINGS = {

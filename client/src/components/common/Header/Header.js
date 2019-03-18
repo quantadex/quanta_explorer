@@ -29,8 +29,16 @@ class Header extends React.PureComponent {
 		}
 	};
 
+	changeEnvironment = (env) => {
+		let params = this.props.location.pathname.split('/')
+		params[1] = env.value
+		this.props.history.push(params.join('/'))
+	}
+
 	render() {
-		const { environmentType, changeEnvironmentType, searchKey } = this.props;
+		const { environmentType, searchKey } = this.props;
+		const net_params = this.props.match.params.network
+		const network = net_params ? { value: net_params, label: net_params } : { value: "testnet", label: "testnet" }
 		const Menu = (prop) => {
 			return (
 				<div className={classNames(classes.menu, prop.className)}>
@@ -58,9 +66,9 @@ class Header extends React.PureComponent {
 							value: environment,
 							label: environment,
 						}))}
-						value={environmentType}
+						// value={{}}
 						className={classes.category}
-						onChange={changeEnvironmentType}
+						onChange={this.changeEnvironment}
 					/>
 					<a className="hidden-sm ml-4" href="/crosschain/node1/1">Crosschain</a>
 					<Menu className="hidden-sm ml-4" />

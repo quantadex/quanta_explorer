@@ -6,9 +6,9 @@ import lodash from 'lodash';
 import { Apis } from "@quantadex/bitsharesjs-ws";
 import { ChainStore } from "@quantadex/bitsharesjs";
 import OperationDescription from '@quanta/components/common/OperationDescription';
+import CONFIG from '@quanta/config';
 
-var wsString = "wss://testnet-01.quantachain.io:8095";
-
+var interval;
 class DExplorer extends Component {
 	constructor(props) {
 		super(props);
@@ -32,15 +32,41 @@ class DExplorer extends Component {
 		}
 	}
 
+	componentWillReceiveProps(nextProps) {
+		if (this.props.match.params.network !== nextProps.match.params.network) {
+			this.setState({
+				operationsList: [],
+				blocksList: [],
+				nodes: 0
+			})
+			setTimeout(() => {
+				this.init()
+			}, 0)
+		}
+	}
+
 	componentDidMount() {
+		this.setState({
+			operationsList: [],
+			blocksList: [],
+			nodes: 0
+		})
+		this.init()
+	}
+
+
+
+	init() {
 		const self = this;
 		const names = {};
 		var last_block = null;
 		const blockTimes = [];
+		let thisInterval;
+		clearInterval(interval)
 
-		Apis.instance(wsString, true, 3000, { enableOrders: false }).init_promise.then((res) => {
+		Apis.instance(CONFIG.ENVIRONMENT[this.props.match.params.network || "mainnet"].WEBSOCKET_PATH, true, 3000, { enableOrders: false }).init_promise.then((res) => {
 			// console.log("connected to:", res[0].network);
-
+			ChainStore.subscribers.clear()
 			ChainStore.init(false).then(() => {
 				ChainStore.subscribe(this.updateChainState.bind(this));
 			});
@@ -53,8 +79,11 @@ class DExplorer extends Component {
 			})
 		}).then((e) => {
 			action()
+			interval = setInterval(() => {
+				action()
+			}, 200)
+			thisInterval = interval
 		})
-
 		function getName(id) {
 			if (names[id] !== undefined) {
 				return names[id]
@@ -90,76 +119,69 @@ class DExplorer extends Component {
 				// console.log("properties ", res);
 				return res
 			}).then((e) => {
-				if (e.head_block_number !== last_block) {
-					last_block = e.head_block_number;
-					Apis.instance().db_api().exec("get_block", [e.head_block_number]).then(async (res) => {
-						// console.log("block ", e.head_block_number, res);
-						let name = undefined;
-						if (names[res.witness] === undefined) {
-							name = await getWitnessName(res.witness)
-						} else {
-							name = names[res.witness]
+				if (e.head_block_number == last_block || thisInterval != interval) return
+
+				last_block = e.head_block_number;
+				Apis.instance().db_api().exec("get_block", [e.head_block_number]).then(async (res) => {
+					// console.log("block ", e.head_block_number, res);
+					let name = undefined;
+					if (names[res.witness] === undefined) {
+						name = await getWitnessName(res.witness)
+					} else {
+						name = names[res.witness]
+					}
+
+					let newBlock = {
+						block: e.head_block_number, witness: name,
+						transactions: res.transactions.length,
+						timestamp: res.timestamp
+					}
+
+					let oldList = self.state.blocksList;
+
+					if (oldList.length > 0) {
+						if (blockTimes.length >= 100) {
+							blockTimes.shift()
 						}
+						blockTimes.push(timeDiff(res.timestamp, oldList[0].timestamp))
+						self.setState({ averageBlockLatency: Math.round(blockTimes.reduce((a, b) => a + b, 0) / blockTimes.length) })
+					}
 
-						let newBlock = {
-							block: e.head_block_number, witness: name,
-							transactions: res.transactions.length,
-							timestamp: res.timestamp
+					while (oldList.length >= 10) {
+						oldList.pop()
+					}
+					oldList.unshift(newBlock)
+
+					self.setState({ blocksList: oldList })
+
+					return [res, e.head_block_number]
+				}).then(async (e) => {
+					var i = 0;
+					for (var item of e[0].transactions) {
+						if (i > 10) {
+							break
 						}
-
-						let oldList = self.state.blocksList;
-
-						if (oldList.length > 0) {
-							if (blockTimes.length >= 100) {
-								blockTimes.shift()
-							}
-							blockTimes.push(timeDiff(res.timestamp, oldList[0].timestamp))
-							self.setState({ averageBlockLatency: Math.round(blockTimes.reduce((a, b) => a + b, 0) / blockTimes.length) })
+						try {
+							let opData = await operationData(item.operations[0], Apis)
+							let blockData = { block: e[1], timestamp: e[0].timestamp, id: e[1] + '.' + i }
+							transactionsList.push({ ...opData, ...blockData })
+						} catch (e) {
+							console.log('item', e, item)
 						}
+						i++;
+					};
 
-						while (oldList.length >= 10) {
-							oldList.pop()
+					if (transactionsList.length > 0) {
+						let oldList = self.state.operationsList
+						let newList = transactionsList.concat(oldList)
+						while (newList.length > 10) {
+							newList.pop()
 						}
-						oldList.unshift(newBlock)
-
-						self.setState({ blocksList: oldList })
-
-						return [res, e.head_block_number]
-					})
-						.then(async (e) => {
-							var i = 0;
-							for (var item of e[0].transactions) {
-								if (i > 10) {
-									break
-								}
-								try {
-									let opData = await operationData(item.operations[0], Apis)
-									let blockData = { block: e[1], timestamp: e[0].timestamp, id: e[1] + '.' + i }
-									transactionsList.push({ ...opData, ...blockData })
-								} catch (e) {
-									console.log('item', e, item)
-								}
-								i++;
-							};
-
-							if (transactionsList.length > 0) {
-								let oldList = self.state.operationsList
-								let newList = transactionsList.concat(oldList)
-								while (newList.length > 10) {
-									newList.pop()
-								}
-								self.setState({ operationsList: newList })
-								// console.log('state', self.state)
-							}
-
-							action()
-						})
-				} else {
-					setTimeout(() => action(), 500);
-				}
+						self.setState({ operationsList: newList })
+					}
+				})
 			})
 		}
-
 	}
 
 	timeAgo(t, adjust = 0) {

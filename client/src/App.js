@@ -39,10 +39,11 @@ const App = () => (
 			<div className={classes.body}>
 				<Switch>
 					<Route exact path="/" component={AsyncDExplorer} />
+					<Route exact path="/:network" component={AsyncDExplorer} />
 					<Route exact path="/operations" component={AsyncOperations} />
 					<Route exact path="/ledgers" component={AsyncLedgers} />
 					<Route exact path="/transactions/:id" component={AsyncTransaction} />
-					<Route exact path="/ledgers/:id" component={AsyncLedger} />
+					<Route exact path="/:network/ledgers/:id" component={AsyncLedger} />
 					<Route exact path="/account/:id" component={AsyncAccount} />
 					<Route exact path="/tools" component={AsyncTools} />
 					<Route exact path="/tools/generate_keys" component={AsyncGenerateKeys} />
