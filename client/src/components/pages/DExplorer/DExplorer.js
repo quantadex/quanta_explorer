@@ -6,7 +6,7 @@ import lodash from 'lodash';
 import { Apis } from "@quantadex/bitsharesjs-ws";
 import { ChainStore } from "@quantadex/bitsharesjs";
 import OperationDescription from '@quanta/components/common/OperationDescription';
-import CONFIG from '@quanta/config';
+import config from '@quanta/config';
 
 var interval;
 class DExplorer extends Component {
@@ -64,7 +64,7 @@ class DExplorer extends Component {
 		let thisInterval;
 		clearInterval(interval)
 
-		Apis.instance(CONFIG.ENVIRONMENT[this.props.match.params.network || "mainnet"].WEBSOCKET_PATH, true, 3000, { enableOrders: false }).init_promise.then((res) => {
+		Apis.instance(config.getEnv().WEBSOCKET_PATH, true, 3000, { enableOrders: false }).init_promise.then((res) => {
 			// console.log("connected to:", res[0].network);
 			ChainStore.subscribers.clear()
 			ChainStore.init(false).then(() => {
@@ -81,7 +81,7 @@ class DExplorer extends Component {
 			action()
 			interval = setInterval(() => {
 				action()
-			}, 200)
+			}, 500)
 			thisInterval = interval
 		})
 		function getName(id) {
@@ -191,38 +191,8 @@ class DExplorer extends Component {
 		return ((now.getTime() - old_date.getTime()) / 1000).toFixed(0)
 	}
 
-	typeToAction(type, data) {
-
-		switch (type) {
-			case 1:
-				return (
-					<tr key={data.id}>
-						<td><a href={"/ledgers/" + data.block}>{data.block}</a></td>
-						<td>
-							<OperationDescription operation={data} />
-						</td>
-
-						<td className="text-right">{this.timeAgo(data.timestamp)} seconds ago</td>
-					</tr>
-				)
-			case 2:
-				return (
-					<tr key={data.id}>
-						<td><a href={"/ledgers/" + data.block}>{data.block}</a></td>
-						<td>
-							<OperationDescription operation={data} />
-						</td>
-
-						<td className="text-right">{this.timeAgo(data.timestamp)} seconds ago</td>
-					</tr>
-				)
-			default:
-				console.log(type, data)
-				return "not map"
-		}
-	}
-
 	render() {
+		const env = this.props.match.params.network || "mainnet"
 		return (
 			<div>
 				<div className={classes.status}>
@@ -246,9 +216,9 @@ class DExplorer extends Component {
 								{this.state.operationsList.map(data => {
 									return (
 										<tr key={data.id}>
-											<td><a href={"/ledgers/" + data.block}>{data.block}</a></td>
+											<td><a href={"/" + env + "/ledgers/" + data.block}>{data.block}</a></td>
 											<td>
-												<OperationDescription operation={data} />
+												<OperationDescription operation={data} env={env} />
 											</td>
 
 											<td className="text-right">{this.timeAgo(data.timestamp)} seconds ago</td>
@@ -274,7 +244,7 @@ class DExplorer extends Component {
 								{this.state.blocksList.map(row => {
 									return (
 										<tr key={row.block}>
-											<td><a href={"/ledgers/" + row.block}>{row.block}</a></td>
+											<td><a href={"/" + env + "/ledgers/" + row.block}>{row.block}</a></td>
 											<td className="text-center">{row.transactions}</td>
 											<td className="text-center">{row.witness}</td>
 											<td className="text-right">{this.timeAgo(row.timestamp)} seconds ago</td>

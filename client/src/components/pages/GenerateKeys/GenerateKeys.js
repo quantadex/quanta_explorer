@@ -21,7 +21,7 @@ class GenerateKeys extends Component {
 		const { keys } = this.props;
 		return (
 			<div className={classNames(templateClasses.main, 'd-flex', classes.tools)}>
-				<ToolsNavigation className="hidden-sm" />
+				<ToolsNavigation className="hidden-sm" network={this.props.match.params.network} />
 				<div className={classes.content}>
 					<h2>Generate Key</h2>
 					<div className={classes.description}>Generate key pair for a new account</div>

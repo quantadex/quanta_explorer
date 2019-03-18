@@ -2,8 +2,8 @@ import ApplicationApi from "@quanta/api/ApplicationApi";
 import { Apis } from "@quantadex/bitsharesjs-ws";
 import { signAndBroadcast } from "@quanta/api/Transactions";
 import { PrivateKey } from "@quantadex/bitsharesjs";
+import config from '@quanta/config';
 
-var wsString = "ws://testnet-01.quantachain.io:8090";
 const registrar = "1.2.6";
 
 /*
@@ -18,7 +18,7 @@ suggest_brain_key
 export function registerAccount(userId, publicKey) {
 	const pKey = PrivateKey.fromWif(process.env.KEY);
 	return Apis
-		.instance(wsString, true, 3000, { enableOrders: true })
+		.instance(config.getEnv().WEBSOCKET_PATH, true, 3000, { enableOrders: true })
 		.init_promise
 		.then((res) => {
 			return ApplicationApi.create_account(publicKey, publicKey, publicKey, userId, registrar, registrar, 0, false)

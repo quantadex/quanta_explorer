@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import classes from './Object.scss';
 import { Apis } from "@quantadex/bitsharesjs-ws";
-import CONFIG from '@quanta/config';
+import config from '@quanta/config';
 
 class BsObject extends Component {
     constructor(props) {
@@ -18,7 +18,7 @@ class BsObject extends Component {
             let data = JSON.stringify(e[0], null, 4)
 
             if (data === "null") {
-                data = await fetch(CONFIG.ENVIRONMENT[this.props.environmentType.value].API_PATH + `account?filter_field=operation_history__op_object__order_id&filter_value=${id}`)
+                data = await fetch(config.getEnv().API_PATH + `account?filter_field=operation_history__op_object__order_id&filter_value=${id}`)
                     .then(e => e.json())
                     .then(e => {
                         return e[0] && JSON.stringify(e[0].operation_history.op_object, null, 4) || "null"
@@ -33,7 +33,7 @@ class BsObject extends Component {
 
     componentDidMount() {
         const { id } = this.props.match.params
-        Apis.instance(CONFIG.ENVIRONMENT[this.props.environmentType.value].WEBSOCKET_PATH, true, 3000, { enableOrders: false }).init_promise.then((res) => {
+        Apis.instance(config.getEnv().WEBSOCKET_PATH, true, 3000, { enableOrders: false }).init_promise.then((res) => {
             this.getObject(id)
         })
     }

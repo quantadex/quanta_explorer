@@ -16,10 +16,10 @@ const renderString = (address, showOriginal) => {
 	}
 };
 
-const QuantaAddress = ({ address, className, showOriginal, isLong }) => (
+const QuantaAddress = ({ address, env, className, showOriginal, isLong }) => (
 	<React.Fragment>
 		<a
-			href={`/account/${address}`}
+			href={`/${env}/account/${address}`}
 			className={classNames(
 				{
 					[className]: !(

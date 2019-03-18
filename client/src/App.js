@@ -40,25 +40,25 @@ const App = () => (
 				<Switch>
 					<Route exact path="/" component={AsyncDExplorer} />
 					<Route exact path="/:network" component={AsyncDExplorer} />
-					<Route exact path="/operations" component={AsyncOperations} />
-					<Route exact path="/ledgers" component={AsyncLedgers} />
-					<Route exact path="/transactions/:id" component={AsyncTransaction} />
+					<Route exact path="/:network/operations" component={AsyncOperations} />
+					<Route exact path="/:network/ledgers" component={AsyncLedgers} />
+					<Route exact path="/:network/transactions/:id" component={AsyncTransaction} />
 					<Route exact path="/:network/ledgers/:id" component={AsyncLedger} />
-					<Route exact path="/account/:id" component={AsyncAccount} />
-					<Route exact path="/tools" component={AsyncTools} />
-					<Route exact path="/tools/generate_keys" component={AsyncGenerateKeys} />
-					<Route exact path="/witness" component={AsyncWitness} />
-					<Route exact path="/committee" component={AsyncCommittee} />
-					<Route exact path="/object/:id" component={AsyncObject} />
-					<Route exact path="/crosschain/:id/:page" component={AsyncCrosschain} />
+					<Route exact path="/:network/account/:id" component={AsyncAccount} />
+					<Route exact path="/:network/tools" component={AsyncTools} />
+					<Route exact path="/:network/tools/generate_keys" component={AsyncGenerateKeys} />
+					<Route exact path="/:network/witness" component={AsyncWitness} />
+					<Route exact path="/:network/committee" component={AsyncCommittee} />
+					<Route exact path="/:network/object/:id" component={AsyncObject} />
+					<Route exact path="/:network/crosschain/:id/:page" component={AsyncCrosschain} />
 					<Route
 						exact
-						path="/tools/request_friendbot"
+						path="/:network/tools/request_friendbot"
 						component={AsyncRequestFriendbot}
 					/>
 					<Route
 						exact
-						path="/tools/deploy_crosschain"
+						path="/:network/tools/deploy_crosschain"
 						component={AsyncDeployCrossChain}
 					/>
 				</Switch>

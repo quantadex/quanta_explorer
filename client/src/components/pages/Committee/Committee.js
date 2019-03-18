@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import classes from './Committee.scss';
 import { Apis } from "@quantadex/bitsharesjs-ws";
-
-var wsString = "wss://testnet-01.quantachain.io:8095";
+import config from '@quanta/config';
 
 class Committee extends Component {
 	constructor(props) {
@@ -20,7 +19,7 @@ class Committee extends Component {
 			})
 		}
 
-		Apis.instance(wsString, true, 3000, { enableOrders: false }).init_promise.then((res) => {
+		Apis.instance(config.getEnv().WEBSOCKET_PATH, true, 3000, { enableOrders: false }).init_promise.then((res) => {
 			// console.log("connected to:", res[0].network);
 			Apis.instance().db_api().exec("get_global_properties", []).then(e => {
 				// console.log(e)

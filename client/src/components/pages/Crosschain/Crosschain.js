@@ -5,10 +5,7 @@ import QuantaSelect from '@quanta/components/common/QuantaSelect';
 import Pagination from '@quanta/components/common/Pagination';
 import { Apis } from "@quantadex/bitsharesjs-ws";
 import lodash from 'lodash';
-import CONFIG from '@quanta/config';
-
-var wsString = "wss://testnet-01.quantachain.io:8095";
-const url = "https://wya99cec1d.execute-api.us-east-1.amazonaws.com/testnet/"
+import config from '@quanta/config';
 
 class Crosschain extends Component {
 	constructor(props) {
@@ -24,9 +21,9 @@ class Crosschain extends Component {
 
 	getNode(id) {
 		this.setState({ selected: id })
-		fetch(CONFIG.ENVIRONMENT[this.props.environmentType.value].API_PATH + id + "/status").then(e => e.json()).then(e => {
+		fetch(config.getEnv().API_PATH + id + "/status").then(e => e.json()).then(e => {
 			this.setState({ status: e })
-			fetch(CONFIG.ENVIRONMENT[this.props.environmentType.value].API_PATH + id + "/history").then(e => e.json()).then(e => {
+			fetch(config.getEnv().API_PATH + id + "/history").then(e => e.json()).then(e => {
 				this.setState({ list: e })
 			})
 		})
@@ -52,7 +49,7 @@ class Crosschain extends Component {
 
 	componentDidMount() {
 		const { id } = this.props.match.params;
-		Apis.instance(CONFIG.ENVIRONMENT[this.props.environmentType.value].WEBSOCKET_PATH, true, 3000, { enableOrders: false }).init_promise.then((res) => {
+		Apis.instance(config.getEnv().WEBSOCKET_PATH, true, 3000, { enableOrders: false }).init_promise.then((res) => {
 			Apis.instance().db_api().exec("list_assets", ["A", 100]).then((assets) => {
 				// console.log("assets ", assets);
 				window.assets = lodash.keyBy(assets, "id")
@@ -87,7 +84,7 @@ class Crosschain extends Component {
 		if (c.length === 2) {
 			return (
 				<div className={classes.sToken}>
-					<a href={CONFIG.ENVIRONMENT[this.props.environmentType.value].ETHERSCAN_URL + "/token/0x" + c[1]} target="_blank" rel="noopener noreferrer"> {c[0]}</a>
+					<a href={config.getEnv().ETHERSCAN_URL + "/token/0x" + c[1]} target="_blank" rel="noopener noreferrer"> {c[0]}</a>
 					<div className={classes.coinToken}>0X{c[1]}</div>
 				</div >
 			)
@@ -137,14 +134,14 @@ class Crosschain extends Component {
 					</thead>
 					<tbody>
 						{this.state.list.slice((this.state.currentPage - 1) * this.state.rowPerPage, this.state.currentPage * this.state.rowPerPage).map(row => {
-							const COIN_URL = row.Coin == "BTC" ? CONFIG.ENVIRONMENT[this.props.environmentType.value].BLOCKCYPHER_URL : CONFIG.ENVIRONMENT[this.props.environmentType.value].ETHERSCAN_URL
+							const COIN_URL = row.Coin == "BTC" ? config.getEnv().BLOCKCYPHER_URL : config.getEnv().ETHERSCAN_URL
 							return (
 								<tr key={row.Type + row.Tx}>
 									<td className="text-uppercase">{row.Type}</td>
-									<td><a href={(row.Type === "deposit" && !row.IsBounced ? COIN_URL + "/tx/" : CONFIG.ENVIRONMENT[this.props.environmentType.value].EXPLORER_URL + "/ledgers/") + row.Tx.split("_")[0]} title={row.Tx} target="_blank" rel="noopener noreferrer">{this.shorten(row.Tx)}</a></td>
-									<td><a href={(row.Type === "deposit" && !row.IsBounced ? COIN_URL + "/address/" : CONFIG.ENVIRONMENT[this.props.environmentType.value].EXPLORER_URL + "/account/") + row.From.split(',')[0]} title={row.From.split(',')[0]} target="_blank" rel="noopener noreferrer">{this.shorten(row.From.split(',')[0])}</a></td>
-									<td><a href={(row.Type === "deposit" || row.IsBounced ? CONFIG.ENVIRONMENT[this.props.environmentType.value].EXPLORER_URL + "/ledgers/" : COIN_URL + "/tx/") + row.SubmitTxHash.split("_")[0]} title={row.SubmitTxHash} target="_blank" rel="noopener noreferrer">{this.shorten(row.SubmitTxHash)}</a></td>
-									<td><a href={(row.Type === "deposit" || row.IsBounced ? CONFIG.ENVIRONMENT[this.props.environmentType.value].EXPLORER_URL + "/account/" : COIN_URL + "/address/") + row.To.split(',')[0]} title={row.To.split(',')[0]} target="_blank" rel="noopener noreferrer">{this.shorten(row.To.split(',')[0])}</a></td>
+									<td><a href={(row.Type === "deposit" && !row.IsBounced ? COIN_URL + "/tx/" : config.getEnv().EXPLORER_URL + "/ledgers/") + row.Tx.split("_")[0]} title={row.Tx} target="_blank" rel="noopener noreferrer">{this.shorten(row.Tx)}</a></td>
+									<td><a href={(row.Type === "deposit" && !row.IsBounced ? COIN_URL + "/address/" : config.getEnv().EXPLORER_URL + "/account/") + row.From.split(',')[0]} title={row.From.split(',')[0]} target="_blank" rel="noopener noreferrer">{this.shorten(row.From.split(',')[0])}</a></td>
+									<td><a href={(row.Type === "deposit" || row.IsBounced ? config.getEnv().EXPLORER_URL + "/ledgers/" : COIN_URL + "/tx/") + row.SubmitTxHash.split("_")[0]} title={row.SubmitTxHash} target="_blank" rel="noopener noreferrer">{this.shorten(row.SubmitTxHash)}</a></td>
+									<td><a href={(row.Type === "deposit" || row.IsBounced ? config.getEnv().EXPLORER_URL + "/account/" : COIN_URL + "/address/") + row.To.split(',')[0]} title={row.To.split(',')[0]} target="_blank" rel="noopener noreferrer">{this.shorten(row.To.split(',')[0])}</a></td>
 									<td className="text-right">{this.handleCoin(row.Coin)}</td>
 									<td className="text-right">{row.Amount / Math.pow(10, row.Type === "withdrawal" ? 5 : (window.assetsBySymbol[row.Coin] ? window.assetsBySymbol[row.Coin].precision : 0))}</td>
 									<td className="text-right text-capitalize">{String(row.IsBounced)}</td>

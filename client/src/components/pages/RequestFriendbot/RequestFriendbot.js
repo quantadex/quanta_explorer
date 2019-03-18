@@ -79,7 +79,7 @@ class RequestFriendbot extends Component {
 		const { username, quantaAddress } = this.state;
 		return (
 			<div className={classNames(templateClasses.main, 'd-flex', classes.tools)}>
-				<ToolsNavigation className="hidden-sm" />
+				<ToolsNavigation className="hidden-sm" network={this.props.match.params.network} />
 				<div className={classes.content}>
 					<h2>Request Friendbot</h2>
 					<div className={classes.description}>

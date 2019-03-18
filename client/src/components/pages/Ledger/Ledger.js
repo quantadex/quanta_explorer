@@ -11,8 +11,7 @@ import operationsClasses from '@quanta/styles/operations.scss';
 import classes from '@quanta/styles/template.scss';
 import { Apis } from "@quantadex/bitsharesjs-ws";
 import lodash from 'lodash';
-
-var wsString = "wss://testnet-01.quantachain.io:8095";
+import config from '@quanta/config';
 
 class Ledger extends Component {
 	constructor(props) {
@@ -28,7 +27,7 @@ class Ledger extends Component {
 		const { id } = this.props.match.params;
 		self.setState({ sequence: id })
 
-		Apis.instance(wsString, true, 3000, { enableOrders: false }).init_promise.then((res) => {
+		Apis.instance(config.getEnv().WEBSOCKET_PATH, true, 3000, { enableOrders: false }).init_promise.then((res) => {
 			Apis.instance().db_api().exec("list_assets", ["A", 100]).then((assets) => {
 				// console.log("assets ", assets);
 				window.assets = lodash.keyBy(assets, "id")
@@ -94,23 +93,23 @@ class Ledger extends Component {
 				{operations.map((operation, index) => (
 					< React.Fragment key={index} >
 						<div className={classNames(tableClasses.body, 'hidden-sm')}>
-							<a href={"/ledgers/" + operation.id.split(".")[0]} className={operationsClasses.id}>
+							<a href={"/" + this.props.match.params.network + "/ledgers/" + operation.id.split(".")[0]} className={operationsClasses.id}>
 								{operation.id}
 							</a>
 							<div className={operationsClasses.description}>
-								<OperationDescription operation={operation} />
+								<OperationDescription operation={operation} env={"/" + this.props.match.params.network} />
 							</div>
 							<div className={operationsClasses.created}>{timeAgo(operation.timestamp)} ago</div>
 						</div>
 						<div className={classNames(tableClasses.body, 'show-sm', 'flex-column')}>
 							<div className="d-flex justify-content-between w-100">
-								<a href={"/ledgers/" + operation.id.split(".")[0]} className={operationsClasses.id}>
+								<a href={"/" + this.props.match.params.network + "/ledgers/" + operation.id.split(".")[0]} className={operationsClasses.id}>
 									{operation.id}
 								</a>
 								<div className={operationsClasses.created}>{timeAgo(operation.timestamp)} ago</div>
 							</div>
 							<div className={operationsClasses.description}>
-								<OperationDescription operation={operation} />
+								<OperationDescription operation={operation} env={"/" + this.props.match.params.network} />
 							</div>
 						</div>
 					</React.Fragment>

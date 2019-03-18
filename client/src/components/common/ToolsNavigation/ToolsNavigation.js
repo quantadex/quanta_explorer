@@ -5,12 +5,12 @@ import { Link } from 'react-router-dom';
 
 import classes from './ToolsNavigation.scss';
 
-const ToolsNavigation = ({ className }) => (
+const ToolsNavigation = ({ className, network }) => (
 	<div className={classNames(classes.toolsNavigation, className)}>
 		<h2>Tools</h2>
-		<Link to="/tools/generate_keys">Generate Keys</Link>
-		<Link to="/tools/deploy_crosschain">Deploy Crosschain Ethereum</Link>
-		<Link to="/tools/request_friendbot">Request Friendbot</Link>
+		<Link to={"/" + network + "/tools/generate_keys"}>Generate Keys</Link>
+		<Link to={"/" + network + "/tools/deploy_crosschain"}>Deploy Crosschain Ethereum</Link>
+		<Link to={"/" + network + "/tools/request_friendbot"}>Request Friendbot</Link>
 	</div>
 );
 

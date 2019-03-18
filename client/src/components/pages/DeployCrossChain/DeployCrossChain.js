@@ -60,7 +60,7 @@ class DeployCrossChain extends Component {
 			{ data: code }
 		);
 
-		this.web3.eth.sendTransaction({ data: contractData }, function(err, transactionHash) {
+		this.web3.eth.sendTransaction({ data: contractData }, function (err, transactionHash) {
 			if (!err) console.log(transactionHash); // "0x7f9fade1c0d57a7af66ab4ead7c2eb7b11a91385"
 		});
 	};
@@ -77,7 +77,7 @@ class DeployCrossChain extends Component {
 		const { quantaAddress, isError, ethereumAddress } = this.state;
 		return (
 			<div className={classNames(templateClasses.main, 'd-flex', classes.tools)}>
-				<ToolsNavigation className="hidden-sm" />
+				<ToolsNavigation className="hidden-sm" network={this.props.match.params.network} />
 				<div className={classes.content}>
 					<h2>Deploy Crosschain Ethereum</h2>
 					<div className={classes.description}>

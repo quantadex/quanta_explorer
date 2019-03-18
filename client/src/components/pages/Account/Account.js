@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { Row, Col, Nav, NavItem, NavLink, TabContent, TabPane, Modal, ModalBody } from 'reactstrap';
 import QRCode from 'qrcode-react';
 
-import CONFIG from '@quanta/config';
+import config from '@quanta/config';
 import OperationDescription from '@quanta/components/common/OperationDescription';
 import QuantaAddress from '@quanta/components/common/QuantaAddress';
 import LabelText from '@quanta/components/common/LabelText';
@@ -17,7 +17,6 @@ import classes from './Account.scss';
 import lodash from 'lodash';
 import { Apis } from "@quantadex/bitsharesjs-ws";
 
-var wsString = "wss://testnet-01.quantachain.io:8095";
 var dataSize = 100
 
 class Account extends Component {
@@ -71,7 +70,7 @@ class Account extends Component {
 
 			this.setState({ accountInfo: accInfo, accountBalance: e[0][1].balances, issuer: issuer })
 
-			fetch("https://wya99cec1d.execute-api.us-east-1.amazonaws.com/testnet/account?operation_type=5&size=1&account_id=" + acc_data.id)
+			fetch(config.getEnv().API_PATH + "account?operation_type=5&size=1&account_id=" + acc_data.id)
 				.then(e => e.json())
 				.then(data => {
 					if (data.length == 0) {
@@ -92,7 +91,7 @@ class Account extends Component {
 
 	getOpHistory(page) {
 		this.setState({ loading: true })
-		fetch(`https://wya99cec1d.execute-api.us-east-1.amazonaws.com/testnet/account?size=${dataSize}&account_id=${this.state.accountInfo.id}&from_=${page * dataSize}`)
+		fetch(config.getEnv().API_PATH + `account?size=${dataSize}&account_id=${this.state.accountInfo.id}&from_=${page * dataSize}`)
 			.then(e => e.json())
 			.then(async (data) => {
 				const opList = []
@@ -133,7 +132,7 @@ class Account extends Component {
 		}
 	}
 	componentDidMount() {
-		Apis.instance(wsString, true, 3000, { enableOrders: false }).init_promise.then(e => {
+		Apis.instance(config.getEnv().WEBSOCKET_PATH, true, 3000, { enableOrders: false }).init_promise.then(e => {
 			Apis.instance().db_api().exec("list_assets", ["A", 100]).then((assets) => {
 				// console.log("assets ", assets);
 				window.assets = lodash.keyBy(assets, "id")
@@ -197,20 +196,20 @@ class Account extends Component {
 					<React.Fragment key={operation.id}>
 						<div className={classNames(tableClasses.body, 'hidden-sm')}>
 							<a
-								href={"/ledgers/" + operation.block}
+								href={"/" + this.props.match.params.network + "/ledgers/" + operation.block}
 								className={operationsClasses.id}
 							>
 								{operation.block}
 							</a>
 							<div className={operationsClasses.description}>
-								<OperationDescription operation={operation} />
+								<OperationDescription operation={operation} env={"/" + this.props.match.params.network} />
 							</div>
 							<div className={operationsClasses.created}>{timeAgo(operation.timestamp)} ago</div>
 						</div>
 						<div className={classNames(tableClasses.body, 'show-sm', 'flex-column')}>
 							<div className="d-flex justify-content-between w-100">
 								<a
-									href={"/object/" + operation.id}
+									href={"/" + this.props.match.params.network + "/object/" + operation.id}
 									className={operationsClasses.id}
 								>
 									{operation.id}
@@ -218,7 +217,7 @@ class Account extends Component {
 								<div className={operationsClasses.created}>{timeAgo(operation.timestamp)} ago</div>
 							</div>
 							<div className={operationsClasses.description}>
-								<OperationDescription operation={operation} />
+								<OperationDescription operation={operation} env={"/" + this.props.match.params.network} />
 							</div>
 						</div>
 					</React.Fragment>
@@ -258,7 +257,7 @@ class Account extends Component {
 	renderLabelTextIssuer = accountId => (
 		<React.Fragment>
 			<div className={classes.label}>Issuer</div>
-			<QuantaAddress className={classes.text} address={accountId} showOriginal isLong />
+			<QuantaAddress className={classes.text} address={accountId} env={this.props.match.params.network} showOriginal isLong />
 		</React.Fragment>
 	);
 
@@ -292,7 +291,7 @@ class Account extends Component {
 			</Row>
 			<div className={classNames(classes.tokenCell, classes.tokenIssuer, 'show-sm')}>
 				{token.asset_code === 'ETH' &&
-					token.asset_issuer === CONFIG.SETTINGS.QUANTA_ISSUER &&
+					token.asset_issuer === config.SETTINGS.QUANTA_ISSUER &&
 					this.renderLabelText(
 						'Deposit Address',
 						this.props.crossChainAddress.map(address => (

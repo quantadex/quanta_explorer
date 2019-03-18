@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import classes from './Witness.scss';
 import { Apis } from "@quantadex/bitsharesjs-ws";
-
-var wsString = "wss://testnet-01.quantachain.io:8095";
+import config from '@quanta/config';
 
 class Witness extends Component {
 	constructor(props) {
@@ -20,7 +19,7 @@ class Witness extends Component {
 			})
 		}
 
-		Apis.instance(wsString, true, 3000, { enableOrders: false }).init_promise.then((res) => {
+		Apis.instance(config.getEnv().WEBSOCKET_PATH, true, 3000, { enableOrders: false }).init_promise.then((res) => {
 			// console.log("connected to:", res[0].network);
 			Apis.instance().db_api().exec("get_global_properties", []).then(e => {
 				// console.log(e)
@@ -57,8 +56,8 @@ class Witness extends Component {
 						{this.state.witnesses.map(witness => {
 							return (
 								<tr key={witness.id}>
-									<td><a href={"/account/" + witness.name}>{witness.id}</a></td>
-									<td><a href={"/account/" + witness.name}>{witness.name}</a></td>
+									<td><a href={"/" + this.props.match.params.network + "/account/" + witness.name}>{witness.id}</a></td>
+									<td><a href={"/" + this.props.match.params.network + "/account/" + witness.name}>{witness.name}</a></td>
 									<td className="text-right">{Number(witness.total_votes).toLocaleString(navigator.language, { minimumFractionDigits: 0 })}</td>
 									<td className="text-right">{witness.total_missed.toLocaleString(navigator.language, { minimumFractionDigits: 0 })}</td>
 									<td className="text-right">{witness.last_confirmed_block_num.toLocaleString(navigator.language, { minimumFractionDigits: 0 })}</td>

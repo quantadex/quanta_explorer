@@ -17,9 +17,9 @@ class Header extends React.PureComponent {
 	onGo = () => {
 		const { searchKey, history } = this.props;
 		if (searchKey.match(/\d+.\d+.\d+/g)) {
-			history.push(`/object/${searchKey}`);
+			history.push(`/${this.getEnv()}/object/${searchKey}`);
 		} else {
-			history.push(`/account/${searchKey}`);
+			history.push(`/${this.getEnv()}/account/${searchKey}`);
 		}
 	};
 
@@ -32,22 +32,26 @@ class Header extends React.PureComponent {
 	changeEnvironment = (env) => {
 		let params = this.props.location.pathname.split('/')
 		params[1] = env.value
-		this.props.history.push(params.join('/'))
+		// this.props.history.push(params.join('/'))
+		window.location = params.join('/')
+	}
+
+	getEnv() {
+		return this.props.location.pathname.startsWith("/testnet") ? "testnet" : "mainnet"
 	}
 
 	render() {
-		const { environmentType, searchKey } = this.props;
-		const net_params = this.props.match.params.network
-		const network = net_params ? { value: net_params, label: net_params } : { value: "testnet", label: "testnet" }
+		const { searchKey } = this.props;
+		const network = this.getEnv() == "testnet" ? { value: "testnet", label: "testnet" } : { value: "mainnet", label: "mainnet" }
 		const Menu = (prop) => {
 			return (
 				<div className={classNames(classes.menu, prop.className)}>
 					More
 					<div className={classes.menuItems}>
-						<a href="/tools">Tools</a><br />
-						<a href="/witness">Witnesses</a><br />
-						<a href="/committee">Committee</a><br />
-						<a className="show-sm" href="/crosschain/node1/1">Crosschain</a>
+						<a href={"/" + network.value + "/tools"}>Tools</a><br />
+						<a href={"/" + network.value + "/witness"}>Witnesses</a><br />
+						<a href={"/" + network.value + "/committee"}>Committee</a><br />
+						<a className="show-sm" href={"/" + network.value + "/crosschain/node1/1"}>Crosschain</a>
 					</div>
 				</div>
 			)
@@ -56,7 +60,7 @@ class Header extends React.PureComponent {
 		return (
 			<div className={classes.header}>
 				<div className={classes.details}>
-					<a href="/">
+					<a href={"/" + network.value}>
 						<img src={Logo} alt="logo" />
 					</a>
 					<Menu className="show-sm mr-4" />
@@ -66,11 +70,11 @@ class Header extends React.PureComponent {
 							value: environment,
 							label: environment,
 						}))}
-						// value={{}}
-						className={classes.category}
+						value={network}
+						className={classes.category + " text-capitalize"}
 						onChange={this.changeEnvironment}
 					/>
-					<a className="hidden-sm ml-4" href="/crosschain/node1/1">Crosschain</a>
+					<a className="hidden-sm ml-4" href={"/" + network.value + "/crosschain/node1/1"}>Crosschain</a>
 					<Menu className="hidden-sm ml-4" />
 				</div>
 				<div className={classes.search}>
