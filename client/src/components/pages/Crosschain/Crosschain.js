@@ -30,12 +30,12 @@ class Crosschain extends Component {
 	}
 
 	changeNode(e) {
-		this.props.history.push(`/crosschain/${e.value}/1`)
+		this.props.history.push(`/${this.props.match.params.network}/crosschain/${e.value}/1`)
 	}
 
 	goToPage(e) {
 		// this.setState({ currentPage: e })
-		this.props.history.push(`/crosschain/${this.props.match.params.id}/${e}`)
+		this.props.history.push(`/${this.props.match.params.network}/crosschain/${this.props.match.params.id}/${e}`)
 	}
 
 	componentWillReceiveProps(nextProps) {
