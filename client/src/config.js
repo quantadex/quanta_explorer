@@ -31,7 +31,18 @@ const SETTINGS = {
 	CROSSCHAIN_ADDRESS: '0xBD770336fF47A3B61D4f54cc0Fb541Ea7baAE92d',
 };
 
+function getEnv() {
+	// what is the env
+	// pick the right baseUrl
+	if (window.location.pathname.startsWith("/testnet")) {
+		return ENVIRONMENT.testnet
+	} else {
+		return ENVIRONMENT.mainnet
+	}
+}
+
 module.exports = {
 	SETTINGS,
 	ENVIRONMENT,
+	getEnv
 };
