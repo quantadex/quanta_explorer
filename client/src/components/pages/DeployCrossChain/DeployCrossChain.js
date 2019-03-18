@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import classNames from 'classnames';
 import { Button, Input } from 'reactstrap';
 
-import CONFIG from '@quanta/config';
+import config from '@quanta/config';
 import ToolsNavigation from '@quanta/components/common/ToolsNavigation';
 import templateClasses from '@quanta/styles/template.scss';
 import classes from './DeployCrossChain.scss';
@@ -55,7 +55,7 @@ class DeployCrossChain extends Component {
 
 		var forwardContract = this.web3.eth.contract(JSON.parse(abi));
 		var contractData = forwardContract.new.getData(
-			CONFIG.SETTINGS.CROSSCHAIN_ADDRESS,
+			config.getEnv().CROSSCHAIN_ADDRESS,
 			quantaAddress,
 			{ data: code }
 		);

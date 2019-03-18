@@ -11,6 +11,7 @@ const ENVIRONMENT = {
 		EXPLORER_URL: "http://testnet.quantadex.com",
 		ETHERSCAN_URL: "https://ropsten.etherscan.io",
 		BLOCKCYPHER_URL: "https://live.blockcypher.com/btc-testnet",
+		CROSSCHAIN_ADDRESS: '0xBD770336fF47A3B61D4f54cc0Fb541Ea7baAE92d',
 	},
 	mainnet: {
 		WEBSOCKET_PATH: "wss://mainnet-api.quantachain.io:8095",
@@ -18,6 +19,7 @@ const ENVIRONMENT = {
 		EXPLORER_URL: "http://testnet.quantadex.com",
 		ETHERSCAN_URL: "https://etherscan.io",
 		BLOCKCYPHER_URL: "https://live.blockcypher.com/btc",
+		CROSSCHAIN_ADDRESS: '0xF8306d5279193146F307dc1c170EA59e7b0C370A',
 	}
 };
 
@@ -28,7 +30,6 @@ const SETTINGS = {
 	QUANTA_ISSUER: 'QCISRUJ73RQBHB3C4LA6X537LPGSFZF3YUZ6MOPUOUJR5A63I5TLJML4',
 	QUANTA_ORDERBOOK: 'QAHXFPFJ33VV4C4BTXECIQCNI7CXRKA6KKG5FP3TJFNWGE7YUC4MBNFZ',
 	ACCOUT_START_WITH: 'Q',
-	CROSSCHAIN_ADDRESS: '0xBD770336fF47A3B61D4f54cc0Fb541Ea7baAE92d',
 };
 
 function getEnv() {
