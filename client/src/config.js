@@ -8,7 +8,7 @@ const ENVIRONMENT = {
 
 		WEBSOCKET_PATH: "wss://testnet-01.quantachain.io:8095",
 		API_PATH: 'https://wya99cec1d.execute-api.us-east-1.amazonaws.com/testnet/',
-		EXPLORER_URL: "http://explorer.quantadex.com",
+		EXPLORER_URL: "http://explorer.quantadex.com/testnet",
 		ETHERSCAN_URL: "https://ropsten.etherscan.io",
 		BLOCKCYPHER_URL: "https://live.blockcypher.com/btc-testnet",
 		CROSSCHAIN_ADDRESS: '0xBD770336fF47A3B61D4f54cc0Fb541Ea7baAE92d',
@@ -16,7 +16,7 @@ const ENVIRONMENT = {
 	mainnet: {
 		WEBSOCKET_PATH: "wss://mainnet-api.quantachain.io:8095",
 		API_PATH: 'https://wya99cec1d.execute-api.us-east-1.amazonaws.com/mainnet/',
-		EXPLORER_URL: "http://explorer.quantadex.com",
+		EXPLORER_URL: "http://explorer.quantadex.com/mainnet",
 		ETHERSCAN_URL: "https://etherscan.io",
 		BLOCKCYPHER_URL: "https://live.blockcypher.com/btc",
 		CROSSCHAIN_ADDRESS: '0xF8306d5279193146F307dc1c170EA59e7b0C370A',
