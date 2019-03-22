@@ -60,7 +60,7 @@ class Account extends Component {
 		Apis.instance().db_api().exec("get_full_accounts", [[id.toLowerCase()], false]).then(async e => {
 			// console.log(e[0][1])
 			const acc_data = e[0][1].account
-			const accInfo = { name: acc_data.name, id: acc_data.id, address: acc_data.options.memo_key }
+			const accInfo = { name: acc_data.name, id: acc_data.id, address: [acc_data.owner.key_auths[0][0], acc_data.active.key_auths[0][0]] }
 			const issuer = {}
 
 			for (let asset of e[0][1].balances) {
@@ -168,7 +168,7 @@ class Account extends Component {
 					</div>
 					<Row>
 						<Col sm={12} md={8} className={templateClasses.section}>
-							<LabelText label="QUANTA ADDRESS" text={this.state.accountInfo.address} isLong />
+							<LabelText label="QUANTA ADDRESS" text={<span>Owner: {this.state.accountInfo.address[0]}<br />Active: {this.state.accountInfo.address[1]}</span>} isLong />
 						</Col>
 						<Col
 							sm={12}
