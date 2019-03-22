@@ -46,6 +46,12 @@ class GenerateKeys extends Component {
 					<Button color="primary" onClick={this.onGenerate}>
 						Generate
 					</Button>
+
+					<hr />
+					<p>
+						If you're looking for 100% secure, offline wallet generation,
+						check out our <a href="https://github.com/quantadex/offline_wallet" target="_blank">offline_wallet on Github</a>.
+					</p>
 				</div>
 			</div>
 		);
