@@ -32,18 +32,18 @@ class DExplorer extends Component {
 		}
 	}
 
-	componentWillReceiveProps(nextProps) {
-		if (this.props.match.params.network !== nextProps.match.params.network) {
-			this.setState({
-				operationsList: [],
-				blocksList: [],
-				nodes: 0
-			})
-			setTimeout(() => {
-				this.init()
-			}, 0)
-		}
-	}
+	// componentWillReceiveProps(nextProps) {
+	// 	if (this.props.match.params.network !== nextProps.match.params.network) {
+	// 		this.setState({
+	// 			operationsList: [],
+	// 			blocksList: [],
+	// 			nodes: 0
+	// 		})
+	// 		setTimeout(() => {
+	// 			this.init()
+	// 		}, 0)
+	// 	}
+	// }
 
 	componentDidMount() {
 		this.setState({
@@ -61,15 +61,15 @@ class DExplorer extends Component {
 		const names = {};
 		var last_block = null;
 		const blockTimes = [];
-		let thisInterval;
-		clearInterval(interval)
+		// let thisInterval;
+		// clearInterval(interval)
 
 		Apis.instance(config.getEnv().WEBSOCKET_PATH, true, 3000, { enableOrders: false }).init_promise.then((res) => {
 			// console.log("connected to:", res[0].network);
-			ChainStore.subscribers.clear()
-			ChainStore.init(false).then(() => {
-				ChainStore.subscribe(this.updateChainState.bind(this));
-			});
+			// ChainStore.subscribers.clear()
+			// ChainStore.init(false).then(() => {
+			// 	ChainStore.subscribe(this.updateChainState.bind(this));
+			// });
 		}).then((e) => {
 			Apis.instance().db_api().exec("list_assets", ["A", 100]).then((assets) => {
 				// console.log("assets ", assets);
@@ -79,11 +79,25 @@ class DExplorer extends Component {
 			})
 		}).then((e) => {
 			action()
-			interval = setInterval(() => {
+			setNodes()
+
+			setInterval(() => {
 				action()
 			}, 500)
-			thisInterval = interval
+
+			setInterval(() => {
+				setNodes()
+			}, 5000)
 		})
+
+		function setNodes() {
+			Apis.instance().db_api().exec("get_global_properties", []).then(e => {
+				if (e.active_witnesses.length !== self.state.nodes) {
+					self.setState({ nodes: e.active_witnesses.length })
+				}
+			})
+		}
+
 		function getName(id) {
 			if (names[id] !== undefined) {
 				return names[id]
@@ -119,7 +133,7 @@ class DExplorer extends Component {
 				// console.log("properties ", res);
 				return res
 			}).then((e) => {
-				if (e.head_block_number == last_block || thisInterval != interval) return
+				if (e.head_block_number == last_block) return
 
 				last_block = e.head_block_number;
 				Apis.instance().db_api().exec("get_block", [e.head_block_number]).then(async (res) => {
