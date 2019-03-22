@@ -16,7 +16,7 @@ class Header extends React.PureComponent {
 
 	onGo = () => {
 		const { searchKey, history } = this.props;
-		if (searchKey.match(/\d+.\d+.\d+/g)) {
+		if (searchKey.match(/\d+\.\d+\.\d+/g)) {
 			history.push(`/${this.getEnv()}/object/${searchKey}`);
 		} else {
 			history.push(`/${this.getEnv()}/account/${searchKey}`);
