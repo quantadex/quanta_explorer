@@ -233,7 +233,7 @@ function getDescription(op, env) {
 			return (
 				<React.Fragment>
 					<a href={env + "/account/" + op.name1}>{op.name1}</a> withdrew vesting balance of&nbsp;
-					{op.data.amount.amount / Math.pow(10, AssetPrecision(op.data.amount.asset_id))} {AssetSymbol(op.data.amount.asset_id)}
+					{op.data.amount_.amount / Math.pow(10, AssetPrecision(op.data.amount_.asset_id))} {AssetSymbol(op.data.amount_.asset_id)}
 				</React.Fragment>
 			);
 		case 34:

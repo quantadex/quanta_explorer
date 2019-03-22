@@ -93,7 +93,7 @@ export async function operationData(op, Apis) {
 			uid = operation.fee_paying_account
 			break
 		case 33:
-			uid = operation.owner
+			uid = operation.owner_
 			break
 		case 37:
 			uid = operation.deposit_to_account
