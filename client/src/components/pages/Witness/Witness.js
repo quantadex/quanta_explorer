@@ -9,6 +9,7 @@ class Witness extends Component {
 
 		this.state = {
 			witnesses: [],
+			all_witnesses: [],
 		};
 	}
 
@@ -35,6 +36,10 @@ class Witness extends Component {
 					this.setState({ witnesses: list })
 				})
 			})
+
+			Apis.instance().db_api().exec("lookup_witness_accounts", [0, 100]).then(e => {
+				this.setState({ all_witnesses: e })
+			})
 		})
 	}
 
@@ -42,7 +47,7 @@ class Witness extends Component {
 		return (
 			<div className={classes.container}>
 				<h3>Active Witnesses</h3>
-				<table>
+				<table className="w-100 mb-5">
 					<thead>
 						<tr>
 							<th>ID</th>
@@ -61,6 +66,26 @@ class Witness extends Component {
 									<td className="text-right">{Number(witness.total_votes).toLocaleString(navigator.language, { minimumFractionDigits: 0 })}</td>
 									<td className="text-right">{witness.total_missed.toLocaleString(navigator.language, { minimumFractionDigits: 0 })}</td>
 									<td className="text-right">{witness.last_confirmed_block_num.toLocaleString(navigator.language, { minimumFractionDigits: 0 })}</td>
+								</tr>
+							)
+						})}
+					</tbody>
+				</table>
+
+				<h3>All Witnesses</h3>
+				<table className="mb-5">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Account</th>
+						</tr>
+					</thead>
+					<tbody>
+						{this.state.all_witnesses.map(witness => {
+							return (
+								<tr key={witness[0]}>
+									<td className="pr-4"><a href={"/" + this.props.match.params.network + "/account/" + witness[0]}>{witness[1]}</a></td>
+									<td className="pr-4"><a href={"/" + this.props.match.params.network + "/account/" + witness[0]}>{witness[0]}</a></td>
 								</tr>
 							)
 						})}
