@@ -16,6 +16,7 @@ import templateClasses from '@quanta/styles/template.scss';
 import classes from './Account.scss';
 import lodash from 'lodash';
 import { Apis } from "@quantadex/bitsharesjs-ws";
+import { PublicKey } from "@quantadex/bitsharesjs";
 
 var dataSize = 100
 
@@ -48,6 +49,28 @@ class Account extends Component {
 		})
 	}
 
+	getAccountsByKey(id) {
+		return Apis.instance().db_api().exec("get_key_references", [[id]]).then(e => {
+			if (e[0].length == 0) {
+				this.getAccount(id)
+			} else {
+				let unique_list = []
+				for (let x of e[0]) {
+					if (unique_list.indexOf(x) === -1) unique_list.push(x)
+				}
+
+				Apis.instance().db_api().exec("get_accounts", [unique_list]).then(accounts => {
+					if (accounts.length > 1) {
+						this.setState({ multi_match: accounts })
+					} else {
+						this.getAccount(accounts[0].name)
+					}
+
+				})
+			}
+		})
+	}
+
 	getAccount(id) {
 		this.setState({
 			operations: [],
@@ -55,10 +78,10 @@ class Account extends Component {
 			hasError: false,
 			loading: false,
 			end: false,
+			multi_match: false,
 			page: 0
 		})
 		Apis.instance().db_api().exec("get_full_accounts", [[id.toLowerCase()], false]).then(async e => {
-			// console.log(e[0][1])
 			const acc_data = e[0][1].account
 			const accInfo = { name: acc_data.name, id: acc_data.id, address: [acc_data.owner.key_auths[0][0], acc_data.active.key_auths[0][0]] }
 			const issuer = {}
@@ -86,7 +109,6 @@ class Account extends Component {
 			// console.log(e)
 			this.setState({ hasError: true })
 		})
-
 	}
 
 	getOpHistory(page) {
@@ -128,7 +150,12 @@ class Account extends Component {
 
 	componentWillReceiveProps(nextProps) {
 		if (nextProps.match.params.id !== this.props.match.params.id) {
-			this.getAccount(nextProps.match.params.id)
+			const { id } = nextProps.match.params;
+			if (PublicKey.fromPublicKeyString(id)) {
+				this.getAccountsByKey(id)
+			} else {
+				this.getAccount(id)
+			}
 		}
 	}
 	componentDidMount() {
@@ -140,7 +167,12 @@ class Account extends Component {
 				return assets;
 			}).then(e => {
 				const { id } = this.props.match.params;
-				this.getAccount(id)
+
+				if (PublicKey.fromPublicKeyString(id)) {
+					this.getAccountsByKey(id)
+				} else {
+					this.getAccount(id)
+				}
 			})
 		})
 	}
@@ -433,8 +465,27 @@ class Account extends Component {
 			return <NoMatchesFound keyword={id} />;
 		}
 
+		if (this.state.multi_match) {
+			return (
+				<div className={classNames(templateClasses.main)}>
+					<h5>Multiple accounts match this address:</h5>
+					<div>
+						{this.state.multi_match.map((account) => {
+							return (
+								<a key={account.id} className="pr-5 d-inline-block"
+									href={"/" + this.props.match.params.network + "/account/" + account.name}>
+									{account.name}
+								</a>
+							)
+						})}
+					</div>
+
+				</div>
+			)
+		}
+
 		return this.state.isFetching || !this.state.accountInfo ? (
-			<React.Fragment />
+			<div className="text-center my-5">Loading...</div>
 		) : (
 				<React.Fragment>
 					{this.renderDetails()}

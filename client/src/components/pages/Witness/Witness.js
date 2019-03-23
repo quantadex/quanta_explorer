@@ -61,7 +61,7 @@ class Witness extends Component {
 						{this.state.witnesses.map(witness => {
 							return (
 								<tr key={witness.id}>
-									<td><a href={"/" + this.props.match.params.network + "/account/" + witness.name}>{witness.id}</a></td>
+									<td><a href={"/" + this.props.match.params.network + "/object/" + witness.id}>{witness.id}</a></td>
 									<td><a href={"/" + this.props.match.params.network + "/account/" + witness.name}>{witness.name}</a></td>
 									<td className="text-right">{Number(witness.total_votes).toLocaleString(navigator.language, { minimumFractionDigits: 0 })}</td>
 									<td className="text-right">{witness.total_missed.toLocaleString(navigator.language, { minimumFractionDigits: 0 })}</td>
@@ -84,7 +84,7 @@ class Witness extends Component {
 						{this.state.all_witnesses.map(witness => {
 							return (
 								<tr key={witness[0]}>
-									<td className="pr-4"><a href={"/" + this.props.match.params.network + "/account/" + witness[0]}>{witness[1]}</a></td>
+									<td className="pr-4"><a href={"/" + this.props.match.params.network + "/object/" + witness[1]}>{witness[1]}</a></td>
 									<td className="pr-4"><a href={"/" + this.props.match.params.network + "/account/" + witness[0]}>{witness[0]}</a></td>
 								</tr>
 							)

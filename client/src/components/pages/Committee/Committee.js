@@ -54,8 +54,8 @@ class Committee extends Component {
 						{this.state.members.map(member => {
 							return (
 								<tr key={member.id}>
-									<td><a href={"/account/" + member.name}>{member.id}</a></td>
-									<td><a href={"/account/" + member.name}>{member.name}</a></td>
+									<td><a href={"/" + this.props.match.params.network + "/object/" + member.id}>{member.id}</a></td>
+									<td><a href={"/" + this.props.match.params.network + "/account/" + member.name}>{member.name}</a></td>
 									<td className="text-right">{member.total_votes.toLocaleString(navigator.language, { minimumFractionDigits: 0 })}</td>
 								</tr>
 							)
