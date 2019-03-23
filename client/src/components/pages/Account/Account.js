@@ -151,7 +151,7 @@ class Account extends Component {
 	componentWillReceiveProps(nextProps) {
 		if (nextProps.match.params.id !== this.props.match.params.id) {
 			const { id } = nextProps.match.params;
-			if (PublicKey.fromPublicKeyString(id)) {
+			if (id.length > 20 && PublicKey.fromPublicKeyString(id)) {
 				this.getAccountsByKey(id)
 			} else {
 				this.getAccount(id)
@@ -168,7 +168,7 @@ class Account extends Component {
 			}).then(e => {
 				const { id } = this.props.match.params;
 
-				if (PublicKey.fromPublicKeyString(id)) {
+				if (id.length > 20 && PublicKey.fromPublicKeyString(id)) {
 					this.getAccountsByKey(id)
 				} else {
 					this.getAccount(id)
