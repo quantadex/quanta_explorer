@@ -23,10 +23,15 @@ class Crosschain extends Component {
 		this.setState({ selected: id })
 		fetch(config.getEnv().API_PATH + id + "/status").then(e => e.json()).then(e => {
 			this.setState({ status: e })
-			fetch(config.getEnv().API_PATH + id + "/history").then(e => e.json()).then(e => {
-				this.setState({ list: e })
-			})
 		})
+	}
+
+	getHistory(id, page) {
+		const { rowPerPage } = this.state
+		fetch(config.getEnv().API_PATH + id + `/history?offset=${(Number(page) - 1) * rowPerPage}&limit=${rowPerPage}`)
+			.then(e => e.json()).then(e => {
+				this.setState({ list: e, last_page: e.length < rowPerPage })
+			})
 	}
 
 	changeNode(e) {
@@ -43,12 +48,13 @@ class Crosschain extends Component {
 			this.getNode(nextProps.match.params.id)
 		}
 		if (nextProps.match.params.page !== this.state.currentPage) {
+			this.getHistory(nextProps.match.params.id, nextProps.match.params.page)
 			this.setState({ currentPage: Number(nextProps.match.params.page) })
 		}
 	}
 
 	componentDidMount() {
-		const { id } = this.props.match.params;
+		const { id, page } = this.props.match.params;
 		Apis.instance(config.getEnv().WEBSOCKET_PATH, true, 3000, { enableOrders: false }).init_promise.then((res) => {
 			Apis.instance().db_api().exec("list_assets", ["A", 100]).then((assets) => {
 				// console.log("assets ", assets);
@@ -57,6 +63,7 @@ class Crosschain extends Component {
 				return assets;
 			}).then(e => {
 				this.getNode(id)
+				this.getHistory(id, page)
 			})
 		})
 	}
@@ -133,7 +140,7 @@ class Crosschain extends Component {
 						</tr>
 					</thead>
 					<tbody>
-						{this.state.list.slice((this.state.currentPage - 1) * this.state.rowPerPage, this.state.currentPage * this.state.rowPerPage).map(row => {
+						{this.state.list.map(row => {
 							const COIN_URL = row.Coin == "BTC" ? config.getEnv().BLOCKCYPHER_URL : config.getEnv().ETHERSCAN_URL
 							return (
 								<tr key={row.Type + row.Tx}>
@@ -153,7 +160,7 @@ class Crosschain extends Component {
 					</tbody>
 				</table>
 
-				<Pagination length={Math.ceil(this.state.list.length / this.state.rowPerPage)} current={this.state.currentPage} onClick={this.goToPage.bind(this)} />
+				<Pagination current={this.state.currentPage} isLast={this.state.last_page} onClick={this.goToPage.bind(this)} />
 			</div>
 		)
 	}

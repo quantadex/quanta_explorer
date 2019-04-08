@@ -19,21 +19,26 @@ class Pagination extends Component {
 
         return (
             <div className={classes.paginate + " d-flex justify-content-center"}>
-                <div className={classes.pagenum + (this.props.current === 1 ? " d-none" : "")}
-                    onClick={() => { this.props.onClick(this.props.current - 1) }}>Prev</div>
-                <div className={classes.pagenum + (start === 0 ? " d-none" : "")}
-                    onClick={() => { this.props.onClick(1) }}>First</div>
-                {arr.map(i => {
-                    let index = i + 1
-                    return (
-                        <div key={index} className={classes.pagenum + (index === this.props.current ? " " + classes.active : "")}
-                            onClick={() => this.props.onClick(index)}>{index}</div>
-                    )
-                })}
-                <div className={classes.pagenum + (end >= this.props.length ? " d-none" : "")}
-                    onClick={() => { this.props.onClick(this.props.length) }}>Last</div>
-                <div className={classes.pagenum + (this.props.current === this.props.length ? " d-none" : "")}
-                    onClick={() => { this.props.onClick(this.props.current + 1) }}>Next</div>
+                <button className={classes.pagenum + (this.props.current === 1 ? " d-none" : "")}
+                    onClick={() => { this.props.onClick(1) }}>First</button>
+                <button className={classes.pagenum + (this.props.current === 1 ? " d-none" : "")}
+                    onClick={() => { this.props.onClick(this.props.current - 1) }}>Prev</button>
+                {this.props.length ?
+                    <React.Fragment>
+                        {arr.map(i => {
+                            let index = i + 1
+                            return (
+                                <button key={index} className={classes.pagenum + (index === this.props.current ? " " + classes.active : "")}
+                                    onClick={() => this.props.onClick(index)}>{index}</button>
+                            )
+                        })}
+                        <button className={classes.pagenum + (end >= this.props.length ? " d-none" : "")}
+                            onClick={() => { this.props.onClick(this.props.length) }}>Last</button>
+                    </React.Fragment>
+                    : null
+                }
+                <button className={classes.pagenum + (this.props.current === this.props.length || this.props.isLast ? " d-none" : "")}
+                    onClick={() => { this.props.onClick(this.props.current + 1) }}>Next</button>
             </div>
         )
     }
