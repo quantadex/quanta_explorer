@@ -20,6 +20,8 @@
 
 .sToken {
 	position: relative;
+	width: max-content;
+	margin-left: auto;
 	.coinToken {
 		display: none;
 		position: absolute;
