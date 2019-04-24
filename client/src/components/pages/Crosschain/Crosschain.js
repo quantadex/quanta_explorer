@@ -116,7 +116,6 @@ class Crosschain extends Component {
 
 	render() {
 		const nodes = { node1: "Node 1", node2: "Node 2", node3: "Node 3" }
-
 		return (
 			<div className={classes.container}>
 				<h3>Crosschain</h3>
@@ -155,9 +154,9 @@ class Crosschain extends Component {
 						</tr>
 					</thead>
 					<tbody>
-						{this.state.list.map(row => {
+						{this.state.list.map((row, index) => {
 							return (
-								<tr key={row.Type + row.Tx}>
+								<tr key={index}>
 									<td className="text-uppercase">{row.Type}</td>
 									<td><a href={(row.Type === "deposit" && !row.IsBounced ? this.coinURL(row.Coin, "/tx/") : config.getEnv().EXPLORER_URL + "/ledgers/") + row.Tx.split("_")[0]} title={row.Tx} target="_blank" rel="noopener noreferrer">{this.shorten(row.Tx)}</a></td>
 									<td><a href={(row.Type === "deposit" && !row.IsBounced ? this.coinURL(row.Coin, "/address/") : config.getEnv().EXPLORER_URL + "/account/") + row.From.split(',')[0]} title={row.From.split(',')[0]} target="_blank" rel="noopener noreferrer">{this.shorten(row.From.split(',')[0])}</a></td>
