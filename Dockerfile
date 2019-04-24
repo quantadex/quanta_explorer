@@ -2,6 +2,9 @@ FROM node:8.16.0-alpine
 
 RUN npm install -g yarn nodemon
 
+RUN apk update && apk upgrade && \
+	apk add --no-cache git make gcc g++ python
+
 # Create app directory
 WORKDIR /usr/src/app
 
