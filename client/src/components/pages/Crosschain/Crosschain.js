@@ -121,8 +121,8 @@ class Crosschain extends Component {
 				<h3>Crosschain</h3>
 				<div className="d-flex justify-content-between">
 					<div className="small">
-						<b>CurrentBlockETH:</b> {this.state.status && this.state.status["CURRENTBLOCK:ETH"]}<br />
-						<b>CurrentBlockQuanta:</b> {this.state.status && this.state.status["CURRENTBLOCK:QUANTA"]}<br />
+						<b>CurrentBlockETH:</b> {this.state.status && this.state.status.ETH.CurrentBlock}<br />
+						<b>CurrentBlockQuanta:</b> {this.state.status && this.state.status.QUANTA.CurrentBlock}<br />
 						<b>Public Key:</b> {this.state.status && this.state.status.PUBLIC_KEY}
 					</div>
 					<QuantaSelect
