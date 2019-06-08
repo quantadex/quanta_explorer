@@ -98,6 +98,12 @@ export async function operationData(op, Apis) {
 		case 37:
 			uid = operation.deposit_to_account
 			break
+		case 49:
+			uid = operation.account_id
+			break
+		case 50:
+			uid = operation.account_id
+			break
 
 		default:
 			throw op

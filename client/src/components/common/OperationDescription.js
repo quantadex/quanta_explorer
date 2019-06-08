@@ -303,6 +303,25 @@ function getDescription(op, env) {
 					FBA DISTRIBUTE
 			</React.Fragment>
 			);
+		case 49:
+			return (
+				<React.Fragment>
+					<a href={env + "/account/" + op.name1}>{op.name1}</a> bet&nbsp;
+					{op.data.risk.amount / Math.pow(10, AssetPrecision(op.data.risk.asset_id))} {AssetSymbol(op.data.risk.asset_id)}
+					&nbsp;on dice roll {op.data.bet[0] == "<" ? "under" : "over"} {op.data.bet.slice(1)}
+				</React.Fragment>
+			);
+		case 50:
+			return (
+				<React.Fragment>
+					<a href={env + "/account/" + op.name1}>{op.name1}</a> rolled {op.data.outcome}&nbsp;
+					{op.data.win ?
+						"and won " +
+						op.data.payout.amount / Math.pow(10, AssetPrecision(op.data.payout.asset_id)) + " " + AssetSymbol(op.data.payout.asset_id)
+						: ""
+					}
+				</React.Fragment>
+			);
 		default:
 			// console.log(op)
 			return (
