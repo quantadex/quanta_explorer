@@ -83,7 +83,12 @@ class Account extends Component {
 		})
 		Apis.instance().db_api().exec("get_full_accounts", [[id.toLowerCase()], false]).then(async e => {
 			const acc_data = e[0][1].account
-			const accInfo = { name: acc_data.name, id: acc_data.id, address: [acc_data.owner.key_auths[0][0], acc_data.active.key_auths[0][0]] }
+			const accInfo = {
+				name: acc_data.name,
+				id: acc_data.id,
+				address: [acc_data.owner.key_auths[0] ? acc_data.owner.key_auths[0][0] : "",
+				acc_data.active.key_auths[0] ? acc_data.active.key_auths[0][0] : ""]
+			}
 			const issuer = {}
 
 			for (let asset of e[0][1].balances) {
@@ -334,9 +339,9 @@ class Account extends Component {
 					)}
 			</div>
 			<div className={classNames(classes.tokenCell, classes.tokenIssuer, 'show-sm')}>
-				{token.asset_type === 'native'
+				{this.state.issuer[token.asset_type] === 'null-account'
 					? 'Native Token'
-					: this.renderLabelTextIssuer(token.asset_issuer ? token.asset_issuer : '')}
+					: this.renderLabelTextIssuer(this.state.issuer[token.asset_type])}
 			</div>
 		</div>
 	);
