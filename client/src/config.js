@@ -15,7 +15,7 @@ const ENVIRONMENT = {
 		CROSSCHAIN_ADDRESS: '0xBD770336fF47A3B61D4f54cc0Fb541Ea7baAE92d',
 	},
 	mainnet: {
-		WEBSOCKET_PATH: "wss://mainnet-api.quantachain.io:8095",
+		WEBSOCKET_PATH: "wss://mainnet-lb.quantachain.io",
 		API_PATH: 'https://wya99cec1d.execute-api.us-east-1.amazonaws.com/mainnet/',
 		EXPLORER_URL: "http://explorer.quantadex.com/mainnet",
 		ETHERSCAN_URL: "https://etherscan.io",
