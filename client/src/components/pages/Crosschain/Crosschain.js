@@ -104,7 +104,7 @@ class Crosschain extends Component {
 		const coin = coinName.toLowerCase()
 		switch (coin) {
 			case "btc":
-				return testnet ? config.getEnv().BLOCKCYPHER_URL + coin + "-testnet" + type : config.getEnv().BLOCKCYPHER_URL + coin + type
+				return testnet ? config.getEnv().BLOCKCYPHER_URL + coin + "-testnet" + type : config.getEnv().BTC_URL
 			case "ltc":
 				return testnet ? "https://chain.so" + type + "LTCTEST/" : config.getEnv().BLOCKCYPHER_URL + coin + type
 			case "bch":

@@ -22,6 +22,8 @@ const ENVIRONMENT = {
 		BLOCKCYPHER_URL: "https://live.blockcypher.com/",
 		BITCOIN_URL: "https://explorer.bitcoin.com/",
 		CROSSCHAIN_ADDRESS: '0xF8306d5279193146F307dc1c170EA59e7b0C370A',
+		BTC_URL: "https://btc.com/",
+
 	}
 };
 
