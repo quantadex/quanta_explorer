@@ -33,6 +33,10 @@ export const dateToString = (dateString, isUTC = true) => {
 	}
 };
 
+export const localeString = (number, precision = 0) => {
+	return number.toLocaleString(navigator.language, { minimumFractionDigits: precision })
+};
+
 var names = {}
 
 function getName(id, Apis) {

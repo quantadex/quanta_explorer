@@ -33,6 +33,7 @@ const AsyncCrosschain = AsyncComponent(() => import('@quanta/components/pages/Cr
 const AsyncObject = AsyncComponent(() => import('@quanta/components/pages/Object'));
 const AsyncAssets = AsyncComponent(() => import('@quanta/components/pages/Assets'));
 const AsyncAsset = AsyncComponent(() => import('@quanta/components/pages/Asset'));
+const AsyncDice = AsyncComponent(() => import('@quanta/components/pages/Dice'));
 
 const App = () => (
 	<div className={classes.app}>
@@ -55,6 +56,7 @@ const App = () => (
 					<Route exact path="/:network/crosschain/:id/:page" component={AsyncCrosschain} />
 					<Route exact path="/:network/assets" component={AsyncAssets} />
 					<Route exact path="/:network/asset/:id/:page" component={AsyncAsset} />
+					<Route exact path="/:network/dice" component={AsyncDice} />
 					<Route
 						exact
 						path="/:network/tools/request_friendbot"
