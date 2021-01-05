@@ -12,7 +12,7 @@
   "dependencies": {
     "@quantadex/bitsharesjs": "^1.8.3",
     "@quantadex/quanta_js": "^1.0.6",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "counterpart": "^0.18.6",
     "express": "^4.16.2",
     "nodemon": "^1.18.9",
