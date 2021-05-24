@@ -52,7 +52,8 @@ class Header extends React.PureComponent {
 						<a href={"/" + network.value + "/assets"}>Assets</a><br />
 						<a href={"/" + network.value + "/witness"}>Witnesses</a><br />
 						<a href={"/" + network.value + "/committee"}>Committee</a><br />
-						<a className="show-sm" href={"/" + network.value + "/crosschain/node1/1"}>Crosschain</a>
+						<a className="show-sm" href={"/" + network.value + "/crosschain/node1/1"}>Crosschain<br /></a>
+						<a href={"/" + network.value + "/dice"}>Dice</a>
 					</div>
 				</div>
 			)
